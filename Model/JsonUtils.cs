@@ -60,6 +60,7 @@ namespace 替换关键词.Model {
             if (data != null)
             {
                 update(item);
+                WriteFile();
                 return;
             }
             Ks.Add(item);

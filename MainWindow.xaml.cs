@@ -72,7 +72,15 @@ namespace 替换关键词 {
                 Value = Content.Text
             };
             JsonUtils.add(data);
-            SourceList.Add(data);
+            var find = SourceList.FirstOrDefault(I => I == data);
+            if (find != null)
+            {
+                find.Value = data.Value;
+            }
+            else
+            {
+                SourceList.Add(data);
+            }
             // clean
             KeyWord.Text = "";
             Content.Text = "";
