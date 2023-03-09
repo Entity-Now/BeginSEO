@@ -66,8 +66,14 @@
             <!--替换后的文本-->
             <TextBox x:Name="behindText" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"/>
             <!--替换按钮-->
-            <Button Content="替换" Grid.RowSpan="2" Width="60" Height="40"
-                    Click="update_Click"/>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Grid.RowSpan="2" Height="40">
+                <Button Content="替换"
+                    Click="update_Click" Width="40"/>
+                <Button Content="清空"
+                    Click="clean_Click" Margin="10,0,10,0" Width="40"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

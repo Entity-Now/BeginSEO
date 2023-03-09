@@ -108,5 +108,10 @@ namespace 替换关键词 {
                 MessageBox.Show("请输入要替换的文本");
             }
         }
+        private void clean_Click(object sender, RoutedEventArgs e)
+        {
+            behindText.Text = "";
+            frontText.Text = "";
+        }
     }
 }
