@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="替换关键词.Components.Employ"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:替换关键词.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="1"
+                 TextWrapping="WrapWithOverflow"
+                 AcceptsReturn="True"
+                 Text="{Binding UrlList}"/>
+        <!--功能-->
+        <StackPanel Grid.Row="2"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+            <Button Content="一键查收录"
+                    Command="{Binding Handle}"/>
+        </StackPanel>
+        <ListView ItemsSource="{Binding EmployList}" Grid.Row="3">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="收录明细列明">
+                    <GridViewColumn DisplayMemberBinding="{Binding Url}" Header="Url地址" Width="200"></GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="是否收录"></GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

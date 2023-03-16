@@ -7,73 +7,33 @@
         mc:Ignorable="d"
         Title="MainWindow"
         Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Style/CheckSelect.xaml"/>
+                <ResourceDictionary Source="/Style/m_Radio.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height=".1*"/>
-            <RowDefinition Height=".1*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".3*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="关键词" Grid.Column="0" VerticalAlignment="Center"/>
-            <TextBlock Text="替换词（多个词用英文的逗号(,)分隔）.多个词之间是随机选择的" Grid.Column="1" VerticalAlignment="Center"/>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".3*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width=".2*"/>
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="KeyWord" Grid.Column="0" VerticalContentAlignment="Center"/>
-            <TextBox x:Name="Content" Grid.Column="1" VerticalContentAlignment="Center"/>
-            <Button Click="Add_Click" Grid.Column="2" Content="添加"/>
-        </Grid>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <!--右边的关键词列表-->
-            <ListBox x:Name="KeyWordList"
-                     ItemsSource="{Binding SourceList}"
-                     SelectionChanged="KeyWordList_SelectionChanged"
-                     Grid.Column="1"
-                     Grid.RowSpan="2"
-                     d:ItemsSource="{d:SampleData ItemCount=5}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width=".3*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Key}" MinWidth="130" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <!--删除-->
-                            <Button Content="删除" Width="50" Height="30" Grid.Column="1" Click="List_Delete_Click" Tag="{Binding}"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <!--替换前的文本-->
-            <TextBox x:Name="frontText" Grid.Row="0" TextWrapping="Wrap" AcceptsReturn="True"/>
-            <!--替换后的文本-->
-            <TextBox x:Name="behindText" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"/>
-            <!--替换按钮-->
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Grid.RowSpan="2" Height="40">
-                <Button Content="替换"
-                    Click="update_Click" Width="40"/>
-                <Button Content="清空"
-                    Click="clean_Click" Margin="10,0,10,0" Width="40"/>
-            </StackPanel>
-        </Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical">
+            <RadioButton Content="替换关键词"
+                         Height="32"
+                         Margin="1"
+                         IsChecked="True"
+                         Command="{Binding NavSelector}"
+                         Style="{StaticResource m_Radio}"/>
+            <RadioButton Content="查收录"
+                         Height="32"
+                         Margin="1"
+                         Command="{Binding EmploySelector}"
+                         Style="{StaticResource m_Radio}"/>
+        </StackPanel>
+        <ContentControl Content="{Binding Content}" Grid.Column="1"/>
+        
     </Grid>
 </Window>
