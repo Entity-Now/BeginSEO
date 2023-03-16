@@ -140,6 +140,7 @@
     <Compile Include="ModelView\EmployViewModel.cs" />
     <Compile Include="ModelView\MainModelView.cs" />
     <Compile Include="Model\EmployData.cs" />
+    <Compile Include="Utils\HTTP.cs" />
     <Compile Include="Utils\JsonUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
