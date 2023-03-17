@@ -14,6 +14,7 @@ using 替换关键词.Utils;
 using System.Net.Http;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Net.Http.Headers;
 
 namespace 替换关键词.ModelView
 {
@@ -41,40 +42,62 @@ namespace 替换关键词.ModelView
         public EmployViewModel()
         {
             Handle = new RelayCommand(GetEmploy);
+            ClearList = new RelayCommand(Clear);
+        }
+        public ICommand ClearList { get; set; }
+        public void Clear()
+        {
+            // 清空列表
+            EmployList.Clear();
         }
         async void GetEmploy() {
+            Clear();
             string[] urlList = UrlList.Split('\n');
+            string Cookie = "";
+            int Count = 1;
             foreach (string url in urlList)
-            { 
-                var temp_url = WebUtility.UrlEncode(url);
-                string requestUrl = $"https://www.baidu.com/s?wd={temp_url}&rsv_spt=1";
-                var client = new HttpClient();
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.41");
-                client.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-                client.DefaultRequestHeaders.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
-                //client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
-                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                client.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
-                client.DefaultRequestHeaders.Add("Host", "www.baidu.com");
-                string result = await HTTP.Get(client, requestUrl);
-                if (!string.IsNullOrEmpty(result)) {
+            {
+                await Task.Delay(1500);
+                if (string.IsNullOrEmpty(url.Trim()))
+                {
+                    continue;
+                }
+                var FilterUrl = Regex.Match(url.Trim(), @"(?<=(http(s?)://)).*");
+                var result = await HTTP.GetBaiDu(FilterUrl.Value.Trim(), Cookie);
+                // 获取cookie
+                if (string.IsNullOrEmpty(Cookie))
+                {
+                    Cookie = HTTP.Cookie(result);
+                }
+                else
+                {
+                    HTTP.Replace(result,ref Cookie);
+                }
+                var resultHtml = await result.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(resultHtml)) {
                     string status = "未收录";
-                    MatchCollection ExistList = Regex.Matches(result, @"(?<=mu="").*(?="")");
+                    string color = "#FF2B00";
+                    if (result.Headers.TryGetValues("Location", out IEnumerable<string> location))
+                    {
+                        status = "请求失败";
+                    }
+                    MatchCollection ExistList = Regex.Matches(resultHtml, @"(?<=mu="").*(?="")");
                     foreach (Match Exist in ExistList) {
-                        var Employ = Regex.Match(Exist.Value.Trim(), @"(?<=http.?://).*");
-                        if (!Employ.Success) {
-                            continue;
-                        }
-                        var temp = Regex.Match(url, @"(?<=http.?://).*");
-                        if (Employ.Value.Equals(temp.Value.Trim())) {
+
+                        if (Exist.Value.Trim().Equals(url.Trim())) {
                             status = "已收录";
+                            color = "#0e79b2";
                             break;
                         }
                     }
                     EmployList.Add(new EmployData() {
+                        ID = ++Count,
                         Status = status,
-                        Url = url
+                        Url = url,
+                        Color = color,
+                        LinkUrl = url.Trim()
                     });
+                    //UrlList = result;
                 }
             }
 

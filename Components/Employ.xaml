@@ -25,13 +25,41 @@
             <Button Content="一键查收录"
                     Command="{Binding Handle}"/>
         </StackPanel>
-        <ListView ItemsSource="{Binding EmployList}" Grid.Row="3">
+        <ListView ItemsSource="{Binding EmployList}" 
+                  SelectionMode="Extended"
+                  Grid.Row="3">
             <ListView.View>
                 <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="收录明细列明">
-                    <GridViewColumn DisplayMemberBinding="{Binding Url}" Header="Url地址" Width="200"></GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Status}" Header="是否收录"></GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding ID}" Header="序号"></GridViewColumn>
+                    <GridViewColumn Header="是否收录" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Status}" Foreground="{Binding Color}">
+                                </TextBlock>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn DisplayMemberBinding="{Binding Url}" Header="Url地址" Width="500"></GridViewColumn>
                 </GridView>
             </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Header="复制"/>
+                                <MenuItem Header="删除"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ContextMenu>
+                <ContextMenu >
+                    <MenuItem Header="重新查询" Command="{Binding Handle}"/>
+                    <MenuItem Header="清空全部查询" Command="{Binding ClearList}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
         </ListView>
     </Grid>
 </UserControl>
