@@ -45,13 +45,8 @@ namespace 替换关键词.Components
             var item = (sender as Button).Tag as KeyWord;
             if (item != null)
             {
-                var ms = MessageBox.Show("确定要删除吗", "警告", MessageBoxButton.YesNo);
-
-                if (ms == MessageBoxResult.Yes)
-                {
-                    JsonUtils.remove(item);
-                    SourceList.Remove(item);
-                }
+                JsonUtils.remove(item);
+                SourceList.Remove(item);
             }
         }
 
@@ -73,7 +68,7 @@ namespace 替换关键词.Components
                 Value = Content.Text
             };
             JsonUtils.add(data);
-            var find = SourceList.FirstOrDefault(I => I == data);
+            var find = SourceList.FirstOrDefault(I => I.Key == data.Key);
             if (find != null)
             {
                 find.Value = data.Value;

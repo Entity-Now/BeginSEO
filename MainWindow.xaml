@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:替换关键词"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="450" Width="800">
+        Height="650" Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,7 +33,7 @@
                          Command="{Binding EmploySelector}"
                          Style="{StaticResource m_Radio}"/>
         </StackPanel>
-        <ContentControl Content="{Binding Content}" Grid.Column="1"/>
+        <ContentControl  Margin="10" Content="{Binding Content}" Grid.Column="1"/>
         
     </Grid>
 </Window>

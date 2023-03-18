@@ -56,7 +56,7 @@ namespace 替换关键词.Model {
         }
         public static void add(KeyWord item)
         {
-            var data = Ks.FirstOrDefault(I => I == item);
+            var data = Ks.FirstOrDefault(I => I.Key == item.Key);
             if (data != null)
             {
                 update(item.Key, item.Value);

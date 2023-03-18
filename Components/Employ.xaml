@@ -22,9 +22,11 @@
                 AcceptsReturn="True"
                 SpellCheck.IsEnabled="True"
                 TextWrapping="Wrap"
+                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                 VerticalScrollBarVisibility="Auto" />
         <!--功能-->
         <StackPanel Grid.Row="2"
+                    Margin="5"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
