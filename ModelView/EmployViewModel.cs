@@ -19,6 +19,8 @@ using Microsoft.Win32;
 using 替换关键词.Data;
 using System.IO.Compression;
 using System.IO;
+using BrotliSharpLib;
+using System.Windows.Threading;
 
 namespace 替换关键词.ModelView
 {
@@ -86,6 +88,7 @@ namespace 替换关键词.ModelView
                 // 检查响应状态是否成功
                 if (response.IsSuccessStatusCode)
                 {
+                    string Content = "";
                     // 获取响应内容的流
                     var stream = await response.Content.ReadAsStreamAsync();
 
@@ -94,33 +97,47 @@ namespace 替换关键词.ModelView
                     {
                         // 如果是GZIP编码，则创建一个GZipStream对象来解压缩流
                         stream = new GZipStream(stream, CompressionMode.Decompress);
-                    }
-
-                    // 读取流中的数据，并转换为字符串
-                    using (var reader = new StreamReader(stream))
-                    {
-                        var content = await reader.ReadToEndAsync();
-                        // 获取cookie
-                        CookieJar.Replace(requestUrl.Trim(), ref Cookie);
-                        if (!string.IsNullOrEmpty(content))
+                        // 读取流中的数据，并转换为字符串
+                        using (var reader = new StreamReader(stream, Encoding.UTF8))
                         {
-                            string status = "未收录";
-                            string color = "#FF2B00";
-                            if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
-                            {
-                                status = "请求失败";
-                            }
-                            MatchCollection ExistList = Regex.Matches(content, @"(?<=mu="").*(?="")");
-                            foreach (Match Exist in ExistList)
-                            {
+                            Content = await reader.ReadToEndAsync();
 
-                                if (Exist.Value.Trim().Equals(url.Trim()))
-                                {
-                                    status = "已收录";
-                                    color = "#0e79b2";
-                                    break;
-                                }
+                        }
+                    }else if (response.Content.Headers.ContentEncoding.Contains("br"))
+                    {
+                        // 响应头是br编码
+                        byte[] buffer = await response.Content.ReadAsByteArrayAsync();
+                        // 解码
+                        var c = new ByteArrayContent(Brotli.DecompressBuffer(buffer, 0, buffer.Length));
+                        Content = await c.ReadAsStringAsync().ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        // 普通类型
+                        Content = await response.Content.ReadAsStringAsync();
+                    }
+                    // 获取cookie
+                    CookieJar.Replace(requestUrl.Trim(), ref Cookie);
+                    if (!string.IsNullOrEmpty(Content))
+                    {
+                        string status = "未收录";
+                        string color = "#FF2B00";
+                        if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
+                        {
+                            status = "请求失败";
+                        }
+                        MatchCollection ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")");
+                        foreach (Match Exist in ExistList)
+                        {
+
+                            if (Exist.Value.Trim().Equals(url.Trim()))
+                            {
+                                status = "已收录";
+                                color = "#0e79b2";
+                                break;
                             }
+                        }
+                        App.Current.Dispatcher.Invoke(new Action(() => {
                             EmployList.Add(new EmployData()
                             {
                                 ID = ++Count,
@@ -129,8 +146,7 @@ namespace 替换关键词.ModelView
                                 Color = color,
                                 LinkUrl = url.Trim()
                             });
-                            UrlList = content;
-                        }
+                        }));
                     }
                 }
 
