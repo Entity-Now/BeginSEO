@@ -4,33 +4,31 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:替换关键词.Components"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="650" d:DesignWidth="1200">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height=".1*"/>
-            <RowDefinition Height=".1*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".3*"/>
                 <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="关键词" Grid.Column="0" VerticalAlignment="Center"/>
-            <TextBlock Text="替换词（多个词用英文的逗号(,)分隔）.多个词之间是随机选择的" Grid.Column="1" VerticalAlignment="Center"/>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".3*"/>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width=".2*"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="KeyWord" Grid.Column="0" VerticalContentAlignment="Center"/>
-            <TextBox x:Name="Content" Grid.Column="1" VerticalContentAlignment="Center"/>
+            <TextBox x:Name="KeyWord"
+                     Grid.Column="0"
+                     materialDesign:HintAssist.Hint="请输入关键词"
+                     VerticalContentAlignment="Center"/>
+            <TextBox x:Name="Content"
+                     Grid.Column="1"
+                     materialDesign:HintAssist.Hint="请输入需要替换的关键词，多个词用英文（,）分隔"
+                     VerticalContentAlignment="Center"/>
             <Button Click="Add_Click" Grid.Column="2" Content="添加"/>
         </Grid>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
@@ -65,25 +63,29 @@
             <!--替换前的文本-->
             <TextBox x:Name="frontText" Grid.Row="1"
                      ToolTip="请输入需要替换的文本"
+                     materialDesign:HintAssist.Hint="请输入需要替换的文本"
+                     VerticalContentAlignment="Top"
                      TextWrapping="Wrap" AcceptsReturn="True"/>
             <!--替换后的文本-->
             <TextBox x:Name="behindText"
                      ToolTip="这是替换后的文本，无需手动输入"
+                     materialDesign:HintAssist.Hint="这是替换后的文本，无需手动输入"
+                     VerticalContentAlignment="Top"
                      Grid.Row="3"
                      TextWrapping="Wrap"
                      AcceptsReturn="True"/>
             <!--替换按钮-->
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        Grid.RowSpan="4" Height="40">
+                        Grid.Row="2" Height="40">
                 <Button Content="一键操作"
                         Click="CopyAndDelete_Click"
                         ToolTip="自动粘贴替换并复制"
                         Margin="10,0,10,0"/>
                 <Button Content="替换"
-                    Click="update_Click" Width="40"/>
+                    Click="update_Click"/>
                 <Button Content="清空"
-                    Click="clean_Click" Margin="10,0,10,0" Width="40"/>
+                    Click="clean_Click" Margin="10,0,10,0"/>
             </StackPanel>
         </Grid>
     </Grid>

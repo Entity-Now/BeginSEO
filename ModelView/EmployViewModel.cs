@@ -15,6 +15,10 @@ using System.Net.Http;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Net.Http.Headers;
+using Microsoft.Win32;
+using 替换关键词.Data;
+using System.IO.Compression;
+using System.IO;
 
 namespace 替换关键词.ModelView
 {
@@ -43,6 +47,8 @@ namespace 替换关键词.ModelView
         {
             Handle = new RelayCommand(GetEmploy);
             ClearList = new RelayCommand(Clear);
+            OpenExcel = new RelayCommand(OpenE);
+            CloseExcel = new RelayCommand(CloseE);
         }
         public ICommand ClearList { get; set; }
         public void Clear()
@@ -51,55 +57,104 @@ namespace 替换关键词.ModelView
             EmployList.Clear();
         }
         async void GetEmploy() {
+            // 清空列表
             Clear();
+            if (string.IsNullOrEmpty(UrlList))
+            {
+                return;
+            }
+            // 分割地址
             string[] urlList = UrlList.Split('\n');
-            string Cookie = "";
+            List<Cookie> Cookie = new List<Cookie>();
+            // 序号
             int Count = 1;
             foreach (string url in urlList)
             {
+                // 搞点延迟，避免速度太快被检测
                 await Task.Delay(1500);
                 if (string.IsNullOrEmpty(url.Trim()))
                 {
                     continue;
                 }
-                var FilterUrl = Regex.Match(url.Trim(), @"(?<=(http(s?)://)).*");
-                var result = await HTTP.GetBaiDu(FilterUrl.Value.Trim(), Cookie);
-                // 获取cookie
-                if (string.IsNullOrEmpty(Cookie))
+                var FilterUrl = Regex.Match(url.Trim(), @"(?<=(http(s?)://)).*")
+                    .Value
+                    .Trim();
+                //string requestUrl = $"https://www.baidu.com/s?wd={FilterUrl}&rsv_spt=1"; // rsv_spt第几页
+                string requestUrl = $"https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
+                CookieContainer CookieJar = new CookieContainer();
+                var response = await HTTP.GetBaiDu(requestUrl, CookieJar, Cookie);
+                // 检查响应状态是否成功
+                if (response.IsSuccessStatusCode)
                 {
-                    Cookie = HTTP.Cookie(result);
-                }
-                else
-                {
-                    HTTP.Replace(result,ref Cookie);
-                }
-                var resultHtml = await result.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(resultHtml)) {
-                    string status = "未收录";
-                    string color = "#FF2B00";
-                    if (result.Headers.TryGetValues("Location", out IEnumerable<string> location))
-                    {
-                        status = "请求失败";
-                    }
-                    MatchCollection ExistList = Regex.Matches(resultHtml, @"(?<=mu="").*(?="")");
-                    foreach (Match Exist in ExistList) {
+                    // 获取响应内容的流
+                    var stream = await response.Content.ReadAsStreamAsync();
 
-                        if (Exist.Value.Trim().Equals(url.Trim())) {
-                            status = "已收录";
-                            color = "#0e79b2";
-                            break;
+                    // 检查响应头是否包含GZIP编码
+                    if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+                    {
+                        // 如果是GZIP编码，则创建一个GZipStream对象来解压缩流
+                        stream = new GZipStream(stream, CompressionMode.Decompress);
+                    }
+
+                    // 读取流中的数据，并转换为字符串
+                    using (var reader = new StreamReader(stream))
+                    {
+                        var content = await reader.ReadToEndAsync();
+                        // 获取cookie
+                        CookieJar.Replace(requestUrl.Trim(), ref Cookie);
+                        if (!string.IsNullOrEmpty(content))
+                        {
+                            string status = "未收录";
+                            string color = "#FF2B00";
+                            if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
+                            {
+                                status = "请求失败";
+                            }
+                            MatchCollection ExistList = Regex.Matches(content, @"(?<=mu="").*(?="")");
+                            foreach (Match Exist in ExistList)
+                            {
+
+                                if (Exist.Value.Trim().Equals(url.Trim()))
+                                {
+                                    status = "已收录";
+                                    color = "#0e79b2";
+                                    break;
+                                }
+                            }
+                            EmployList.Add(new EmployData()
+                            {
+                                ID = ++Count,
+                                Status = status,
+                                Url = url,
+                                Color = color,
+                                LinkUrl = url.Trim()
+                            });
+                            UrlList = content;
                         }
                     }
-                    EmployList.Add(new EmployData() {
-                        ID = ++Count,
-                        Status = status,
-                        Url = url,
-                        Color = color,
-                        LinkUrl = url.Trim()
-                    });
-                    //UrlList = result;
                 }
+
             }
+
+        }
+        public ICommand OpenExcel { get; set; }
+        void OpenE()
+        {
+            List<ExcelEmploy> data = new List<ExcelEmploy>();
+
+            var OpenFile = new OpenFileDialog();
+            if (OpenFile.ShowDialog() == true)
+            {
+                ExcelUtils.OpenExcel<ExcelEmploy>(OpenFile.FileName, data, new ExcelEmploy() { Split = true});
+            }
+            foreach (var item in data)
+            {
+                UrlList += item.Link + "\n";
+            }
+        }
+        public ICommand CloseExcel { get; }
+        void CloseE()
+        {
 
         }
     }

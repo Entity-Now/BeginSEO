@@ -17,40 +17,35 @@ namespace 替换关键词.Utils {
         Multipart
     }
     public static class HTTP {
-        public static Dictionary<string, string> Cookie(this CookieContainer cookieJar, string Url)
+        public static List<string> User_Agent = new List<string>()
         {
-            Dictionary<string,string> Cookie = new Dictionary<string, string>();
-            // 获取cookie
-            var uri = new Uri(Url);
-            var responseCookies = cookieJar.GetCookies(uri);
-            foreach (Cookie item in responseCookies)
-            {
-                Cookie.Add(item.Name, item.Value);
-            }
-            return Cookie;
-        }
-        public static void Replace(this CookieContainer cookieJar, string Url, ref Dictionary<string, string> Cookies)
+           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.41",
+           //"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+           //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+        };
+        public static void Replace(this CookieContainer CookieJar, string Url, ref List<Cookie> Cookies)
         {
             var uri = new Uri(Url);
-            foreach (Cookie item in cookieJar.GetCookies(uri))
+            var responseCookie = CookieJar.GetCookies(uri);
+            foreach (Cookie item in responseCookie)
             {
-                int Find = 0;
-                foreach (var OldItem in Cookies)
+                var findCookie = Cookies.Find(I => I.Name == item.Name);
+                if (findCookie != null && findCookie != default)
                 {
-                    if (item.Name == OldItem.Key)
-                    {
-                        Find = 1;
-                        Cookies[OldItem.Value] = item.Value;
-                        break;
-                    }
+                    findCookie = item;
+                }
+                else
+                {
+                    Cookies.Add(item);
                 }
             }
         }
-        public static async Task<HttpResponseMessage> GetBaiDu(string url, CookieContainer cookieJar = null)
+        public static async Task<HttpResponseMessage> GetBaiDu(string url, CookieContainer cookieJar, List<Cookie> Cookies)
         {
             Dictionary<string, string> Header = new Dictionary<string, string>();
             Header.Add("Host", "www.baidu.com");
-            Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.41");
+            //Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0");
+            Header.Add("User-Agent", User_Agent[new Random().Next(0, User_Agent.Count)]);
             Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
             Header.Add("Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2");
             Header.Add("Connection", "keep-alive");
@@ -59,20 +54,20 @@ namespace 替换关键词.Utils {
             Header.Add("Sec-Fetch-Mode", "navigate");
             Header.Add("Sec-Fetch-Site", "none");
             Header.Add("Sec-Fetch-User", "?1");
-            Header.Add("sec-ch-ua", @"""Microsoft Edge"";v=""111"", ""Not(A:Brand"";v=""8"", ""Chromium"";v=""111""");
-            Header.Add("sec-ch-ua-mobile", "?0");
-            Header.Add("sec-ch-ua-platform", @"""Windows""");
+            //Header.Add("sec-ch-ua", @"""Microsoft Edge"";v=""111"", ""Not(A:Brand"";v=""8"", ""Chromium"";v=""111""");
+            //Header.Add("sec-ch-ua-mobile", "?0");
+            //Header.Add("sec-ch-ua-platform", @"""Windows""");
 
-            var temp_url = WebUtility.UrlEncode(url);
-            string requestUrl = $"https://www.baidu.com/s?wd={temp_url}&rsv_spt=1";
-            //string requestUrl = $"https://www.baidu.com";
             HttpClientHandler handler = new HttpClientHandler();
             handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            handler.UseCookies = false;
-            if (cookieJar != null)
+            handler.UseCookies = true;
+            handler.CookieContainer = cookieJar;
+            if (Cookies.Count > 0)
             {
-                handler.UseCookies = true;
-                handler.CookieContainer = cookieJar;
+                foreach (var item in Cookies)
+                {
+                    cookieJar.Add(item);
+                }
             }
             handler.AllowAutoRedirect = false;
             var client = new HttpClient(handler);
@@ -81,7 +76,7 @@ namespace 替换关键词.Utils {
             {
                 client.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
-            return await client.GetAsync(requestUrl);
+            return await client.GetAsync(url);
         }
         public static async Task<string> Post(string url,Dictionary<string,string> Data,RequestType ContentType) {
             HttpClient client = new HttpClient();

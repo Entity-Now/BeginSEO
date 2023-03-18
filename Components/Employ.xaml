@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:替换关键词.Components"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -14,15 +15,25 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBox Grid.Row="1"
-                 TextWrapping="WrapWithOverflow"
-                 AcceptsReturn="True"
-                 Text="{Binding UrlList}"/>
+                Text="{Binding UrlList}"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                materialDesign:HintAssist.Hint="请输入URL链接，每行是一条地址"
+                AcceptsReturn="True"
+                SpellCheck.IsEnabled="True"
+                TextWrapping="Wrap"
+                VerticalScrollBarVisibility="Auto" />
         <!--功能-->
         <StackPanel Grid.Row="2"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
+            <Button Content="打开Excel"
+                    Margin="10 0 10 0"
+                    Style="{StaticResource MaterialDesignPaperButton}"
+                    Command="{Binding OpenExcel}"/>
             <Button Content="一键查收录"
+                    Style="{StaticResource MaterialDesignPaperButton}"
                     Command="{Binding Handle}"/>
         </StackPanel>
         <ListView ItemsSource="{Binding EmployList}" 
@@ -54,12 +65,6 @@
                     </Setter>
                 </Style>
             </ListView.ItemContainerStyle>
-            <ListView.ContextMenu>
-                <ContextMenu >
-                    <MenuItem Header="重新查询" Command="{Binding Handle}"/>
-                    <MenuItem Header="清空全部查询" Command="{Binding ClearList}"/>
-                </ContextMenu>
-            </ListView.ContextMenu>
         </ListView>
     </Grid>
 </UserControl>
