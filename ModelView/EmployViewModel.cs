@@ -66,21 +66,20 @@ namespace 替换关键词.ModelView
                 return;
             }
             // 分割地址
-            string[] urlList = UrlList.Split('\n');
+            string[] urlList = UrlList.Split('\r');
             List<Cookie> Cookie = new List<Cookie>();
             // 序号
-            int Count = 1;
+            int Count = 0;
             foreach (string url in urlList)
             {
                 // 搞点延迟，避免速度太快被检测
-                await Task.Delay(1500);
-                if (string.IsNullOrEmpty(url.Trim()))
+                var FilterUrl = Regex.Match(url.Trim(), @"(?<=https?:\/\/|)([\w\-\.]+)\.([a-z]+)(\/[\w\-\.%\/]*)?")
+                    .Value
+                    .Trim();
+                if (string.IsNullOrEmpty(FilterUrl))
                 {
                     continue;
                 }
-                var FilterUrl = Regex.Match(url.Trim(), @"(?<=(http(s?)://)).*")
-                    .Value
-                    .Trim();
                 //string requestUrl = $"https://www.baidu.com/s?wd={FilterUrl}&rsv_spt=1"; // rsv_spt第几页
                 string requestUrl = $"https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
                 CookieContainer CookieJar = new CookieContainer();
@@ -124,7 +123,11 @@ namespace 替换关键词.ModelView
                         string color = "#FF2B00";
                         if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
                         {
-                            status = "请求失败";
+                            status = "需要验证";
+                        }
+                        if (response.StatusCode == HttpStatusCode.Found)
+                        {
+                            status = "需要验证";
                         }
                         MatchCollection ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")");
                         foreach (Match Exist in ExistList)
@@ -149,6 +152,10 @@ namespace 替换关键词.ModelView
                         }));
                     }
                 }
+                else
+                {
+                    ShowToast.Open("请求失败~");
+                }
 
             }
 
@@ -171,7 +178,7 @@ namespace 替换关键词.ModelView
         public ICommand CloseExcel { get; }
         void CloseE()
         {
-
+            ShowToast.Open("test");
         }
     }
 }

@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using 替换关键词.Components;
 using 替换关键词.Model;
 using 替换关键词.ModelView;
+using 替换关键词.Utils;
 
 namespace 替换关键词 {
     /// <summary>
@@ -30,8 +31,13 @@ namespace 替换关键词 {
             InitializeComponent();
             ViewModel = new MainModelView();
             this.DataContext = ViewModel;
+            // 注入
+            Inject();
         }
 
-
+        void Inject()
+        {
+            ShowToast.Snackbar = MainSnackbar;
+        }
     }
 }

@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Remoting.Messaging;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace 替换关键词.Utils {
     public enum RequestType {
@@ -29,6 +30,10 @@ namespace 替换关键词.Utils {
             var responseCookie = CookieJar.GetCookies(uri);
             foreach (Cookie item in responseCookie)
             {
+                if (item.Name == "BAIDUID_BFESS")
+                {
+                    File.WriteAllText("BAIDUID_BFESS.txt",item.Value);
+                }
                 var findCookie = Cookies.Find(I => I.Name == item.Name);
                 if (findCookie != null && findCookie != default)
                 {
@@ -37,6 +42,14 @@ namespace 替换关键词.Utils {
                 else
                 {
                     Cookies.Add(item);
+                }
+            }
+            if (Cookies.Find(I=>I.Name == "BAIDUID_BFESS") == null)
+            {
+                if (File.Exists("BAIDUID_BFESS.txt"))
+                {
+                    var BAIDUID = File.ReadAllText("BAIDUID_BFESS.txt");
+                    Cookies.Add(new Cookie("BAIDUID_BFESS", BAIDUID));
                 }
             }
         }
@@ -66,11 +79,19 @@ namespace 替换关键词.Utils {
             {
                 foreach (var item in Cookies)
                 {
+                    if (string.IsNullOrEmpty(item.Name) || string.IsNullOrEmpty(item.Value))
+                    {
+                        continue;
+                    }
+                    if (item is null)
+                    {
+                        continue;
+                    }
                     cookieJar.Add(item);
                 }
             }
             handler.AllowAutoRedirect = false;
-            var client = new HttpClient(handler);
+                var client = new HttpClient(handler);
             client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("br"));
             foreach (var item in Header)
             {

@@ -30,6 +30,9 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
+            <Button Content="Test"
+                    Command="{Binding CloseExcel}"
+                    Style="{StaticResource MaterialDesignPaperButton}"/>
             <Button Content="打开Excel"
                     Margin="10 0 10 0"
                     Style="{StaticResource MaterialDesignPaperButton}"
