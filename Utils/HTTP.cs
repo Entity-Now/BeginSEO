@@ -49,7 +49,7 @@ namespace 替换关键词.Utils {
                 if (File.Exists("BAIDUID_BFESS.txt"))
                 {
                     var BAIDUID = File.ReadAllText("BAIDUID_BFESS.txt");
-                    Cookies.Add(new Cookie("BAIDUID_BFESS", BAIDUID));
+                    Cookies.Add(new Cookie("BAIDUID_BFESS", BAIDUID) { Domain = "baidu.com"});
                 }
             }
         }

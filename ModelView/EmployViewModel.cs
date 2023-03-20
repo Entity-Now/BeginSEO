@@ -21,6 +21,7 @@ using System.IO.Compression;
 using System.IO;
 using BrotliSharpLib;
 using System.Windows.Threading;
+using System.Windows.Controls;
 
 namespace 替换关键词.ModelView
 {
@@ -51,6 +52,7 @@ namespace 替换关键词.ModelView
             ClearList = new RelayCommand(Clear);
             OpenExcel = new RelayCommand(OpenE);
             CloseExcel = new RelayCommand(CloseE);
+            CommandRemove = new RelayCommand<EmployData>(Remove);
         }
         public ICommand ClearList { get; set; }
         public void Clear()
@@ -175,10 +177,17 @@ namespace 替换关键词.ModelView
                 UrlList += item.Link + "\n";
             }
         }
-        public ICommand CloseExcel { get; }
+        public ICommand CloseExcel { get; set; }
         void CloseE()
         {
             ShowToast.Open("test");
+        }
+        public ICommand CommandRemove { get; set; }
+        public void Remove(EmployData listViewItem)
+        {
+            
+            MessageBox.Show(listViewItem.Url);
+            //EmployList.Remove();
         }
     }
 }

@@ -21,10 +21,6 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <materialDesign:Snackbar Grid.ColumnSpan="2"
-                                 VerticalAlignment="Bottom"
-                                 MessageQueue="{materialDesign:MessageQueue}"
-                                 x:Name="MainSnackbar"/>
         <StackPanel Orientation="Vertical">
             <RadioButton Content="替换关键词"
                          Height="32"
@@ -39,6 +35,10 @@
                          Style="{StaticResource m_Radio}"/>
         </StackPanel>
         <ContentControl  Margin="10" Content="{Binding Content}" Grid.Column="1"/>
-        
+
+        <materialDesign:Snackbar Grid.ColumnSpan="2"
+                                 VerticalAlignment="Bottom"
+                                 MessageQueue="{materialDesign:MessageQueue}"
+                                 x:Name="MainSnackbar"/>
     </Grid>
 </Window>

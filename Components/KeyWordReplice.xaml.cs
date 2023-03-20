@@ -137,6 +137,8 @@ namespace 替换关键词.Components
             }
             // replice
             replice();
+            // 设置到剪切板
+            Clipboard.SetText(behindText.Text);
         }
     }
 }
