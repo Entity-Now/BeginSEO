@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace 替换关键词.Utils
+namespace BeginSEO.Utils
 {
     public static class ShowToast
     {

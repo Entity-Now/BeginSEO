@@ -10,8 +10,12 @@ using System.Runtime.Remoting.Messaging;
 using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.IO;
+using BrotliSharpLib;
+using System.IO.Compression;
+using System.Windows;
+using BeginSEO.Model;
 
-namespace 替换关键词.Utils {
+namespace BeginSEO.Utils {
     public enum RequestType {
         FormData,
         String,
@@ -21,9 +25,19 @@ namespace 替换关键词.Utils {
         public static List<string> User_Agent = new List<string>()
         {
            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36 Edg/111.0.1661.41",
-           //"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
-           //"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+           "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
         };
+        public static List<string> Baidu_Url = new List<string>()
+        {
+            "www.baidu.com", "180.97.33.107", "180.97.33.108", "180.97.33.107", "180.97.33.107", "180.97.33.108"
+        };
+        /// <summary>
+        /// 从响应结果中获取cookie并替换过期的cookie
+        /// </summary>
+        /// <param name="CookieJar"></param>
+        /// <param name="Url"></param>
+        /// <param name="Cookies"></param>
         public static void Replace(this CookieContainer CookieJar, string Url, ref List<Cookie> Cookies)
         {
             var uri = new Uri(Url);
@@ -55,8 +69,9 @@ namespace 替换关键词.Utils {
         }
         public static async Task<HttpResponseMessage> GetBaiDu(string url, CookieContainer cookieJar, List<Cookie> Cookies)
         {
+            string Host = Regex.Match(url, @"(?<=https?:\/\/)\S+?(?=\/)").Value;
             Dictionary<string, string> Header = new Dictionary<string, string>();
-            Header.Add("Host", "www.baidu.com");
+            Header.Add("Host", Host);
             //Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0");
             Header.Add("User-Agent", User_Agent[new Random().Next(0, User_Agent.Count)]);
             Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
@@ -72,7 +87,7 @@ namespace 替换关键词.Utils {
             //Header.Add("sec-ch-ua-platform", @"""Windows""");
 
             HttpClientHandler handler = new HttpClientHandler();
-            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None;
             handler.UseCookies = true;
             handler.CookieContainer = cookieJar;
             if (Cookies.Count > 0)
@@ -90,6 +105,7 @@ namespace 替换关键词.Utils {
                     cookieJar.Add(item);
                 }
             }
+            // 禁止重定向
             handler.AllowAutoRedirect = false;
                 var client = new HttpClient(handler);
             client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("br"));
@@ -97,7 +113,16 @@ namespace 替换关键词.Utils {
             {
                 client.DefaultRequestHeaders.Add(item.Key, item.Value);
             }
-            return await client.GetAsync(url);
+            var response = await client.GetAsync(url);
+            // 判断响应头编码是否是br
+            if (response.Content.Headers.ContentEncoding.Contains("br"))
+            {
+                byte[] buffer = await response.Content.ReadAsByteArrayAsync();
+                // 解码
+                response.Content = new ByteArrayContent(Brotli.DecompressBuffer(buffer, 0, buffer.Length));
+            }
+
+            return response;
         }
         public static async Task<string> Post(string url,Dictionary<string,string> Data,RequestType ContentType) {
             HttpClient client = new HttpClient();

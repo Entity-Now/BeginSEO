@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace 替换关键词 {
+namespace BeginSEO {
     /// <summary>
     /// App.xaml 的交互逻辑
     /// </summary>

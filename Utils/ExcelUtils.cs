@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using LinqToExcel;
-using 替换关键词.Data;
+using BeginSEO.Data;
 
-namespace 替换关键词.Utils
+namespace BeginSEO.Utils
 {
     public class ExcelUtils
     {

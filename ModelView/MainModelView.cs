@@ -8,9 +8,9 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using 替换关键词.Components;
+using BeginSEO.Components;
 
-namespace 替换关键词.ModelView
+namespace BeginSEO.ModelView
 {
     public class MainModelView: ObservableObject
     {

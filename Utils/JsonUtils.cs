@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using System.Windows;
 
-namespace 替换关键词.Model {
+namespace BeginSEO.Model {
     public class KeyWord {
         public string Key { get; set; }
         public string Value { get; set; }

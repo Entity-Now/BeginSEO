@@ -13,9 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 替换关键词.Model;
+using BeginSEO.Model;
 
-namespace 替换关键词.Components
+namespace BeginSEO.Components
 {
     /// <summary>
     /// KeyWordReplice.xaml 的交互逻辑

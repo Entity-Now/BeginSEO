@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace 替换关键词.Model
+namespace BeginSEO.Model
 {
     public class EmployData: ObservableObject
     {

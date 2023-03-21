@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,23 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BeginSEO.Model;
-using BeginSEO.ModelView;
 
 namespace BeginSEO.Components
 {
     /// <summary>
-    /// Employ.xaml 的交互逻辑
+    /// SearchRanking.xaml 的交互逻辑
     /// </summary>
-    public partial class Employ : UserControl
+    public partial class SearchRanking : UserControl
     {
-        public EmployViewModel ViewModel { get; set; }
-        public Employ()
+        public SearchRanking()
         {
             InitializeComponent();
-            ViewModel = new EmployViewModel();
-            this.DataContext = ViewModel;
-
         }
     }
 }

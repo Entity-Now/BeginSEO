@@ -14,12 +14,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using 替换关键词.Components;
-using 替换关键词.Model;
-using 替换关键词.ModelView;
-using 替换关键词.Utils;
+using BeginSEO.Components;
+using BeginSEO.Model;
+using BeginSEO.ModelView;
+using BeginSEO.Utils;
 
-namespace 替换关键词 {
+namespace BeginSEO
+{
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>

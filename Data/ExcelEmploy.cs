@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using LinqToExcel.Attributes;
 using LinqToExcel;
 
-namespace 替换关键词.Data
+namespace BeginSEO.Data
 {
     public class ExcelEmploy
     {

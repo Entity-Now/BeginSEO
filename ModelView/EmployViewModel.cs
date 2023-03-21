@@ -4,29 +4,40 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using 替换关键词.Model;
+using BeginSEO.Model;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
-using 替换关键词.Utils;
+using BeginSEO.Utils;
 using System.Net.Http;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Net.Http.Headers;
 using Microsoft.Win32;
-using 替换关键词.Data;
+using BeginSEO.Data;
 using System.IO.Compression;
 using System.IO;
 using BrotliSharpLib;
 using System.Windows.Threading;
 using System.Windows.Controls;
 
-namespace 替换关键词.ModelView
+namespace BeginSEO.ModelView
 {
     public class EmployViewModel: ObservableObject
     {
+        public EmployViewModel()
+        {
+            Handle = new RelayCommand(GetEmploy);
+            ClearList = new RelayCommand(Clear);
+            OpenExcel = new RelayCommand(OpenE);
+            CloseExcel = new RelayCommand(CloseE);
+            CommandShowEmploy = new RelayCommand(ShowEmploy);
+            CommandRemove = new RelayCommand<EmployData>(Remove);
+            CommandCopy = new RelayCommand<EmployData>(Copy);
+            CommandCopyExcel = new RelayCommand<EmployData>(CopyExcel);
+        }
         private ObservableCollection<EmployData> _EmployList = new ObservableCollection<EmployData>();
         public ObservableCollection<EmployData> EmployList
         {
@@ -46,14 +57,6 @@ namespace 替换关键词.ModelView
             }
         }
         public ICommand Handle { get; set; }
-        public EmployViewModel()
-        {
-            Handle = new RelayCommand(GetEmploy);
-            ClearList = new RelayCommand(Clear);
-            OpenExcel = new RelayCommand(OpenE);
-            CloseExcel = new RelayCommand(CloseE);
-            CommandRemove = new RelayCommand<EmployData>(Remove);
-        }
         public ICommand ClearList { get; set; }
         public void Clear()
         {
@@ -67,14 +70,15 @@ namespace 替换关键词.ModelView
             {
                 return;
             }
+            // 序号
+            int Count = 0;
             // 分割地址
             string[] urlList = UrlList.Split('\r');
             List<Cookie> Cookie = new List<Cookie>();
-            // 序号
-            int Count = 0;
             foreach (string url in urlList)
             {
-                // 搞点延迟，避免速度太快被检测
+                string status = "未收录";
+                string color = "#FF2B00";
                 var FilterUrl = Regex.Match(url.Trim(), @"(?<=https?:\/\/|)([\w\-\.]+)\.([a-z]+)(\/[\w\-\.%\/]*)?")
                     .Value
                     .Trim();
@@ -82,47 +86,20 @@ namespace 替换关键词.ModelView
                 {
                     continue;
                 }
-                //string requestUrl = $"https://www.baidu.com/s?wd={FilterUrl}&rsv_spt=1"; // rsv_spt第几页
-                string requestUrl = $"https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
+                var Host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
+                string requestUrl = $"http://{Host}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
                 CookieContainer CookieJar = new CookieContainer();
                 var response = await HTTP.GetBaiDu(requestUrl, CookieJar, Cookie);
                 // 检查响应状态是否成功
                 if (response.IsSuccessStatusCode)
                 {
-                    string Content = "";
-                    // 获取响应内容的流
-                    var stream = await response.Content.ReadAsStreamAsync();
+                    string Content = Content = await response.Content.ReadAsStringAsync();
 
-                    // 检查响应头是否包含GZIP编码
-                    if (response.Content.Headers.ContentEncoding.Contains("gzip"))
-                    {
-                        // 如果是GZIP编码，则创建一个GZipStream对象来解压缩流
-                        stream = new GZipStream(stream, CompressionMode.Decompress);
-                        // 读取流中的数据，并转换为字符串
-                        using (var reader = new StreamReader(stream, Encoding.UTF8))
-                        {
-                            Content = await reader.ReadToEndAsync();
-
-                        }
-                    }else if (response.Content.Headers.ContentEncoding.Contains("br"))
-                    {
-                        // 响应头是br编码
-                        byte[] buffer = await response.Content.ReadAsByteArrayAsync();
-                        // 解码
-                        var c = new ByteArrayContent(Brotli.DecompressBuffer(buffer, 0, buffer.Length));
-                        Content = await c.ReadAsStringAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        // 普通类型
-                        Content = await response.Content.ReadAsStringAsync();
-                    }
                     // 获取cookie
                     CookieJar.Replace(requestUrl.Trim(), ref Cookie);
                     if (!string.IsNullOrEmpty(Content))
                     {
-                        string status = "未收录";
-                        string color = "#FF2B00";
+
                         if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
                         {
                             status = "需要验证";
@@ -142,23 +119,23 @@ namespace 替换关键词.ModelView
                                 break;
                             }
                         }
-                        App.Current.Dispatcher.Invoke(new Action(() => {
-                            EmployList.Add(new EmployData()
-                            {
-                                ID = ++Count,
-                                Status = status,
-                                Url = url,
-                                Color = color,
-                                LinkUrl = url.Trim()
-                            });
-                        }));
                     }
+
                 }
                 else
                 {
-                    ShowToast.Open("请求失败~");
+                    status = "请求失败";
                 }
-
+                App.Current.Dispatcher.Invoke(new Action(() => {
+                    EmployList.Add(new EmployData()
+                    {
+                        ID = ++Count,
+                        Status = status,
+                        Url = url,
+                        Color = color,
+                        LinkUrl = url.Trim()
+                    });
+                }));
             }
 
         }
@@ -185,9 +162,35 @@ namespace 替换关键词.ModelView
         public ICommand CommandRemove { get; set; }
         public void Remove(EmployData listViewItem)
         {
-            
-            MessageBox.Show(listViewItem.Url);
-            //EmployList.Remove();
+            EmployList.Remove(listViewItem);
+            ShowToast.Open("删除成功");
+        }
+        public ICommand CommandCopy { get; set; }
+        public void Copy(EmployData Item)
+        {
+            Clipboard.SetText(Item.Url.Trim());
+            ShowToast.Open("复制成功");
+        }
+        public ICommand CommandCopyExcel { get; set; }
+        public void CopyExcel(EmployData Item)
+        {
+            Clipboard.SetText($"{Item.Url} {Item.Status}");
+            ShowToast.Open("复制成功");
+        }
+        /// <summary>
+        /// 只显示已收录的链接
+        /// </summary>
+        public ICommand CommandShowEmploy { get; set; }
+        public void ShowEmploy()
+        {
+            var data = EmployList
+                .Where(I => I.Status == "未收录" || I.Status == "请求失败" || I.Status == "需要验证")
+                .ToList();
+            foreach (var item in data)
+            {
+                EmployList.Remove(item);
+            }
+
         }
     }
 }
