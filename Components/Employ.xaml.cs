@@ -29,7 +29,6 @@ namespace BeginSEO.Components
             InitializeComponent();
             ViewModel = new EmployViewModel();
             this.DataContext = ViewModel;
-
         }
     }
 }

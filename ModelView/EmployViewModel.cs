@@ -74,9 +74,10 @@ namespace BeginSEO.ModelView
             int Count = 0;
             // 分割地址
             string[] urlList = UrlList.Split('\r');
-            List<Cookie> Cookie = new List<Cookie>();
+            Dictionary<string, string> Cookies = new Dictionary<string, string>();
             foreach (string url in urlList)
             {
+                await Task.Delay(500);
                 string status = "未收录";
                 string color = "#FF2B00";
                 var FilterUrl = Regex.Match(url.Trim(), @"(?<=https?:\/\/|)([\w\-\.]+)\.([a-z]+)(\/[\w\-\.%\/]*)?")
@@ -88,15 +89,17 @@ namespace BeginSEO.ModelView
                 }
                 var Host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
                 string requestUrl = $"http://{Host}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
-                CookieContainer CookieJar = new CookieContainer();
-                var response = await HTTP.GetBaiDu(requestUrl, CookieJar, Cookie);
+                // 获取cookie
+                Cookies.TryGetValue(Host, out string CookieValue);
+                var response = await HTTP.GetBaiDu(requestUrl, CookieValue);
                 // 检查响应状态是否成功
                 if (response.IsSuccessStatusCode)
                 {
+                    // 获取cookie
+                    response.GetCookies(Host, ref Cookies);
                     string Content = Content = await response.Content.ReadAsStringAsync();
 
-                    // 获取cookie
-                    CookieJar.Replace(requestUrl.Trim(), ref Cookie);
+
                     if (!string.IsNullOrEmpty(Content))
                     {
 
@@ -147,7 +150,7 @@ namespace BeginSEO.ModelView
             var OpenFile = new OpenFileDialog();
             if (OpenFile.ShowDialog() == true)
             {
-                ExcelUtils.OpenExcel<ExcelEmploy>(OpenFile.FileName, data, new ExcelEmploy() { Split = true});
+                ExcelUtils.ImportToList(OpenFile.FileName);
             }
             foreach (var item in data)
             {

@@ -71,6 +71,9 @@
                      materialDesign:HintAssist.Hint="请输入需要替换的文本"
                      VerticalContentAlignment="Top"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     materialDesign:TextFieldAssist.CharacterCounterVisibility="Visible"
+                     MaxLength="50000"
+                     VerticalScrollBarVisibility="Auto"
                      TextWrapping="Wrap" AcceptsReturn="True"/>
             <!--替换后的文本-->
             <TextBox x:Name="behindText"
@@ -79,6 +82,9 @@
                      VerticalContentAlignment="Top"
                      Grid.Row="3"
                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     materialDesign:TextFieldAssist.CharacterCounterVisibility="Visible"
+                     VerticalScrollBarVisibility="Auto"
+                     MaxLength="50000"
                      TextWrapping="Wrap"
                      AcceptsReturn="True"/>
             <!--替换按钮-->

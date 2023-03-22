@@ -1,24 +1,23 @@
-﻿using System;
+﻿using BeginSEO.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LinqToExcel.Attributes;
-using LinqToExcel;
 
 namespace BeginSEO.Data
 {
     public class ExcelEmploy
     {
-        [ExcelColumn("标题")]
+        [ExcellData("标题")]
         public string Name { get; set; }
-        [ExcelColumn("发布时间")]
+        [ExcellData("发布时间")]
         public DateTime PublishTime { get; set; }
-        [ExcelColumn("链接")]
+        [ExcellData("链接","URL", "PC URL","地址", "网址")]
         public string Link { get; set; }
-        [ExcelColumn("排名")]
+        [ExcellData("排名")]
         public int Order { get; set; }
-        [ExcelColumn("收录")]
+        [ExcellData("收录")]
         public string Status { get; set; }
         /// <summary>
         /// 
