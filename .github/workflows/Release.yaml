@@ -19,7 +19,7 @@ jobs:
         dotnet-version: '6.0.x'
     
     - name: Build WPF project
-      run: dotnet build --configuration Release --no-restore
+      run: msbuild BeginSeo.sln /p:Configuration=Release
     
     - name: Zip the Build
       run: Compress-Archive -Path ./WpfApp/bin/Release/* -DestinationPath ${{ secrets.ReleaseZipName }}.zip

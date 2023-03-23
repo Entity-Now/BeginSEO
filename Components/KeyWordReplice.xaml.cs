@@ -13,7 +13,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BeginSEO.Data;
 using BeginSEO.Model;
+using BeginSEO.SQL;
+using BeginSEO.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeginSEO.Components
 {
@@ -22,18 +26,20 @@ namespace BeginSEO.Components
     /// </summary>
     public partial class KeyWordReplice : UserControl
     {
-        public ObservableCollection<KeyWord> SourceList = new ObservableCollection<KeyWord>();
+        CollectionViewSource KeyWordSource;
+        ObservableCollection<KeyWord> KeyWords;
         public KeyWordReplice()
         {
             InitializeComponent();
             this.DataContext = this;
-            KeyWordList.ItemsSource = SourceList;
-            // init
-            JsonUtils.Init();
-            foreach (KeyWord keyWord in JsonUtils.Ks)
-            {
-                SourceList.Add(keyWord);
-            }
+            KeyWordSource = (CollectionViewSource)FindResource(nameof(KeyWordSource));
+        }
+
+        private void KeyWordList_Loaded(object sender, RoutedEventArgs e)
+        {
+           DataAccess.Entity<KeyWord>().Load();
+           KeyWordSource.Source = DataAccess.Entity<KeyWord>().Local.ToObservableCollection();
+           KeyWords = ((ObservableCollection<KeyWord>)KeyWordSource.Source);
         }
         /// <summary>
         /// 删除元素
@@ -45,8 +51,8 @@ namespace BeginSEO.Components
             var item = (sender as Button).Tag as KeyWord;
             if (item != null)
             {
-                JsonUtils.remove(item);
-                SourceList.Remove(item);
+                KeyWords.Remove(item);
+                DataAccess.SaveChanges();
             }
         }
 
@@ -54,29 +60,30 @@ namespace BeginSEO.Components
         {
             if (KeyWord.Text.Length <= 0)
             {
-                MessageBox.Show("请输入关键词");
+                ShowToast.Open("请输入关键词");
                 return;
             }
             if (Content.Text.Length <= 0)
             {
-                MessageBox.Show("请输入要替换的值");
+                ShowToast.Open("请输入要替换的值");
                 return;
             }
-            var data = new KeyWord()
+            // add
+            var findData = KeyWords.FirstOrDefault(I => I.Key == KeyWord.Text);
+            if (findData != null)
             {
-                Key = KeyWord.Text,
-                Value = Content.Text
-            };
-            JsonUtils.add(data);
-            var find = SourceList.FirstOrDefault(I => I.Key == data.Key);
-            if (find != null)
-            {
-                find.Value = data.Value;
+                findData.Value = Content.Text;
+                findData.Key = KeyWord.Text; ;
             }
             else
             {
-                SourceList.Add(data);
+                KeyWords.Add(new KeyWord()
+                {
+                    Key = KeyWord.Text,
+                    Value = Content.Text
+                });
             }
+            DataAccess.SaveChanges();
             // clean
             KeyWord.Text = "";
             Content.Text = "";
@@ -104,7 +111,7 @@ namespace BeginSEO.Components
             string Text = frontText.Text;
             if (Text.Length > 0)
             {
-                foreach (var item in JsonUtils.Ks)
+                foreach (var item in KeyWords)
                 {
                     string[] splitText = item.Value.Split(new char[] { ',' });
                     string newString = splitText[new Random().Next(splitText.Length)];
@@ -140,5 +147,6 @@ namespace BeginSEO.Components
             // 设置到剪切板
             Clipboard.SetText(behindText.Text);
         }
+
     }
 }

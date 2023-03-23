@@ -47,8 +47,12 @@ namespace BeginSEO.Utils
                     var RowCount = sheet.LastRowNum;
                     for (int j = 0; j < RowCount; j++)
                     {
+                        // cell
                         var row = sheet.GetRow(j);
-                        MessageBox.Show($"{row.LastCellNum}");
+                        foreach (var item in row.Cells)
+                        {
+                            MessageBox.Show(item.StringCellValue);
+                        }
                     }
                 }
 

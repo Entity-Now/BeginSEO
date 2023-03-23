@@ -7,6 +7,9 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="650" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="KeyWordSource"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -46,7 +49,8 @@
             </Grid.RowDefinitions>
             <!--右边的关键词列表-->
             <ListBox x:Name="KeyWordList"
-                     ItemsSource="{Binding SourceList}"
+                     ItemsSource="{Binding Source={StaticResource KeyWordSource}}"
+                     Loaded="KeyWordList_Loaded"
                      SelectionChanged="KeyWordList_SelectionChanged"
                      Grid.Column="1"
                      Grid.RowSpan="4"

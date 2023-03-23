@@ -22,6 +22,7 @@ using System.IO;
 using BrotliSharpLib;
 using System.Windows.Threading;
 using System.Windows.Controls;
+using BeginSEO.SQL;
 
 namespace BeginSEO.ModelView
 {
@@ -160,7 +161,10 @@ namespace BeginSEO.ModelView
         public ICommand CloseExcel { get; set; }
         void CloseE()
         {
-            ShowToast.Open("test");
+            DataAccess.update<KeyWord>(new KeyWord()
+            {
+                Key = "11111"
+            });
         }
         public ICommand CommandRemove { get; set; }
         public void Remove(EmployData listViewItem)

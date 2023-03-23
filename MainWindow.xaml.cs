@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using BeginSEO.Components;
 using BeginSEO.Model;
 using BeginSEO.ModelView;
+using BeginSEO.SQL;
 using BeginSEO.Utils;
 
 namespace BeginSEO
@@ -32,8 +33,10 @@ namespace BeginSEO
             InitializeComponent();
             ViewModel = new MainModelView();
             this.DataContext = ViewModel;
-            // 注入
+            // 注入提示框
             Inject();
+            // 初始化数据库
+            DataAccess.init();
         }
 
         void Inject()
