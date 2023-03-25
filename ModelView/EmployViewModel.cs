@@ -151,7 +151,8 @@ namespace BeginSEO.ModelView
             var OpenFile = new OpenFileDialog();
             if (OpenFile.ShowDialog() == true)
             {
-                ExcelUtils.ImportToList(OpenFile.FileName);
+                new ExcelUtils<ExcelEmploy>(OpenFile.FileName).GetHeads();
+                //ExcelUtils.ImportToList(OpenFile.FileName);
             }
             foreach (var item in data)
             {
@@ -161,10 +162,9 @@ namespace BeginSEO.ModelView
         public ICommand CloseExcel { get; set; }
         void CloseE()
         {
-            DataAccess.update<KeyWord>(new KeyWord()
-            {
-                Key = "11111"
-            });
+            //ExcelUtils.ImportToList();
+            
+
         }
         public ICommand CommandRemove { get; set; }
         public void Remove(EmployData listViewItem)

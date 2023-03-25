@@ -256,6 +256,9 @@
     </ApplicationDefinition>
     <Compile Include="Attributes\databaseAttribute.cs" />
     <Compile Include="Attributes\ExcellDataAttribute.cs" />
+    <Compile Include="Components\MessageModal.xaml.cs">
+      <DependentUpon>MessageModal.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\SearchRanking.xaml.cs">
       <DependentUpon>SearchRanking.xaml</DependentUpon>
     </Compile>
@@ -264,12 +267,18 @@
     <Compile Include="SQL\DataAccess.cs" />
     <Compile Include="SQL\dataBank.cs" />
     <Compile Include="Utils\getReflex.cs" />
+    <Compile Include="Utils\ShowModal.cs" />
     <Compile Include="Utils\ShowToast.cs" />
+    <Compile Include="Utils\Tools.cs" />
     <Page Include="Components\Employ.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\KeyWordReplice.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\MessageModal.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -297,6 +306,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Style\CheckSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Style\mColors.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

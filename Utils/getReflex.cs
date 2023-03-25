@@ -96,6 +96,18 @@ namespace BeginSEO.Utils
             source.mGetProperty<T>(name).SetValue(source, value);
         }
         /// <summary>
+        /// 获取对象某个属性的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="O"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static O mGetProperyValue<T, O>(this T source, string name) where T : class
+        {
+            return (O)source.mGetProperty(name).GetValue(source);
+        }
+        /// <summary>
         /// 对旧的对象赋值
         /// </summary>
         public static void Assignment<old, New>(this old source, New Value) where old : class where New : class

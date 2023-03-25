@@ -42,6 +42,7 @@ namespace BeginSEO
         void Inject()
         {
             ShowToast.Snackbar = MainSnackbar;
+            ShowModal.dialogHost = MainDialog;
         }
     }
 }

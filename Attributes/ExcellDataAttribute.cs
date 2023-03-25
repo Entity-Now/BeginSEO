@@ -8,10 +8,10 @@ namespace BeginSEO.Attributes
 {
     public class ExcellDataAttribute: Attribute
     {
-        public string[] Headers { get; set; }
+        public List<string> Headers { get; set; }
         public ExcellDataAttribute(params string[] _header)
         {
-            this.Headers = _header;
+            this.Headers = _header.ToList();
         }
     }
 }

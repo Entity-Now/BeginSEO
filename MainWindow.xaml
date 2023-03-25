@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical">
-            <RadioButton Content="BeginSEO"
+            <RadioButton Content="替换文章关键词"
                          Height="32"
                          Margin="1"
                          IsChecked="True"
@@ -40,5 +40,9 @@
                                  VerticalAlignment="Bottom"
                                  MessageQueue="{materialDesign:MessageQueue}"
                                  x:Name="MainSnackbar"/>
+        <materialDesign:DialogHost
+            Grid.ColumnSpan="2"
+            x:Name="MainDialog"
+            />
     </Grid>
 </Window>
