@@ -256,6 +256,9 @@
     </ApplicationDefinition>
     <Compile Include="Attributes\databaseAttribute.cs" />
     <Compile Include="Attributes\ExcellDataAttribute.cs" />
+    <Compile Include="Components\GPT.xaml.cs">
+      <DependentUpon>GPT.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\MessageModal.xaml.cs">
       <DependentUpon>MessageModal.xaml</DependentUpon>
     </Compile>
@@ -271,6 +274,10 @@
     <Compile Include="Utils\ShowToast.cs" />
     <Compile Include="Utils\Tools.cs" />
     <Page Include="Components\Employ.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\GPT.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

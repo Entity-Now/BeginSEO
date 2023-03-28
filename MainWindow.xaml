@@ -33,6 +33,11 @@
                          Margin="1"
                          Command="{Binding EmploySelector}"
                          Style="{StaticResource m_Radio}"/>
+            <RadioButton Content="GPT"
+                         Height="32"
+                         Margin="1"
+                         Command="{Binding GPTSelector}"
+                         Style="{StaticResource m_Radio}"/>
         </StackPanel>
         <ContentControl  Margin="10" Content="{Binding Content}" Grid.Column="1"/>
 

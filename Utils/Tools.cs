@@ -20,5 +20,9 @@ namespace BeginSEO.Utils
             return GetResource(Name) as SolidColorBrush;
             //return new SolidColorBrush((Color)ColorConverter.ConvertFromString(color));
         }
+        public static string GetTimeStamp()
+        {
+            return $"{(DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000}";
+        }
     }
 }

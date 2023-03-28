@@ -22,7 +22,8 @@ namespace BeginSEO.Data
         /// 域名
         /// </summary>
         public string Host { get; set; }
-        public string Cookie { get; set; }
+        public string CookieKey { get; set; }
+        public string CookieValue { get; set; }
         public DateTime CreateTime { get; set; }
         /// <summary>
         /// 过期时间

@@ -23,6 +23,7 @@ using BrotliSharpLib;
 using System.Windows.Threading;
 using System.Windows.Controls;
 using BeginSEO.SQL;
+using System.Threading;
 
 namespace BeginSEO.ModelView
 {
@@ -64,84 +65,25 @@ namespace BeginSEO.ModelView
             // 清空列表
             EmployList.Clear();
         }
-        async void GetEmploy() {
+        void GetEmploy() {
             // 清空列表
             Clear();
             if (string.IsNullOrEmpty(UrlList))
             {
                 return;
             }
-            // 序号
-            int Count = 0;
             // 分割地址
-            string[] urlList = UrlList.Split('\r');
-            Dictionary<string, string> Cookies = new Dictionary<string, string>();
-            foreach (string url in urlList)
-            {
-                await Task.Delay(500);
-                string status = "未收录";
-                string color = "#FF2B00";
-                var FilterUrl = Regex.Match(url.Trim(), @"(?<=https?:\/\/|)([\w\-\.]+)\.([a-z]+)(\/[\w\-\.%\/]*)?")
-                    .Value
-                    .Trim();
-                if (string.IsNullOrEmpty(FilterUrl))
-                {
-                    continue;
-                }
-                var Host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
-                string requestUrl = $"http://{Host}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={FilterUrl}&rsv_spt=1";
-                // 获取cookie
-                Cookies.TryGetValue(Host, out string CookieValue);
-                var response = await HTTP.GetBaiDu(requestUrl, CookieValue);
-                // 检查响应状态是否成功
-                if (response.IsSuccessStatusCode)
-                {
-                    // 获取cookie
-                    response.GetCookies(Host, ref Cookies);
-                    string Content = Content = await response.Content.ReadAsStringAsync();
+            List<string> urlList = UrlList.Split('\r').ToList();
 
-
-                    if (!string.IsNullOrEmpty(Content))
+            new Thread(async () => {
+                await HTTP.MultipleRequest(urlList, new Progress<EmployData>(I =>
+                {
+                    App.Current.Dispatcher.Invoke(() =>
                     {
-
-                        if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
-                        {
-                            status = "需要验证";
-                        }
-                        if (response.StatusCode == HttpStatusCode.Found)
-                        {
-                            status = "需要验证";
-                        }
-                        MatchCollection ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")");
-                        foreach (Match Exist in ExistList)
-                        {
-
-                            if (Exist.Value.Trim().Equals(url.Trim()))
-                            {
-                                status = "已收录";
-                                color = "#0e79b2";
-                                break;
-                            }
-                        }
-                    }
-
-                }
-                else
-                {
-                    status = "请求失败";
-                }
-                App.Current.Dispatcher.Invoke(new Action(() => {
-                    EmployList.Add(new EmployData()
-                    {
-                        ID = ++Count,
-                        Status = status,
-                        Url = url,
-                        Color = color,
-                        LinkUrl = url.Trim()
+                        EmployList.Add(I);
                     });
                 }));
-            }
-
+            }).Start();
         }
         public ICommand OpenExcel { get; set; }
         void OpenE()
