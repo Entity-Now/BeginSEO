@@ -36,6 +36,10 @@ namespace BeginSEO.SQL
                     }
                 }
             }
+            if (BeginContext.Database.GetPendingMigrations().Any())
+            {
+                BeginContext.Database.Migrate(); //执行迁移
+            }
         }
         public static DbSet<T> Entity<T>() where T : class
         {

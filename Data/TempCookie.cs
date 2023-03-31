@@ -19,6 +19,10 @@ namespace BeginSEO.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         /// <summary>
+        /// 绑定的代理，原则是每个ip都有不同的cookie
+        /// </summary>
+        public string ProxyId { get; set; }
+        /// <summary>
         /// 域名
         /// </summary>
         public string Host { get; set; }

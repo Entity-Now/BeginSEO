@@ -16,5 +16,13 @@ namespace BeginSEO.Utils
         {
             dialogHost.ShowDialog(new MessageModal(title, value, callBack));
         }
+        public static void ShowLoading()
+        {
+            dialogHost.ShowDialog(new Loading());
+        }
+        public static void Closing()
+        {
+            dialogHost.IsOpen = false;
+        }
     }
 }

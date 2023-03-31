@@ -66,6 +66,7 @@ namespace BeginSEO.ModelView
             EmployList.Clear();
         }
         void GetEmploy() {
+            ShowModal.ShowLoading();
             // 清空列表
             Clear();
             if (string.IsNullOrEmpty(UrlList))
@@ -84,6 +85,7 @@ namespace BeginSEO.ModelView
                     });
                 }));
             }).Start();
+            ShowModal.Closing();
         }
         public ICommand OpenExcel { get; set; }
         void OpenE()
@@ -102,10 +104,23 @@ namespace BeginSEO.ModelView
             }
         }
         public ICommand CloseExcel { get; set; }
-        void CloseE()
+        async void CloseE()
         {
             //ExcelUtils.ImportToList();
-            
+            var content = File.ReadAllLines(@"C:\Users\Administrator\Downloads\http_proxies.txt");
+            foreach (var item in content)
+            {
+                if (string.IsNullOrEmpty(item))
+                {
+                    continue;
+                }
+                var split = Tools.SplitIpAndPort(item);
+                DataAccess.Inser<Proxys>(new Proxys
+                {
+                    IP = split[0],
+                    Popt = split[1]
+                });
+            }
 
         }
         public ICommand CommandRemove { get; set; }

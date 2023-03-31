@@ -13,6 +13,9 @@ using BeginSEO.SQL;
 using BeginSEO.Data;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Xml;
+using System.Xml.Schema;
+using System.Runtime.Remoting.Contexts;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -42,7 +45,47 @@ namespace BeginSEO.Utils {
             "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; QQDownload 732; .NET4.0C; .NET4.0E)",
             "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 SE 2.X MetaSr 1.0",
             "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; SE 2.X MetaSr 1.0)",
-            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 UBrowser/4.0.3214.0 Safari/537.36"
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2125.122 UBrowser/4.0.3214.0 Safari/537.36",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/4.0.211.2 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.50 Safari/525.19",
+            "Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.2; eu) AppleWebKit/530.4 (KHTML, like Gecko) Chrome/2.0.172.0 Safari/530.4",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.153.0 Safari/525.19",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.8 (KHTML, like Gecko) Chrome/7.0.521.0 Safari/534.8",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.3 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.8 (KHTML, like Gecko) Chrome/6.0.397.0 Safari/533.8",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.43 Safari/530.5",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.3 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.6 Safari/525.13",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 Safari/530.5",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/4.0.211.7 Safari/532.0",
+            "Mozilla/6.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.27 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.2 Safari/530.5",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.601.0 Safari/534.14",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.0 Safari/532.5",
+            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.17 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.36 Safari/535.7",
+            "Mozilla/6.0 (Windows; U; Windows NT 6.0; en-US) Gecko/2009032609 (KHTML, like Gecko) Chrome/2.0.172.6 Safari/530.7",
+            "Mozilla/5.0 (Windows NT 6.0) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.1 Safari/532.0",
+            "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/18.6.872.0 Safari/535.2 UNTRUSTED/1.0 3gpp-gba UNTRUSTED/1.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/533.3 (KHTML, like Gecko) Chrome/8.0.552.224 Safari/533.3",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.21 Safari/532.0",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.24 Safari/535.1",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.198.0 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.1 (KHTML, like Gecko) Chrome/2.0.169.0 Safari/530.1",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/533.8 (KHTML, like Gecko) Chrome/6.0.397.0 Safari/533.8",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.59 Safari/525.19",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; it-IT) AppleWebKit/532.5 (KHTML, like Gecko) Chrome/4.0.249.25 Safari/532.5",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.2 (KHTML, like Gecko) Chrome/4.0.222.4 Safari/532.2",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.30 Safari/525.13",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.21 Safari/532.0",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.700.3 Safari/534.24",
+            "Mozilla/5.0 (Windows NT 7.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.3 (KHTML, like Gecko) Chrome/4.0.227.0 Safari/532.3",
+            "Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
         };
         public static List<string> Baidu_Url = new List<string>()
         {
@@ -53,10 +96,10 @@ namespace BeginSEO.Utils {
             "180.101.50.242",
             "39.156.69.79",
             "39.156.69.80",
-            "220.181.38.149",
-            "220.181.38.148",
-            //"123.125.115.111",
-            //"123.125.115.110",
+            //"220.181.38.149",
+            //"220.181.38.148",
+            "123.125.115.111",
+            "123.125.115.110",
             "104.193.88.77",
             "104.193.88.123",
             "14.215.177.38",
@@ -131,12 +174,44 @@ namespace BeginSEO.Utils {
                 DataAccess.SaveChanges();
             }
         }
-
+        private static void GetHost(ref string host)
+        {
+            host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
+            if (Tools.GetPingDelay(host) < 0)
+            {
+                GetHost(ref host);
+            }
+        }
+        private static void GetUserAgent(ref string userAgent)
+        {
+            userAgent = User_Agent[new Random().Next(User_Agent.Count)];
+        }
+        static WebProxy GetIp()
+        {
+            // 随机获取10个元素
+            Proxys proxy = DataAccess.Entity<Proxys>()
+                                        .AsEnumerable()
+                                        .OrderBy(e => Guid.NewGuid()) // 使用Guid.NewGuid随机排序
+                                        .FirstOrDefault();
+            if (proxy == null || Tools.GetPingDelay(proxy.IP) == -1)
+            {
+                return GetIp();
+            }
+            return new WebProxy(proxy.IP, int.Parse(proxy.Popt));
+        }
+        /// <summary>
+        /// 批量查询百度收录状况
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="Progress"></param>
+        /// <returns></returns>
         public static async Task<List<string>> MultipleRequest(List<string> url, IProgress<EmployData> Progress)
         {
             string UrlTemplate = @"http://{0}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={1}&rsv_spt=1";
-            string Host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
+            string Host = "www.baidu.com";
+            string userAgent = "";
             int Count = 0;
+            WebProxy proxy = null;
             List<string> ErrorList = new List<string>();
             foreach (var item in url)
             {
@@ -144,23 +219,25 @@ namespace BeginSEO.Utils {
                 {
                     continue;
                 }
-                // 每请求3次更换一次Host
+                // 每请求3次更换一次user_agent
                 if (Count % 3 == 0)
                 {
-                    Host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
+                    //GetHost(ref Host);
+                    GetUserAgent(ref userAgent);
+                    proxy = GetIp();
                 }
                 string status = "未收录";
                 string color = "#FF2B00";
                 string requestUrl = string.Format(UrlTemplate,Host,item);
-                // 获取cookie
+                // 获取cookie，并拼接成字符串
                 var cookies = DataAccess.Entity<TempCookie>()
                                         .Where(i => i.Host == Host && i.TopTime > DateTime.Now)
                                         .Select(i => i.CookieValue)
                                         .AsEnumerable()
                                         .Aggregate(string.Empty, (s, c) => s + c);
-                await Task.Delay(500);
+                //await Task.Delay(new Random().Next(500,1000));
                 // 请求
-                var response = await HTTP.GetBaiDu(requestUrl, cookies);
+                var response = await HTTP.Get(requestUrl, cookies, userAgent, proxy);
                 if (response.StatusCode == HttpStatusCode.Found)
                 {
                     status = "需要验证";
@@ -180,8 +257,6 @@ namespace BeginSEO.Utils {
 
                     if (!string.IsNullOrEmpty(Content))
                     {
-
-
                         var ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")")
                                                          .Cast<Match>()
                                                          .Where(I=> I.Value.Trim().Contains(item.Trim()));
@@ -214,11 +289,47 @@ namespace BeginSEO.Utils {
             }
             return ErrorList;
         }
-        public static async Task<HttpResponseMessage> GetBaiDu(string url, string cookies = null)
+        /// <summary>
+        /// 获取快代理的ip地址，不过用不到了（有官方api）
+        /// </summary>
+        /// <param name="Progress"></param>
+        /// <returns></returns>
+        public static async Task GetProxys(IProgress<Proxys> Progress)
         {
-            var headers = new Dictionary<string, string>
+            for (int i = 1; i < 2; i++)
             {
-                { "User-Agent", User_Agent[new Random().Next(0, User_Agent.Count)] },
+
+                var ProxyResult = await Get($"https://www.kuaidaili.com/free/inha/{i}/");
+                if (!ProxyResult.IsSuccessStatusCode)
+                {
+                    continue;
+                }
+                var HTMLResult = await ProxyResult.Content.ReadAsStringAsync();
+                int StartIndex = HTMLResult.IndexOf("<tbody>");
+                int EndIndex = HTMLResult.IndexOf("</tbody>") + 8;
+                HTMLResult = HTMLResult.Substring(StartIndex, EndIndex - StartIndex);
+                XmlDocument Xml = new XmlDocument();
+                Xml.LoadXml(Tools.HTMLtoXML(HTMLResult));
+                var GetXml = Xml.SelectNodes(@"(//tr/td[@data-title='IP'] | //tr/td[@data-title='PORT'])");
+                for (int j = 0; j < GetXml.Count; j += 2)
+                {
+                    var item = new Proxys
+                    {
+                        IP = GetXml[j].InnerText,
+                        Popt = GetXml[j + 1].InnerText,
+                    };
+                    DataAccess.Entity<Proxys>().Add(item);
+                    DataAccess.SaveChanges();
+                    Progress.Report(item);
+                }
+            }
+        }
+        public static async Task<HttpResponseMessage> Get(string url, string cookies = null,string user_Agent = null, WebProxy proxy = null)
+        {
+            try
+            {
+                var headers = new Dictionary<string, string>
+            {
                 { "Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7" },
                 { "Accept-Language", "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2" },
                 { "Connection", "keep-alive" },
@@ -226,34 +337,52 @@ namespace BeginSEO.Utils {
                 { "Accept-Encoding", "gzip, deflate, br" }
             };
 
-            if (string.IsNullOrEmpty(cookies))
-            {
-                headers["Cookie"] = cookies;
+                if (string.IsNullOrEmpty(cookies))
+                {
+                    headers["Cookie"] = cookies;
+                }
+                if (!string.IsNullOrEmpty(user_Agent))
+                {
+                    headers["User-Agent"] = user_Agent;
+                }
+                else
+                {
+                    headers["User-Agent"] = User_Agent[0];
+                }
+
+                var handler = new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
+                    UseCookies = false,
+                    AllowAutoRedirect = false,
+                };
+                if (proxy != null)
+                {
+                    handler.Proxy = proxy;
+                    handler.UseProxy = true;
+                }
+
+                var client = new HttpClient(handler);
+
+                foreach (var header in headers)
+                {
+                    client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+
+                var response = await client.GetAsync(url);
+
+                if (response.Content.Headers.ContentEncoding.Contains("br"))
+                {
+                    var buffer = await response.Content.ReadAsByteArrayAsync();
+                    response.Content = new ByteArrayContent(Brotli.DecompressBuffer(buffer, 0, buffer.Length));
+                }
+
+                return response;
             }
-
-            var handler = new HttpClientHandler()
+            catch (Exception e)
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.None,
-                UseCookies = false,
-                AllowAutoRedirect = false,
-            };
-
-            var client = new HttpClient(handler);
-
-            foreach (var header in headers)
-            {
-                client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                throw e;
             }
-
-            var response = await client.GetAsync(url);
-
-            if (response.Content.Headers.ContentEncoding.Contains("br"))
-            {
-                var buffer = await response.Content.ReadAsByteArrayAsync();
-                response.Content = new ByteArrayContent(Brotli.DecompressBuffer(buffer, 0, buffer.Length));
-            }
-
-            return response;
         }
         public static async Task<string> Post(this HttpClient _httpClient, string url, Dictionary<string, string> data, RequestType contentType)
         {
