@@ -9,11 +9,14 @@
 
             <Color x:Key="Text_Primary_Color">#A4A4A4</Color>
             <Color x:Key="Text_Second_Color">#C8C8C8</Color>
-            
+
             <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}"/>
             <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
             <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
             <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+
+            <SolidColorBrush x:Key="Text_Primary_Brush" Color="{StaticResource Text_Primary_Color}"/>
+            <SolidColorBrush x:Key="Text_Second_Brush" Color="{StaticResource Text_Second_Color}"/>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

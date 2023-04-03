@@ -6,11 +6,10 @@
              xmlns:local="clr-namespace:BeginSEO.Components"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="200">
-    <Grid>
+    <Border MinWidth="64" MinHeight="64">
         <ProgressBar
-                Width="32"
                 IsIndeterminate="True"
                 Style="{StaticResource MaterialDesignCircularProgressBar}"
                 Value="35" />
-    </Grid>
+    </Border>
 </UserControl>

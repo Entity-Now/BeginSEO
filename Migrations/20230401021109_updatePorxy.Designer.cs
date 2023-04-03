@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeginSEO.Migrations
 {
     [DbContext(typeof(dataBank))]
-    [Migration("20230331050509_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230401021109_updatePorxy")]
+    partial class updatePorxy
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,7 +44,13 @@ namespace BeginSEO.Migrations
                     b.Property<string>("IP")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Popt")
+                    b.Property<string>("Port")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Speed")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

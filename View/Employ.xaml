@@ -34,12 +34,12 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
-            <Button Content="打开Excel读取所有链接"
+            <Button Content="获取代理ip"
                     Margin="10 0 10 0"
                     Style="{StaticResource MaterialDesignPaperButton}"
-                    Command="{Binding OpenExcel}"/>
-            <Button Content="将收录状态保存到Excel"
-                    Command="{Binding CloseExcel}"
+                    Command="{Binding GetProxyCommand}"/>
+            <Button Content="测速代理"
+                    Command="{Binding SpeedTestCommand}"
                     Margin="10 0 10 0"
                     Style="{StaticResource MaterialDesignPaperButton}"/>
             <Button Content="一键查收录"

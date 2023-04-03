@@ -16,6 +16,8 @@ namespace BeginSEO.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
         public string IP { get; set; }
-        public string Popt { get; set; }
+        public string Port { get; set; }
+        public ProxyStatus Status { get; set; }
+        public int Speed { get; set; }
     }
 }

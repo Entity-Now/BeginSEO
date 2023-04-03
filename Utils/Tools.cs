@@ -72,5 +72,12 @@ namespace BeginSEO.Utils
             var ipAndPort = ip.Split(':');
             return ipAndPort;
         }
+        /// <summary>
+        /// UI线程内执行操作
+        /// </summary>
+        public static void Dispatcher(Action func)
+        {
+            App.Current.Dispatcher.Invoke(func);
+        }
     }
 }

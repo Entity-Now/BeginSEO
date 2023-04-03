@@ -33,8 +33,8 @@ namespace BeginSEO.ModelView
         {
             Handle = new RelayCommand(GetEmploy);
             ClearList = new RelayCommand(Clear);
-            OpenExcel = new RelayCommand(OpenE);
-            CloseExcel = new RelayCommand(CloseE);
+            SpeedTestCommand = new RelayCommand(SpeedTest);
+            GetProxyCommand = new RelayCommand(GetProxy);
             CommandShowEmploy = new RelayCommand(ShowEmploy);
             CommandRemove = new RelayCommand<EmployData>(Remove);
             CommandCopy = new RelayCommand<EmployData>(Copy);
@@ -79,32 +79,22 @@ namespace BeginSEO.ModelView
             new Thread(async () => {
                 await HTTP.MultipleRequest(urlList, new Progress<EmployData>(I =>
                 {
-                    App.Current.Dispatcher.Invoke(() =>
+                   Tools.Dispatcher(() =>
                     {
                         EmployList.Add(I);
                     });
                 }));
-            }).Start();
-            ShowModal.Closing();
-        }
-        public ICommand OpenExcel { get; set; }
-        void OpenE()
-        {
-            List<ExcelEmploy> data = new List<ExcelEmploy>();
 
-            var OpenFile = new OpenFileDialog();
-            if (OpenFile.ShowDialog() == true)
-            {
-                new ExcelUtils<ExcelEmploy>(OpenFile.FileName).GetHeads();
-                //ExcelUtils.ImportToList(OpenFile.FileName);
-            }
-            foreach (var item in data)
-            {
-                UrlList += item.Link + "\n";
-            }
+                Tools.Dispatcher(() => ShowModal.Closing());
+            }).Start();
         }
-        public ICommand CloseExcel { get; set; }
-        async void CloseE()
+        public ICommand SpeedTestCommand { get; set; }
+        void SpeedTest()
+        {
+
+        }
+        public ICommand GetProxyCommand { get; set; }
+        void GetProxy()
         {
             //ExcelUtils.ImportToList();
             var content = File.ReadAllLines(@"C:\Users\Administrator\Downloads\http_proxies.txt");
@@ -118,7 +108,7 @@ namespace BeginSEO.ModelView
                 DataAccess.Inser<Proxys>(new Proxys
                 {
                     IP = split[0],
-                    Popt = split[1]
+                    Port = split[1]
                 });
             }
 

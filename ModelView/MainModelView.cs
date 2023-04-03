@@ -9,6 +9,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using BeginSEO.Components;
+using BeginSEO.View;
 
 namespace BeginSEO.ModelView
 {
@@ -17,12 +18,14 @@ namespace BeginSEO.ModelView
         KeyWordReplice k_c = new KeyWordReplice();
         Employ E_c = new Employ();
         GPT G_c = new GPT();
+        Settings C_c = new Settings();
         public MainModelView()
         {
             Content = k_c;
             NavSelector = new RelayCommand(()=>Content = k_c);
             EmploySelector = new RelayCommand(()=>Content = E_c);
             GPTSelector = new RelayCommand(()=>Content = G_c);
+            SettingsSelector = new RelayCommand(() => Content = C_c);
         }
         private Control content;
         public Control Content
@@ -33,6 +36,7 @@ namespace BeginSEO.ModelView
         public ICommand NavSelector { get; set; }
         public ICommand EmploySelector { get; set; }
         public ICommand GPTSelector { get; set; }
+        public ICommand SettingsSelector { get; set; }
 
     }
 }

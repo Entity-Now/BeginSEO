@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="BeginSEO.View.Settings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BeginSEO.View"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:Components="clr-namespace:BeginSEO.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Vertical">
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="获取网络代理"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="获取网络上的免费代理IP。"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <Button Content="获取"/>
+            </Components:Card.Button>
+        </Components:Card>
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="测速代理"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="将所有获取到的代理ip测速，并筛选无用的代理。"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <Button Content="操作"/>
+            </Components:Card.Button>
+        </Components:Card>
+    </StackPanel>
+</UserControl>

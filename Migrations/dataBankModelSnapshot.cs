@@ -42,7 +42,13 @@ namespace BeginSEO.Migrations
                     b.Property<string>("IP")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Popt")
+                    b.Property<string>("Port")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Speed")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

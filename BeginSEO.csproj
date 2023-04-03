@@ -263,32 +263,40 @@
     </ApplicationDefinition>
     <Compile Include="Attributes\databaseAttribute.cs" />
     <Compile Include="Attributes\ExcellDataAttribute.cs" />
+    <Compile Include="Components\Card.xaml.cs">
+      <DependentUpon>Card.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Components\Loading.xaml.cs">
       <DependentUpon>Loading.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\ProxyStatus.cs" />
+    <Compile Include="Migrations\20230401021109_updatePorxy.cs" />
+    <Compile Include="Migrations\20230401021109_updatePorxy.designer.cs">
+      <DependentUpon>20230401021109_updatePorxy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\MessageModal.xaml.cs">
       <DependentUpon>MessageModal.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\SearchRanking.xaml.cs">
-      <DependentUpon>SearchRanking.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Data\KeyWord.cs" />
     <Compile Include="Data\Proxys.cs" />
     <Compile Include="Data\TempCookie.cs" />
-    <Compile Include="Migrations\20230331050509_InitialCreate.cs" />
-    <Compile Include="Migrations\20230331050509_InitialCreate.designer.cs">
-      <DependentUpon>20230331050509_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="SQL\DataAccess.cs" />
     <Compile Include="SQL\dataBank.cs" />
     <Compile Include="Utils\getReflex.cs" />
     <Compile Include="Utils\ShowModal.cs" />
     <Compile Include="Utils\ShowToast.cs" />
     <Compile Include="Utils\Tools.cs" />
+    <Compile Include="View\Settings.xaml.cs">
+      <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Components\Card.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Components\Loading.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -306,10 +314,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\MessageModal.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Components\SearchRanking.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -341,6 +345,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Style\m_Radio.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

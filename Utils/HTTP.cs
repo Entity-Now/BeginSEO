@@ -16,6 +16,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Xml;
 using System.Xml.Schema;
 using System.Runtime.Remoting.Contexts;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Windows;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -85,7 +87,47 @@ namespace BeginSEO.Utils {
             "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.700.3 Safari/534.24",
             "Mozilla/5.0 (Windows NT 7.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.112 Safari/534.30",
             "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.3 (KHTML, like Gecko) Chrome/4.0.227.0 Safari/532.3",
-            "Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36"
+            "Mozilla/5.0 (Windows NT 4.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2049.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.6 Safari/537.11",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.0 Safari/534.13",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.152.0 Safari/525.19",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.860.0 Safari/535.2",
+            "Mozilla/5.0 (Windows NT 6.0; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.220 Safari/535.1",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/533.16 (KHTML, like Gecko) Chrome/5.0.335.0 Safari/533.16",
+            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; de-DE) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/7.0.540.0 Safari/534.10",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.601.0 Safari/534.14",
+            "Mozilla/5.0 (Windows NT 6.0) yi; AppleWebKit/345667.12221 (KHTML, like Gecko) Chrome/23.0.1271.26 Safari/453667.1221",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.151.0 Safari/525.19",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.198.0 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.153.0 Safari/525.19",
+            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.17 Safari/537.36",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/532.1 (KHTML, like Gecko) Chrome/4.0.219.4 Safari/532.1",
+            "Mozilla/5.0 (Windows NT 6.0; WOW64) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.45 Safari/535.19",
+            "Mozilla/5.0 (Windows NT 6.1; en-US) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.750.0 Safari/534.30",
+            "Mozilla/6.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.27 Safari/532.0",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.3 (KHTML, like Gecko) Chrome/6.0.461.0 Safari/534.3",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.20 (KHTML, like Gecko) Chrome/11.0.669.0 Safari/534.20",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.21 Safari/532.0",
+            "Mozilla/5.0 (Windows NT 6.4; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2225.0 Safari/537.36",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1) AppleWebKit/526.3 (KHTML, like Gecko) Chrome/14.0.564.21 Safari/526.3",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.600.0 Safari/534.14",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.3 (KHTML, like Gecko) Chrome/6.0.459.0 Safari/534.3",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/530.7 (KHTML, like Gecko) Chrome/2.0.176.0 Safari/530.7",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.864.0 Safari/535.2",
+            "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.21 (KHTML, like Gecko) Chrome/11.0.682.0 Safari/534.21",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.792.0 Safari/535.1",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.9 (KHTML, like Gecko) Chrome/5.0.307.1 Safari/532.9",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/532.3 (KHTML, like Gecko) Chrome/4.0.227.0 Safari/532.3",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.107 Safari/535.1",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.46 Safari/525.19",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.43 Safari/530.5",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.872.0 Safari/535.2",
+            "Mozilla/5.0 (Windows NT 5.2) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.794.0 Safari/535.1",
+            "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.2 Safari/530.5",
+            "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2117.157 Safari/537.36"
         };
         public static List<string> Baidu_Url = new List<string>()
         {
@@ -186,19 +228,7 @@ namespace BeginSEO.Utils {
         {
             userAgent = User_Agent[new Random().Next(User_Agent.Count)];
         }
-        static WebProxy GetIp()
-        {
-            // 随机获取10个元素
-            Proxys proxy = DataAccess.Entity<Proxys>()
-                                        .AsEnumerable()
-                                        .OrderBy(e => Guid.NewGuid()) // 使用Guid.NewGuid随机排序
-                                        .FirstOrDefault();
-            if (proxy == null || Tools.GetPingDelay(proxy.IP) == -1)
-            {
-                return GetIp();
-            }
-            return new WebProxy(proxy.IP, int.Parse(proxy.Popt));
-        }
+
         /// <summary>
         /// 批量查询百度收录状况
         /// </summary>
@@ -212,80 +242,93 @@ namespace BeginSEO.Utils {
             string userAgent = "";
             int Count = 0;
             WebProxy proxy = null;
+            // 获取cookie，并拼接成字符串
+            string cookies = string.Empty;
             List<string> ErrorList = new List<string>();
             foreach (var item in url)
             {
-                if (string.IsNullOrEmpty(item.Trim()))
-                {
-                    continue;
-                }
-                // 每请求3次更换一次user_agent
-                if (Count % 3 == 0)
-                {
-                    //GetHost(ref Host);
-                    GetUserAgent(ref userAgent);
-                    proxy = GetIp();
-                }
                 string status = "未收录";
                 string color = "#FF2B00";
-                string requestUrl = string.Format(UrlTemplate,Host,item);
-                // 获取cookie，并拼接成字符串
-                var cookies = DataAccess.Entity<TempCookie>()
-                                        .Where(i => i.Host == Host && i.TopTime > DateTime.Now)
-                                        .Select(i => i.CookieValue)
-                                        .AsEnumerable()
-                                        .Aggregate(string.Empty, (s, c) => s + c);
-                //await Task.Delay(new Random().Next(500,1000));
-                // 请求
-                var response = await HTTP.Get(requestUrl, cookies, userAgent, proxy);
-                if (response.StatusCode == HttpStatusCode.Found)
+                string requestUrl = string.Format(UrlTemplate, Host, item);
+                try
                 {
-                    status = "需要验证";
-                    ErrorList.Add(requestUrl);
-                }
-                if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
-                {
-                    status = "需要验证";
-                    ErrorList.Add(requestUrl);
-                }
-                // 检查响应状态是否成功
-                if (response.IsSuccessStatusCode)
-                {
-                    // 获取cookie
-                    response.GetCookies(Host);
-                    string Content = Content = await response.Content.ReadAsStringAsync();
-
-                    if (!string.IsNullOrEmpty(Content))
+                    if (string.IsNullOrEmpty(item.Trim()))
                     {
-                        var ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")")
-                                                         .Cast<Match>()
-                                                         .Where(I=> I.Value.Trim().Contains(item.Trim()));
-                        if (ExistList.Count() > 0)
+                        continue;
+                    }
+                    // 每请求3次更换一次user_agent
+                    if (Count % 3 == 0)
+                    {
+                        GetUserAgent(ref userAgent);
+                        if (string.IsNullOrEmpty(cookies))
                         {
-                            status = "已收录";
-                            color = "#0e79b2";
+                            cookies = DataAccess.Entity<TempCookie>()
+                                    .Where(i => i.Host == Host && i.TopTime > i.CreateTime)
+                                    .Select(i => i.CookieValue)
+                                    .AsEnumerable()
+                                    .Aggregate(string.Empty, (s, c) => s + c);
                         }
+                        else
+                        {
+                            cookies = string.Empty;
+                        }
+                    }
+                    // 请求
+                    var response = await HTTP.Get(requestUrl, cookies, userAgent, proxy);
+                    if (response.StatusCode == HttpStatusCode.Found)
+                    {
+                        status = "需要验证";
+                        ErrorList.Add(requestUrl);
+                    }
+                    if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
+                    {
+                        status = "需要验证";
+                        ErrorList.Add(requestUrl);
+                    }
+                    // 检查响应状态是否成功
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // 获取cookie
+                        response.GetCookies(Host);
+                        string Content = Content = await response.Content.ReadAsStringAsync();
+
+                        if (!string.IsNullOrEmpty(Content))
+                        {
+                            var ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")")
+                                                             .Cast<Match>()
+                                                             .Where(I => I.Value.Trim().Contains(item.Trim()));
+                            if (ExistList.Count() > 0)
+                            {
+                                status = "已收录";
+                                color = "#0e79b2";
+                            }
+                        }
+                        else
+                        {
+                            status = "请求内容为空";
+                            ErrorList.Add(item);
+                        }
+
                     }
                     else
                     {
                         status = "请求失败";
                         ErrorList.Add(item);
                     }
-
+                    Progress.Report(new EmployData()
+                    {
+                        ID = ++Count,
+                        Status = status,
+                        Url = item,
+                        Color = color,
+                        LinkUrl = requestUrl.Trim()
+                    });
                 }
-                else
+                catch (Exception)
                 {
-                    status = "请求失败";
+                    status = "代理超时";
                     ErrorList.Add(item);
                 }
-                Progress.Report(new EmployData()
-                {
-                    ID = ++Count,
-                    Status = status,
-                    Url = item,
-                    Color = color,
-                    LinkUrl = requestUrl.Trim()
-                });
             }
             return ErrorList;
         }
@@ -316,7 +359,7 @@ namespace BeginSEO.Utils {
                     var item = new Proxys
                     {
                         IP = GetXml[j].InnerText,
-                        Popt = GetXml[j + 1].InnerText,
+                        Port = GetXml[j + 1].InnerText,
                     };
                     DataAccess.Entity<Proxys>().Add(item);
                     DataAccess.SaveChanges();
@@ -337,7 +380,7 @@ namespace BeginSEO.Utils {
                 { "Accept-Encoding", "gzip, deflate, br" }
             };
 
-                if (string.IsNullOrEmpty(cookies))
+                if (!string.IsNullOrEmpty(cookies))
                 {
                     headers["Cookie"] = cookies;
                 }
