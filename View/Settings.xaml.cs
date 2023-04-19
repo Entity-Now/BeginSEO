@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BeginSEO.ModelView;
+using BeginSEO.SQL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,12 @@ namespace BeginSEO.View
     /// </summary>
     public partial class Settings : UserControl
     {
+        SettingsViewModel viewModel;
         public Settings()
         {
             InitializeComponent();
+            viewModel = new SettingsViewModel();
+            this.DataContext = viewModel;
         }
     }
 }

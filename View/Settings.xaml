@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BeginSEO.View.Settings"
+﻿<UserControl x:Name="userControl" x:Class="BeginSEO.View.Settings"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -31,6 +31,69 @@
             </Components:Card.Description>
             <Components:Card.Button>
                 <Button Content="操作"/>
+            </Components:Card.Button>
+        </Components:Card>
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="智能改写KEY"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="5118一键智能改写API，将全文内容智能改写，返回高可读，低相似度的内容"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <TextBox 
+                    Text="{Binding Original}"
+                    materialDesign:HintAssist.Hint="请输入5118后台的KEY值"
+                    MinWidth="64"/>
+            </Components:Card.Button>
+        </Components:Card>
+
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="一键换词KEY"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="5118一键换词API，将全文内容换词，返回高可读，低相似度的内容"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <TextBox
+                    Text="{Binding ReplaceKeyWord}"
+                    materialDesign:HintAssist.Hint="请输入5118后台的KEY值"
+                    MinWidth="64"/>
+            </Components:Card.Button>
+        </Components:Card>
+
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="相似度检测KEY"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="5118相似度检测API，比较两段文本之间的相似度"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <TextBox
+                        Text="{Binding Contrast}"
+                        materialDesign:HintAssist.Hint="请输入5118后台的KEY值"
+                        MinWidth="64"/>
+            </Components:Card.Button>
+        </Components:Card>
+
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="原创度检测KEY"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="5188原创度检测API，检测文章在搜索中的原创度，返回相似度高或重复出现的情况"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <TextBox
+                        materialDesign:HintAssist.Hint="请输入5118后台的KEY值"
+                        Text="{Binding Detection}"
+                        MinWidth="64"/>
             </Components:Card.Button>
         </Components:Card>
     </StackPanel>

@@ -56,43 +56,45 @@ namespace BeginSEO.SQL
             BeginContext.SaveChanges();
         }
         /// <summary>
+        /// 如果数据不存在则插入，如果存在则更新
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="item"></param>
+        public static void InsertOrUpdate<T>(T item, Expression<Func<T, bool>> predicate = null) where T : class
+        {
+            var find = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
+            if (find != null)
+            {
+                update(item, predicate);
+            }
+            else
+            {
+                Inser(item);
+            }
+        }
+        /// <summary>
         /// 使用反射获取所有属性，对比新旧数据进行修改
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="Value">新值</param>
         /// <param name="predicate">判断条件</param>
         public static void update<T>(T Value, Expression<Func<T, bool>> predicate = null) where T : class
-        {   
-            T data = null;
-            if (predicate == null)
-            {
-                data = Entity<T>().FirstOrDefault();
-            }
-            else
-            {
-                data = Entity<T>().FirstOrDefault(predicate);
-            }
+        {
+            var data = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
             if (data != null)
-            foreach (var item in typeof(T).GetProperties())
-            {
-                var ps = data.mGetPropertys();
-                foreach (var psItem in ps)
+                foreach (var item in data.mGetPropertys())
                 {
-                    var ItemAttribute = psItem.GetCustomAttribute<KeyAttribute>();
+                    var ItemAttribute = item.GetCustomAttribute<KeyAttribute>();
                     // 不修改键名
                     if (ItemAttribute == null)
                     {
-                        if (psItem.Name == item.Name)
+                        var newValue = Value.mGetProperyValue<T, object>(item.Name);
+                        if (newValue != null )
                         {
-                            var newValue = Value.mGetProperty(item.Name).GetValue(Value, null);
-                            if (newValue != null)
-                            {
-                                psItem.SetValue(item.Name, newValue);
-                            }
+                            item.SetValue(data, newValue);
                         }
                     }
                 }
-            }
             SaveChanges();
         }
     }

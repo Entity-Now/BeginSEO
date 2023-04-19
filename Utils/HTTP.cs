@@ -97,7 +97,6 @@ namespace BeginSEO.Utils {
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.66 Safari/535.11",
             "Mozilla/5.0 (Windows; U; Windows NT 6.1; de-DE) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/7.0.540.0 Safari/534.10",
             "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/534.14 (KHTML, like Gecko) Chrome/9.0.601.0 Safari/534.14",
-            "Mozilla/5.0 (Windows NT 6.0) yi; AppleWebKit/345667.12221 (KHTML, like Gecko) Chrome/23.0.1271.26 Safari/453667.1221",
             "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.151.0 Safari/525.19",
             "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.198.0 Safari/532.0",
             "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.2.153.0 Safari/525.19",
@@ -197,10 +196,6 @@ namespace BeginSEO.Utils {
                     data.CookieValue = GetCookieValue;
                     data.CreateTime = DateTime.Now;
                     data.TopTime = DateTime.Now.AddHours(24);
-                    if (data.CookieKey == "PSTM")
-                    {
-                        data.CookieValue = Tools.GetTimeStamp();
-                    }
                 }
                 else
                 {
@@ -224,9 +219,16 @@ namespace BeginSEO.Utils {
                 GetHost(ref host);
             }
         }
-        private static void GetUserAgent(ref string userAgent)
+        private static void GetUserAgent(ref string userAgent, int index = 0)
         {
-            userAgent = User_Agent[new Random().Next(User_Agent.Count)];
+            if (index != 0 && index < User_Agent.Count)
+            {
+                userAgent = User_Agent[index];
+            }
+            else
+            {
+                userAgent = User_Agent[new Random().Next(User_Agent.Count)];
+            }
         }
 
         /// <summary>
@@ -243,7 +245,11 @@ namespace BeginSEO.Utils {
             int Count = 0;
             WebProxy proxy = null;
             // 获取cookie，并拼接成字符串
-            string cookies = string.Empty;
+            //string cookies = DataAccess.Entity<TempCookie>()
+            //                        .Where(i => i.Host == Host && i.TopTime > i.CreateTime)
+            //                        .Select(i => i.CookieValue)
+            //                        .AsEnumerable()
+            //                        .Aggregate(string.Empty, (s, c) => s + c);
             List<string> ErrorList = new List<string>();
             foreach (var item in url)
             {
@@ -259,22 +265,11 @@ namespace BeginSEO.Utils {
                     // 每请求3次更换一次user_agent
                     if (Count % 3 == 0)
                     {
-                        GetUserAgent(ref userAgent);
-                        if (string.IsNullOrEmpty(cookies))
-                        {
-                            cookies = DataAccess.Entity<TempCookie>()
-                                    .Where(i => i.Host == Host && i.TopTime > i.CreateTime)
-                                    .Select(i => i.CookieValue)
-                                    .AsEnumerable()
-                                    .Aggregate(string.Empty, (s, c) => s + c);
-                        }
-                        else
-                        {
-                            cookies = string.Empty;
-                        }
+                        GetUserAgent(ref userAgent, Count);
                     }
                     // 请求
-                    var response = await HTTP.Get(requestUrl, cookies, userAgent, proxy);
+                    await Task.Delay(new Random().Next(0, 3000));
+                    var response = await HTTP.Get(requestUrl, string.Empty, userAgent, proxy);
                     if (response.StatusCode == HttpStatusCode.Found)
                     {
                         status = "需要验证";
@@ -315,20 +310,20 @@ namespace BeginSEO.Utils {
                         status = "请求失败";
                         ErrorList.Add(item);
                     }
-                    Progress.Report(new EmployData()
-                    {
-                        ID = ++Count,
-                        Status = status,
-                        Url = item,
-                        Color = color,
-                        LinkUrl = requestUrl.Trim()
-                    });
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    status = "代理超时";
+                    status = e.Message;
                     ErrorList.Add(item);
                 }
+                Progress.Report(new EmployData()
+                {
+                    ID = ++Count,
+                    Status = status,
+                    Url = item,
+                    Color = color,
+                    LinkUrl = requestUrl.Trim()
+                });
             }
             return ErrorList;
         }

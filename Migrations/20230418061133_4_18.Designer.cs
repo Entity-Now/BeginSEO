@@ -3,14 +3,16 @@ using System;
 using BeginSEO.SQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BeginSEO.Migrations
 {
     [DbContext(typeof(dataBank))]
-    partial class dataBankModelSnapshot : ModelSnapshot
+    [Migration("20230418061133_4_18")]
+    partial class _4_18
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

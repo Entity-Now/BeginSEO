@@ -12,21 +12,21 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <materialDesign:Card Padding="10" Margin="0 0 0 10">
-        <Grid MinHeight="32">
+        <Grid MinHeight="32" Loaded="Grid_Loaded">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <ContentPresenter Grid.Column="0"
+                              x:Name="_Title"
                               Margin="0 0 20 0"
-                              Content="{Binding Title}"
                               VerticalAlignment="Center"/>
             <ContentPresenter Grid.Column="1"
-                              Content="{Binding Description}"
+                              x:Name="_Description"
                               VerticalAlignment="Center"/>
             <ContentPresenter Grid.Column="2"
-                              Content="{Binding Button}"/>
+                              x:Name="_Button"/>
         </Grid>
     </materialDesign:Card>
 </UserControl>

@@ -269,12 +269,20 @@
     <Compile Include="Components\Loading.xaml.cs">
       <DependentUpon>Loading.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\DataEnum\SettingsEnum.cs" />
     <Compile Include="Data\ProxyStatus.cs" />
+    <Compile Include="Data\Settings.cs" />
     <Compile Include="Migrations\20230401021109_updatePorxy.cs" />
     <Compile Include="Migrations\20230401021109_updatePorxy.designer.cs">
       <DependentUpon>20230401021109_updatePorxy.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20230418061133_4_18.cs" />
+    <Compile Include="Migrations\20230418061133_4_18.designer.cs">
+      <DependentUpon>20230418061133_4_18.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
+    <Compile Include="ModelView\SettingsViewModel.cs" />
+    <Compile Include="Utils\5188Tools.cs" />
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
     </Compile>

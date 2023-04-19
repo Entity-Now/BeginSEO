@@ -23,10 +23,16 @@ namespace BeginSEO.Components
         public Card()
         {
             InitializeComponent();
-            DataContext = this;
         }
         public object Title { get; set; }
         public object Description { get; set; }
         public object Button { get; set; }
+
+        private void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            _Description.Content = Description;
+            _Title.Content = Title;
+            _Button.Content = Button;
+        }
     }
 }

@@ -46,6 +46,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <!--右边的关键词列表-->
             <ListBox x:Name="KeyWordList"
@@ -95,14 +96,37 @@
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Grid.Row="2" Height="40">
+                <CheckBox
+                    x:Name="ReplaceKeyWord"
+                  Content="5118一键换词"
+                  IsChecked="False"
+                  Style="{StaticResource MaterialDesignLightCheckBox}" />
+                <CheckBox
+                    x:Name="Original"
+                  Content="5118智能改写"
+                  IsChecked="False"
+                  Style="{StaticResource MaterialDesignLightCheckBox}" />
+                <CheckBox
+                    x:Name="IsCopy"
+                  Content="完成后自动复制"
+                  IsChecked="True"
+                  Style="{StaticResource MaterialDesignLightCheckBox}" Cursor="" />
                 <Button Content="一键操作"
                         Click="CopyAndDelete_Click"
                         ToolTip="自动粘贴替换并复制"
                         Margin="10,0,10,0"/>
-                <Button Content="替换"
-                    Click="update_Click"/>
                 <Button Content="清空"
                     Click="clean_Click" Margin="10,0,10,0"/>
+            </StackPanel>
+            <!--状态显示-->
+            <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10 5">
+                <TextBlock Text="原创度："/>
+                <ProgressBar
+                      Height="10"
+                      Value="0"
+                      MinWidth="500"
+                      MaxWidth="500"/>
+                <TextBlock Text="0%"/>
             </StackPanel>
         </Grid>
     </Grid>

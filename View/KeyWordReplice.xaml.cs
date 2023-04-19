@@ -88,7 +88,11 @@ namespace BeginSEO.Components
             KeyWord.Text = "";
             Content.Text = "";
         }
-
+        /// <summary>
+        /// 关键词列表选择事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void KeyWordList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selector = (sender as ListBox).SelectedItem as KeyWord;
@@ -97,11 +101,6 @@ namespace BeginSEO.Components
                 KeyWord.Text = selector.Key;
                 Content.Text = selector.Value;
             }
-        }
-
-        private void update_Click(object sender, RoutedEventArgs e)
-        {
-            replice();
         }
         /// <summary>
         /// 替换
