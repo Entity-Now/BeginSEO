@@ -9,9 +9,51 @@ using Newtonsoft.Json;
 
 namespace BeginSEO.Utils
 {
+
+    public class Detection
+    {
+        public string errcode { get; set; }
+        public string errmsg { get; set; }
+        public string like { get; set; }
+        public string data { get; set; }
+    }
+
+    public class RepalceKeyWord
+    {
+        public string errcode { get; set; }
+        public string errmsg { get; set; }
+        public string corewords { get; set; }
+        public string like { get; set; }
+        public string data { get; set; }
+    }
+
+    public class Contrast
+    {
+        public string errcode { get; set; }
+        public string errmsg { get; set; }
+        public string like { get; set; }
+    }
+
+    public class Original
+    {
+        public string errcode { get; set; }
+        public string errmsg { get; set; }
+        public Datum[][] data { get; set; }
+    }
+
+    public class Datum
+    {
+        public string Content { get; set; }
+        public string OriginalValue { get; set; }
+        public string Platform { get; set; }
+        public int Sort { get; set; }
+        public int ParagraphPosition { get; set; }
+    }
+
+
     public static class _5188Tools
     {
-        public static async  Task<T> ReplaceKeyword<T>(string token, string url, Dictionary<string,string> body)
+        public static async Task<T> ReplaceKeyword<T>(string token, string url, Dictionary<string, string> body)
         {
             try
             {
@@ -25,6 +67,10 @@ namespace BeginSEO.Utils
                 return default(T);
             }
         }
+        public static string Detection()
+        {
 
+            return "";
+        }
     }
 }

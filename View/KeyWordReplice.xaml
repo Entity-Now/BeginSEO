@@ -105,7 +105,20 @@
                     x:Name="Original"
                   Content="5118智能改写"
                   IsChecked="False"
+                    Margin="5 0"
                   Style="{StaticResource MaterialDesignLightCheckBox}" />
+                <ComboBox x:Name="Strict"
+                          materialDesign:HintAssist.Hint="严选换词"
+                          ItemsSource="{Binding LongIntegerList}"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          MinWidth="128">
+                    <ComboBoxItem>0</ComboBoxItem>
+                    <ComboBoxItem>1</ComboBoxItem>
+                    <ComboBoxItem>2</ComboBoxItem>
+                    <ComboBoxItem>3</ComboBoxItem>
+                    <ComboBoxItem>4</ComboBoxItem>
+                    <ComboBoxItem>5</ComboBoxItem>
+                </ComboBox>
                 <CheckBox
                     x:Name="IsCopy"
                   Content="完成后自动复制"
