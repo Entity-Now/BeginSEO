@@ -33,6 +33,11 @@
                          Margin="1"
                          Command="{Binding EmploySelector}"
                          Style="{StaticResource m_Radio}"/>
+            <RadioButton Content="抓取网络文章"
+                         Height="32"
+                         Margin="1"
+                         Command="{Binding GrabSelector}"
+                         Style="{StaticResource m_Radio}"/>
             <RadioButton Content="GPT"
                          Height="32"
                          Margin="1"

@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BeginSEO.Data;
+using BeginSEO.Data.DataEnum;
 using BeginSEO.Model;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
@@ -73,20 +74,23 @@ namespace BeginSEO.Components
             if (findData != null)
             {
                 findData.Value = Content.Text;
-                findData.Key = KeyWord.Text; ;
+                findData.Key = KeyWord.Text;
+                findData.Type = (bool)LockKeyWord.IsChecked;
             }
             else
             {
                 KeyWords.Add(new KeyWord()
                 {
                     Key = KeyWord.Text,
-                    Value = Content.Text
-                });
+                    Value = Content.Text,
+                    Type = (bool)LockKeyWord.IsChecked
+            });
             }
             DataAccess.SaveChanges();
             // clean
             KeyWord.Text = "";
             Content.Text = "";
+            LockKeyWord.IsChecked = false;
         }
         /// <summary>
         /// 关键词列表选择事件
@@ -99,18 +103,20 @@ namespace BeginSEO.Components
             if (selector != null)
             {
                 KeyWord.Text = selector.Key;
+                LockKeyWord.IsChecked = selector.Type;
                 Content.Text = selector.Value;
             }
         }
         /// <summary>
         /// 替换
         /// </summary>
-        void replice()
+        void replice(string Source = null)
         {
-            string Text = frontText.Text;
+            string Text = Source ?? frontText.Text;
             if (Text.Length > 0)
             {
-                foreach (var item in KeyWords)
+                var list = KeyWords.Where(I => I.Type != true);
+                foreach (var item in list)
                 {
                     string[] splitText = item.Value.Split(new char[] { ',' });
                     string newString = splitText[new Random().Next(splitText.Length)];
@@ -131,8 +137,9 @@ namespace BeginSEO.Components
             frontText.Text = "";
         }
 
-        private void CopyAndDelete_Click(object sender, RoutedEventArgs e)
+        private async void CopyAndDelete_Click(object sender, RoutedEventArgs e)
         {
+            ShowModal.ShowLoading();
             var temp = Clipboard.GetText();
             if (string.IsNullOrEmpty(frontText.Text))
             {
@@ -141,10 +148,56 @@ namespace BeginSEO.Components
                     frontText.Text = temp;
                 }
             }
+            string TempValue = "";
+            // 5118智能原创
+            if (Original.IsChecked == true)
+            {
+                var OriginalResult = await _5188Tools.Original(frontText.Text, string.IsNullOrEmpty(Strict.Text) ? "0" : Strict.Text);
+                if (OriginalResult == null || OriginalResult.errcode != "0")
+                {
+                    await ShowToast.Show("智能原创失败", ShowToast.Type.Error);
+                }
+                else
+                {
+                    float Schedule = float.Parse(OriginalResult.like) * 100;
+                    OriginalValue.Value = Schedule;
+                    OriginalText.Text = $"{Schedule}%";
+                    TempValue = OriginalResult.data;
+                    await ShowToast.Show("智能原创成功", ShowToast.Type.Success);
+                }
+            }
+            // 5118一键换词
+            if (ReplaceKeyWord.IsChecked == true)
+            {
+                var FilterKeyWord = KeyWords.Where(I => I.Type == true)
+                    .Select(I => I.Value.Replace(",","|"))
+                    // 第一个关键词无需添加‘|’
+                    .Aggregate(string.Empty,(A, B)=> A + (A != string.Empty ? "|" : string.Empty) + B);
+
+                var ReKeyword = await _5188Tools.ReplaceKeyWord(!string.IsNullOrEmpty(TempValue) ? TempValue : frontText.Text, FilterKeyWord);
+
+                if (ReKeyword == null || ReKeyword.errcode != "0")
+                {
+                    await ShowToast.Show("一键换词失败", ShowToast.Type.Error);
+                }
+                else
+                {
+                    float Schedule = float.Parse(ReKeyword.like) * 100;
+                    OriginalValue.Value = Schedule;
+                    OriginalText.Text = $"{Schedule}%";
+                    TempValue = ReKeyword.data;
+                    await ShowToast.Show("一键换词成功", ShowToast.Type.Success);
+
+                }
+            }
             // replice
-            replice();
+            replice(!string.IsNullOrEmpty(TempValue) ? TempValue : frontText.Text);
             // 设置到剪切板
-            Clipboard.SetText(behindText.Text);
+            if (IsCopy.IsChecked == true)
+            {
+                Clipboard.SetText(behindText.Text);
+            }
+            ShowModal.Closing();
         }
 
     }

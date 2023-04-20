@@ -434,7 +434,8 @@ namespace BeginSEO.Utils {
                 var builder = new StringBuilder();
                 foreach (var item in data)
                 {
-                    builder.Append(builder.Length == 0 ? "?" : "&");
+                    builder.Append(builder.Length == 0 ? string.Empty : "&");
+                    //builder.Append(builder.Length == 0 ? "?" : "&");
                     builder.Append($"{item.Key}={item.Value}");
                 }
                 content = new StringContent(builder.ToString());

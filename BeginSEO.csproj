@@ -269,6 +269,7 @@
     <Compile Include="Components\Loading.xaml.cs">
       <DependentUpon>Loading.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Convert\BoolToColor.cs" />
     <Compile Include="Data\DataEnum\SettingsEnum.cs" />
     <Compile Include="Data\ProxyStatus.cs" />
     <Compile Include="Data\Settings.cs" />
@@ -279,6 +280,10 @@
     <Compile Include="Migrations\20230418061133_4_18.cs" />
     <Compile Include="Migrations\20230418061133_4_18.designer.cs">
       <DependentUpon>20230418061133_4_18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230420022044__update_keyword.cs" />
+    <Compile Include="Migrations\20230420022044__update_keyword.designer.cs">
+      <DependentUpon>20230420022044__update_keyword.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
@@ -298,6 +303,9 @@
     <Compile Include="Utils\ShowModal.cs" />
     <Compile Include="Utils\ShowToast.cs" />
     <Compile Include="Utils\Tools.cs" />
+    <Compile Include="View\Grab.xaml.cs">
+      <DependentUpon>Grab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
@@ -314,6 +322,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\GPT.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Grab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

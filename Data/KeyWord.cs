@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BeginSEO.Data.DataEnum;
 
 namespace BeginSEO.Data
 {
@@ -18,5 +19,9 @@ namespace BeginSEO.Data
         public string Id { get; set; }
         public string Key { get; set; }
         public string Value { get; set; }
+        /// <summary>
+        /// 关键词类型
+        /// </summary>
+        public bool Type { get; set; }
     }
 }

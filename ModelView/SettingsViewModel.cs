@@ -89,7 +89,7 @@ namespace BeginSEO.ModelView
         string Get(string name)
         {
             var data = DataAccess.Entity<Data.Settings>().FirstOrDefault(I => I.Name == name);
-            return data != null ? data.Value : "123";
+            return data != null ? data.Value : string.Empty;
         }
         void Inser(string name, string value)
         {

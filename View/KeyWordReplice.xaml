@@ -4,11 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BeginSEO.Components"
+             xmlns:Convert="clr-namespace:BeginSEO.Convert"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="650" d:DesignWidth="1200">
     <UserControl.Resources>
         <CollectionViewSource x:Key="KeyWordSource"/>
+        <Convert:BoolToColor x:Key="BoolToColor"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -19,6 +21,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".3*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width=".2*"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="KeyWord"
@@ -31,8 +34,17 @@
                      Margin="5 0"
                      materialDesign:HintAssist.Hint="请输入需要替换的关键词，多个词用英文（,）分隔"
                      VerticalContentAlignment="Center"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <TextBlock Text="是否保护此关键词"
+                           Margin="10 0"
+                           VerticalAlignment="Center"/>
+                <ToggleButton
+                    x:Name="LockKeyWord"
+                  Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                  ToolTip="5118换词时保护此关键词不被替换" />
+            </StackPanel>
             <Button Click="Add_Click"
-                    Grid.Column="2"
+                    Grid.Column="3"
                     Margin="5 0"
                     Content="添加"/>
         </Grid>
@@ -63,7 +75,12 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width=".3*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Key}" MinWidth="130" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Key}" 
+                                       Foreground="{Binding Type,Converter={StaticResource BoolToColor}}"
+                                       MinWidth="130" 
+                                       Grid.Column="0" 
+                                       HorizontalAlignment="Left" 
+                                       VerticalAlignment="Center"/>
                             <!--删除-->
                             <Button Content="删除" Grid.Column="1" Click="List_Delete_Click" Tag="{Binding}"/>
                         </Grid>
@@ -109,7 +126,6 @@
                   Style="{StaticResource MaterialDesignLightCheckBox}" />
                 <ComboBox x:Name="Strict"
                           materialDesign:HintAssist.Hint="严选换词"
-                          ItemsSource="{Binding LongIntegerList}"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                           MinWidth="128">
                     <ComboBoxItem>0</ComboBoxItem>
@@ -132,14 +148,18 @@
                     Click="clean_Click" Margin="10,0,10,0"/>
             </StackPanel>
             <!--状态显示-->
-            <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10 5">
+            <StackPanel Grid.Row="5" Orientation="Horizontal"
+                        Margin="10 5">
                 <TextBlock Text="原创度："/>
                 <ProgressBar
+                      x:Name="OriginalValue"
                       Height="10"
                       Value="0"
                       MinWidth="500"
                       MaxWidth="500"/>
-                <TextBlock Text="0%"/>
+                <TextBlock
+                    x:Name="OriginalText"
+                    Text="0%"/>
             </StackPanel>
         </Grid>
     </Grid>

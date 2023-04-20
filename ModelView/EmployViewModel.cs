@@ -33,12 +33,9 @@ namespace BeginSEO.ModelView
         {
             Handle = new RelayCommand(GetEmploy);
             ClearList = new RelayCommand(Clear);
-            SpeedTestCommand = new RelayCommand(SpeedTest);
-            GetProxyCommand = new RelayCommand(GetProxy);
             CommandShowEmploy = new RelayCommand(ShowEmploy);
             CommandRemove = new RelayCommand<EmployData>(Remove);
             CommandCopy = new RelayCommand<EmployData>(Copy);
-            CommandCopyExcel = new RelayCommand<EmployData>(CopyExcel);
         }
         private ObservableCollection<EmployData> _EmployList = new ObservableCollection<EmployData>();
         public ObservableCollection<EmployData> EmployList
@@ -58,6 +55,7 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _UrlList, value);
             }
         }
+        public ICommand ReHandleCommand { get; set; }
         public ICommand Handle { get; set; }
         public ICommand ClearList { get; set; }
         public void Clear()
@@ -65,6 +63,9 @@ namespace BeginSEO.ModelView
             // 清空列表
             EmployList.Clear();
         }
+        /// <summary>
+        /// 查询收录的链接
+        /// </summary>
         void GetEmploy() {
             ShowModal.ShowLoading();
             // 清空列表
@@ -88,29 +89,11 @@ namespace BeginSEO.ModelView
                 Tools.Dispatcher(() => ShowModal.Closing());
             }).Start();
         }
-        public ICommand SpeedTestCommand { get; set; }
-        void SpeedTest()
+        /// <summary>
+        /// 重新查询失败的链接
+        /// </summary>
+        void ReHandle()
         {
-
-        }
-        public ICommand GetProxyCommand { get; set; }
-        void GetProxy()
-        {
-            //ExcelUtils.ImportToList();
-            var content = File.ReadAllLines(@"C:\Users\Administrator\Downloads\http_proxies.txt");
-            foreach (var item in content)
-            {
-                if (string.IsNullOrEmpty(item))
-                {
-                    continue;
-                }
-                var split = Tools.SplitIpAndPort(item);
-                DataAccess.Inser<Proxys>(new Proxys
-                {
-                    IP = split[0],
-                    Port = split[1]
-                });
-            }
 
         }
         public ICommand CommandRemove { get; set; }
@@ -123,12 +106,6 @@ namespace BeginSEO.ModelView
         public void Copy(EmployData Item)
         {
             Clipboard.SetText(Item.Url.Trim());
-            ShowToast.Open("复制成功");
-        }
-        public ICommand CommandCopyExcel { get; set; }
-        public void CopyExcel(EmployData Item)
-        {
-            Clipboard.SetText($"{Item.Url} {Item.Status}");
             ShowToast.Open("复制成功");
         }
         /// <summary>

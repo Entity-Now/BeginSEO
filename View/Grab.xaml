@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="BeginSEO.View.Grab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:local="clr-namespace:BeginSEO.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <material:Card Padding="17">
+            <StackPanel Orientation="Vertical">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="要抓取的文章关键词"
+                               Margin="10 0"
+                               VerticalAlignment="Center"/>
+                    <TextBox Grid.Column="1"
+                             material:HintAssist.Hint="请输入要抓取的标题关键词，多个词请用英文的逗号隔开(,)"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                </Grid>
+                <Grid Margin="0 10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="选择要抓取的平台"
+                               Margin="10 0"
+                               VerticalAlignment="Center"/>
+                    <ListBox Grid.Column="1"
+                            Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                        <ListBoxItem
+                            Content="39疾病" />
+                        <ListBoxItem
+                            Content="百度咨询"
+                            IsSelected="True" />
+                        <ListBoxItem
+                            Content="全民健康网" />
+                        <ListBoxItem
+                            Content="复合健康"
+                            IsEnabled="True" />
+                     </ListBox>
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="抓取数量" 
+                               Margin="10 0"
+                               VerticalAlignment="Center"/>
+                    <TextBox material:HintAssist.Hint="设置抓取数量" Text="10"/>
+                    <Button Margin="10 0"
+                          Content="抓取文章"
+                          Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
+                          ToolTip="抓取网络文章" />
+                </StackPanel>
+            </StackPanel>
+        </material:Card>
+        <ListView Grid.Row="1" Margin="10">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="抓取的文章列表">
+                    <GridViewColumn Header="序号"/>
+                    <GridViewColumn Header="标题"/>
+                    <GridViewColumn Header="原文链接"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>
