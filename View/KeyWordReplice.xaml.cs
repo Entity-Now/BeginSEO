@@ -110,6 +110,7 @@ namespace BeginSEO.Components
                 KeyWord.Text = selector.Key;
                 LockKeyWord.IsChecked = selector.Type;
                 Content.Text = selector.Value;
+                Level.Value = selector.level;
             }
         }
         /// <summary>
@@ -120,7 +121,7 @@ namespace BeginSEO.Components
             string Text = Source ?? frontText.Text;
             if (Text.Length > 0)
             {
-                var list = KeyWords.Where(I => I.Type != true);
+                var list = KeyWords.Where(I => I.Type != true).OrderBy(I=>I.level);
                 foreach (var item in list)
                 {
                     string[] splitText = item.Value.Split(new char[] { ',' });

@@ -35,7 +35,7 @@
                      materialDesign:HintAssist.Hint="请输入需要替换的关键词，多个词用英文（,）分隔"
                      VerticalContentAlignment="Center"/>
             <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <TextBlock Text="优先度"
+                <TextBlock Text="优先度(按此数值排序替换关键词)"
                            Margin="10 0"
                            VerticalAlignment="Center"/>
                 <Slider x:Name="Level"
