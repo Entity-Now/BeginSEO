@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BeginSEO.Attributes;
 using BeginSEO.Components;
 using BeginSEO.Model;
 using BeginSEO.ModelView;
@@ -28,15 +30,30 @@ namespace BeginSEO
     
     public partial class MainWindow : Window
     {
-        public MainModelView ViewModel { get; set; }
         public MainWindow() {
             InitializeComponent();
-            ViewModel = new MainModelView();
-            this.DataContext = ViewModel;
             // 注入提示框
             Inject();
             // 初始化数据库
             DataAccess.init();
+
+            var data = getReflex.Get<PagesAttribute>("BeginSEO").OrderBy(I=>I.Name);
+            foreach (var page in data)
+            {
+                var PageInfo = page.GetCustomAttribute<PagesAttribute>();
+                var rb = new RadioButton
+                {
+                    Content = PageInfo.Name,
+                    Height = 32,
+                    Margin = new Thickness(1),
+                    Style = (Style)FindResource("m_Radio")
+                };
+                rb.Click += (sender, e) =>
+                {
+                    MainContent.Content = Activator.CreateInstance(page);
+                };
+                NavList.Children.Add(rb);
+            }
         }
 
         void Inject()

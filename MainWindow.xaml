@@ -21,35 +21,11 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Vertical">
-            <RadioButton Content="替换文章关键词"
-                         Height="32"
-                         Margin="1"
-                         IsChecked="True"
-                         Command="{Binding NavSelector}"
-                         Style="{StaticResource m_Radio}"/>
-            <RadioButton Content="查收录"
-                         Height="32"
-                         Margin="1"
-                         Command="{Binding EmploySelector}"
-                         Style="{StaticResource m_Radio}"/>
-            <RadioButton Content="抓取网络文章"
-                         Height="32"
-                         Margin="1"
-                         Command="{Binding GrabSelector}"
-                         Style="{StaticResource m_Radio}"/>
-            <RadioButton Content="GPT"
-                         Height="32"
-                         Margin="1"
-                         Command="{Binding GPTSelector}"
-                         Style="{StaticResource m_Radio}"/>
-            <RadioButton Content="设置"
-                         Height="32"
-                         Margin="1"
-                         Command="{Binding SettingsSelector}"
-                         Style="{StaticResource m_Radio}"/>
+        <StackPanel x:Name="NavList" Orientation="Vertical">
         </StackPanel>
-        <ContentControl  Margin="10" Content="{Binding Content}" Grid.Column="1"/>
+        <ContentControl  x:Name="MainContent"
+                         Margin="10" 
+                         Grid.Column="1"/>
 
         <materialDesign:Snackbar Grid.ColumnSpan="2"
                                  VerticalAlignment="Bottom"

@@ -31,6 +31,9 @@ namespace BeginSEO.Migrations
                     b.Property<string>("Value")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("level")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("KeyWord");

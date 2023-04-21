@@ -263,6 +263,7 @@
     </ApplicationDefinition>
     <Compile Include="Attributes\databaseAttribute.cs" />
     <Compile Include="Attributes\ExcellDataAttribute.cs" />
+    <Compile Include="Attributes\PagesAttribute.cs" />
     <Compile Include="Components\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
@@ -273,17 +274,9 @@
     <Compile Include="Data\DataEnum\SettingsEnum.cs" />
     <Compile Include="Data\ProxyStatus.cs" />
     <Compile Include="Data\Settings.cs" />
-    <Compile Include="Migrations\20230401021109_updatePorxy.cs" />
-    <Compile Include="Migrations\20230401021109_updatePorxy.designer.cs">
-      <DependentUpon>20230401021109_updatePorxy.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20230418061133_4_18.cs" />
-    <Compile Include="Migrations\20230418061133_4_18.designer.cs">
-      <DependentUpon>20230418061133_4_18.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20230420022044__update_keyword.cs" />
-    <Compile Include="Migrations\20230420022044__update_keyword.designer.cs">
-      <DependentUpon>20230420022044__update_keyword.cs</DependentUpon>
+    <Compile Include="Migrations\20230421075242_update_keyword.cs" />
+    <Compile Include="Migrations\20230421075242_update_keyword.designer.cs">
+      <DependentUpon>20230421075242_update_keyword.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
@@ -305,6 +298,9 @@
     <Compile Include="Utils\Tools.cs" />
     <Compile Include="View\Grab.xaml.cs">
       <DependentUpon>Grab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ProxyList.xaml.cs">
+      <DependentUpon>ProxyList.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
@@ -368,6 +364,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ProxyList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -375,7 +375,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModelView\EmployViewModel.cs" />
-    <Compile Include="ModelView\MainModelView.cs" />
     <Compile Include="Model\EmployData.cs" />
     <Compile Include="Utils\ExcelUtils.cs" />
     <Compile Include="Utils\HTTP.cs" />

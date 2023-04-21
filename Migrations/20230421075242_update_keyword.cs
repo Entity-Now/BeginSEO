@@ -2,21 +2,21 @@
 
 namespace BeginSEO.Migrations
 {
-    public partial class _update_keyword : Migration
+    public partial class update_keyword : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "Type",
+            migrationBuilder.AddColumn<int>(
+                name: "level",
                 table: "KeyWord",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: 0);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Type",
+                name: "level",
                 table: "KeyWord");
         }
     }

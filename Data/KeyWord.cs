@@ -23,5 +23,9 @@ namespace BeginSEO.Data
         /// 关键词类型
         /// </summary>
         public bool Type { get; set; }
+        /// <summary>
+        /// 替换关键词的优先级，数值高的在最后替换反之亦然
+        /// </summary>
+        public int level { get; set; } = 0;
     }
 }

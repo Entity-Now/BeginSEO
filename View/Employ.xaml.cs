@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BeginSEO.Attributes;
 using BeginSEO.Model;
 using BeginSEO.ModelView;
 
@@ -21,6 +22,7 @@ namespace BeginSEO.Components
     /// <summary>
     /// Employ.xaml 的交互逻辑
     /// </summary>
+    [Pages("百度收录查询")]
     public partial class Employ : UserControl
     {
         public EmployViewModel ViewModel { get; set; }

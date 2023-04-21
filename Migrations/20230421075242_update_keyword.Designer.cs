@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeginSEO.Migrations
 {
     [DbContext(typeof(dataBank))]
-    [Migration("20230401021109_updatePorxy")]
-    partial class updatePorxy
+    [Migration("20230421075242_update_keyword")]
+    partial class update_keyword
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,8 +27,14 @@ namespace BeginSEO.Migrations
                     b.Property<string>("Key")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Value")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("level")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -47,15 +53,32 @@ namespace BeginSEO.Migrations
                     b.Property<string>("Port")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Speed")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Speed")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.ToTable("Proxys");
+                });
+
+            modelBuilder.Entity("BeginSEO.Data.Settings", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("BeginSEO.Data.TempCookie", b =>

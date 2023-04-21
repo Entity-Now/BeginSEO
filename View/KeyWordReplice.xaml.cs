@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BeginSEO.Attributes;
 using BeginSEO.Data;
 using BeginSEO.Data.DataEnum;
 using BeginSEO.Model;
@@ -25,6 +26,7 @@ namespace BeginSEO.Components
     /// <summary>
     /// KeyWordReplice.xaml 的交互逻辑
     /// </summary>
+    [Pages("关键词替换")]
     public partial class KeyWordReplice : UserControl
     {
         CollectionViewSource KeyWordSource;
@@ -76,6 +78,7 @@ namespace BeginSEO.Components
                 findData.Value = Content.Text;
                 findData.Key = KeyWord.Text;
                 findData.Type = (bool)LockKeyWord.IsChecked;
+                findData.level = (int)Level.Value;
             }
             else
             {
@@ -83,13 +86,15 @@ namespace BeginSEO.Components
                 {
                     Key = KeyWord.Text,
                     Value = Content.Text,
-                    Type = (bool)LockKeyWord.IsChecked
+                    Type = (bool)LockKeyWord.IsChecked,
+                    level = (int)Level.Value
             });
             }
             DataAccess.SaveChanges();
             // clean
             KeyWord.Text = "";
             Content.Text = "";
+            Level.Value = 0;
             LockKeyWord.IsChecked = false;
         }
         /// <summary>

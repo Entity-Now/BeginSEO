@@ -1,4 +1,5 @@
-﻿using BeginSEO.ModelView;
+﻿using BeginSEO.Attributes;
+using BeginSEO.ModelView;
 using BeginSEO.SQL;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace BeginSEO.View
     /// <summary>
     /// Settings.xaml 的交互逻辑
     /// </summary>
+    [Pages("设置")]
     public partial class Settings : UserControl
     {
         SettingsViewModel viewModel;

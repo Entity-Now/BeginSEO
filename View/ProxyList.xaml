@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="BeginSEO.View.ProxyList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BeginSEO.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="ViewProxyList"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="6">
+            <RepeatButton
+                  Click="GrabProxy_Click"
+                  Content="抓取网络ip"
+                  ToolTip="抓取网络ip，这些ip都是免费的可用性未知。" />
+            <RepeatButton
+                  Content="测速"
+                  Margin="10 0"
+                  ToolTip="测速已抓取的代理IP" />
+        </StackPanel>
+        <ListView Grid.Row="1" 
+                  ItemsSource="{Binding Source={StaticResource ViewProxyList}}"
+                  Loaded="ListView_Loaded">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="所有代理IP">
+                    <GridViewColumn Header="IP" DisplayMemberBinding="{Binding IP}"/>
+                    <GridViewColumn Header="响应速度" DisplayMemberBinding="{Binding Speed}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

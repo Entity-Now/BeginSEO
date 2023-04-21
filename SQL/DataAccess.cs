@@ -10,6 +10,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Windows;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using System.Runtime.Remoting.Contexts;
 
 namespace BeginSEO.SQL
 {
@@ -38,7 +42,14 @@ namespace BeginSEO.SQL
             }
             if (BeginContext.Database.GetPendingMigrations().Any())
             {
-                BeginContext.Database.Migrate(); //执行迁移
+                try
+                {
+                    BeginContext.Database.Migrate(); //执行迁移
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
             }
         }
         public static DbSet<T> Entity<T>() where T : class

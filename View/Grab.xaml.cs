@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeginSEO.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ namespace BeginSEO.View
     /// <summary>
     /// Grab.xaml 的交互逻辑
     /// </summary>
+    [Pages("抓取文章")]
     public partial class Grab : UserControl
     {
         public Grab()
