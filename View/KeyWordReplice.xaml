@@ -42,7 +42,6 @@
                       Maximum="3"
                       Minimum="-1"
                       Style="{StaticResource MaterialDesignDiscreteSlider}"
-                      TickFrequency="{Binding DiscreteHorizontal.TickFrequency}"
                       TickPlacement="BottomRight"
                       Panel.ZIndex="99"
                       Value="1" Width="65" VerticalAlignment="Bottom" Margin="0,25,0,0" />

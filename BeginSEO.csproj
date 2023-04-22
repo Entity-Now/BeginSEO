@@ -281,6 +281,7 @@
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Utils\5188Tools.cs" />
+    <Compile Include="Utils\Throttle.cs" />
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
     </Compile>

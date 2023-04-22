@@ -30,6 +30,7 @@ namespace BeginSEO
     
     public partial class MainWindow : Window
     {
+        private Dictionary<string, object> PageList = new Dictionary<string, object>();
         public MainWindow() {
             InitializeComponent();
             // 注入提示框
@@ -50,7 +51,17 @@ namespace BeginSEO
                 };
                 rb.Click += (sender, e) =>
                 {
-                    MainContent.Content = Activator.CreateInstance(page);
+                    object temp_page = null;
+                    if (PageList.ContainsKey(PageInfo.Name))
+                    {
+                        temp_page = PageList[PageInfo.Name];
+                    }
+                    else
+                    {
+                        temp_page = Activator.CreateInstance(page);
+                        PageList.Add(PageInfo.Name, temp_page);
+                    }
+                    MainContent.Content = temp_page;
                 };
                 NavList.Children.Add(rb);
             }

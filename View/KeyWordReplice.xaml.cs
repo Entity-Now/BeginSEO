@@ -116,12 +116,14 @@ namespace BeginSEO.Components
         /// <summary>
         /// 替换
         /// </summary>
-        void replice(string Source = null)
+        string replice(string Source = null, bool IsLevel = false)
         {
             string Text = Source ?? frontText.Text;
             if (Text.Length > 0)
             {
-                var list = KeyWords.Where(I => I.Type != true).OrderBy(I=>I.level);
+                var list = KeyWords.Where(I => I.Type != true)
+                    .Where(I => IsLevel ? I.level == -1 : true)
+                    .OrderBy(I=>I.level);
                 foreach (var item in list)
                 {
                     string[] splitText = item.Value.Split(new char[] { ',' });
@@ -136,6 +138,7 @@ namespace BeginSEO.Components
             {
                 MessageBox.Show("请输入要替换的文本");
             }
+            return Text;
         }
         private void clean_Click(object sender, RoutedEventArgs e)
         {
@@ -154,11 +157,12 @@ namespace BeginSEO.Components
                     frontText.Text = temp;
                 }
             }
-            string TempValue = "";
+
+            string TempValue = replice(frontText.Text, true);
             // 5118智能原创
             if (Original.IsChecked == true)
             {
-                var OriginalResult = await _5188Tools.Original(frontText.Text, string.IsNullOrEmpty(Strict.Text) ? "0" : Strict.Text);
+                var OriginalResult = await _5188Tools.Original(TempValue, string.IsNullOrEmpty(Strict.Text) ? "0" : Strict.Text);
                 if (OriginalResult == null || OriginalResult.errcode != "0")
                 {
                     await ShowToast.Show("智能原创失败", ShowToast.Type.Error);

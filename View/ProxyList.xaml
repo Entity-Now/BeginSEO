@@ -22,6 +22,7 @@
             <RepeatButton
                   Content="测速"
                   Margin="10 0"
+                  Click="TestSpeed_Click"
                   ToolTip="测速已抓取的代理IP" />
         </StackPanel>
         <ListView Grid.Row="1" 

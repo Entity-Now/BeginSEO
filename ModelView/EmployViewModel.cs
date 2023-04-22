@@ -36,6 +36,7 @@ namespace BeginSEO.ModelView
             CommandShowEmploy = new RelayCommand(ShowEmploy);
             CommandRemove = new RelayCommand<EmployData>(Remove);
             CommandCopy = new RelayCommand<EmployData>(Copy);
+            ReHandleCommand = new RelayCommand(ReHandle);
         }
         private ObservableCollection<EmployData> _EmployList = new ObservableCollection<EmployData>();
         public ObservableCollection<EmployData> EmployList
@@ -55,6 +56,7 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _UrlList, value);
             }
         }
+        public List<string> ErrorList { get; set; } = null;
         public ICommand ReHandleCommand { get; set; }
         public ICommand Handle { get; set; }
         public ICommand ClearList { get; set; }
@@ -76,11 +78,14 @@ namespace BeginSEO.ModelView
             }
             // 分割地址
             List<string> urlList = UrlList.Split('\r').ToList();
-
+            Employ(urlList);
+        }
+        void Employ(List<string> urlList)
+        {
             new Thread(async () => {
-                await HTTP.MultipleRequest(urlList, new Progress<EmployData>(I =>
+                ErrorList = await HTTP.MultipleRequest(urlList, new Progress<EmployData>(I =>
                 {
-                   Tools.Dispatcher(() =>
+                    Tools.Dispatcher(() =>
                     {
                         EmployList.Add(I);
                     });
@@ -94,7 +99,14 @@ namespace BeginSEO.ModelView
         /// </summary>
         void ReHandle()
         {
-
+            if (ErrorList == null)
+            {
+                ShowToast.Show("没有查询失败的链接");
+            }
+            else
+            {
+                Employ(ErrorList);
+            }
         }
         public ICommand CommandRemove { get; set; }
         public void Remove(EmployData listViewItem)

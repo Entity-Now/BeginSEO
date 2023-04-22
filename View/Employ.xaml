@@ -36,7 +36,7 @@
                     Orientation="Horizontal">
             <Button Content="重新查询失败的链接"
                     Style="{StaticResource MaterialDesignPaperButton}"
-                    Command="{Binding ReHandle}"/>
+                    Command="{Binding ReHandleCommand}"/>
             <Button Content="一键查收录"
                     Style="{StaticResource MaterialDesignPaperButton}"
                     Command="{Binding Handle}"/>

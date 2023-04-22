@@ -1,8 +1,11 @@
-﻿using HtmlAgilityPack;
+﻿using BeginSEO.Data;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,7 +84,38 @@ namespace BeginSEO.Utils
         {
             return JsonConvert.DeserializeObject<T>(source);
         }
+        /// <summary>
+        /// 对代理进行测速
+        /// </summary>
+        public static async Task<(int Speed, ProxyStatus status)> TextSpeed(string IP, string port)
+        {
+            try
+            {
+                // 创建一个 WebRequest 对象
+                WebRequest request = WebRequest.Create("https://www.baidu.com");
 
+                // 设置代理服务器
+                request.Proxy = new WebProxy($"http://{IP}:{port}");
+
+                // 测速
+                Stopwatch stopwatch = Stopwatch.StartNew();
+
+                // 发送请求并获取响应
+                using (WebResponse response = await  request.GetResponseAsync())
+                {
+                    if (((HttpWebResponse)response).StatusCode != HttpStatusCode.OK)
+                    {
+                        return (-1, ProxyStatus.Error);
+                    }
+                    // 输出响应时间
+                    return ((int)stopwatch.ElapsedMilliseconds, ProxyStatus.Success);
+                }
+            }
+            catch (WebException ex)
+            {
+                return (-1, ProxyStatus.Error);
+            }
+        }
         /// <summary>
         /// UI线程内执行操作
         /// </summary>
