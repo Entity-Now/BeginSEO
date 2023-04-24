@@ -93,6 +93,7 @@ namespace BeginSEO.Utils
             {
                 // 创建一个 WebRequest 对象
                 WebRequest request = WebRequest.Create("https://www.baidu.com");
+                request.Timeout = 10000;
 
                 // 设置代理服务器
                 request.Proxy = new WebProxy($"http://{IP}:{port}");
@@ -101,7 +102,7 @@ namespace BeginSEO.Utils
                 Stopwatch stopwatch = Stopwatch.StartNew();
 
                 // 发送请求并获取响应
-                using (WebResponse response = await  request.GetResponseAsync())
+                using (WebResponse response = await request.GetResponseAsync())
                 {
                     if (((HttpWebResponse)response).StatusCode != HttpStatusCode.OK)
                     {

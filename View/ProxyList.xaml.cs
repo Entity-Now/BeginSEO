@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
+using NPOI.Util;
 
 namespace BeginSEO.View
 {
@@ -81,29 +82,29 @@ namespace BeginSEO.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TestSpeed_Click(object sender, RoutedEventArgs e)
+        private async void TestSpeed_Click(object sender, RoutedEventArgs e)
         {
-            var delayExecution = Throttle.DelayExecution(3000);
-            for (int i = 0; i < 10; i++)
+            Tools.Dispatcher(()=> ShowModal.ShowLoading());
+            var ProxyLists = new List<Task>();
+            var data = DataAccess.Entity<Proxys>().Where(I=>I.Status == ProxyStatus.Success);
+            int HandleCount = 0;
+            foreach (var item in data)
             {
-                delayExecution(() =>
+                ProxyLists.Add(Task.Run(async () =>
                 {
-                });
+                    var (speed, status) = await Tools.TextSpeed(item.IP, item.Port);
+                    item.Status = status;
+                    item.Speed = speed;
+                    HandleCount++;
+                    if (HandleCount % 10 == 0 || HandleCount <= ProxyLists.Count)
+                    {
+                        await DataAccess.BeginContext.SaveChangesAsync();
+                    }
+                }));
             }
-            //Parallel.ForEach(_ProxyList, async (item) =>
-            //{
-            //    var (speed, status) = await Tools.TextSpeed(item.IP, item.Port);
-            //    delayExecution(() =>{
-            //        Dispatcher.Invoke(() =>
-            //        {
-            //            var data = _ProxyList.FirstOrDefault(I => I.IP == item.IP && I.Port == item.Port);
-            //            data.Speed = speed;
-            //            data.Status = status;
-            //            DataAccess.SaveChanges();
-            //        });
-            //    });
-
-            //});
+            await Task.WhenAll(ProxyLists);
+            await DataAccess.BeginContext.SaveChangesAsync();
+            Tools.Dispatcher(()=>ShowModal.Closing());
         }
     }
 }
