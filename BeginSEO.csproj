@@ -282,6 +282,7 @@
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Utils\5188Tools.cs" />
     <Compile Include="Utils\Throttle.cs" />
+    <Compile Include="Utils\WithCancellation.cs" />
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
     </Compile>

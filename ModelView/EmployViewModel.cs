@@ -69,7 +69,6 @@ namespace BeginSEO.ModelView
         /// 查询收录的链接
         /// </summary>
         void GetEmploy() {
-            ShowModal.ShowLoading();
             // 清空列表
             Clear();
             if (string.IsNullOrEmpty(UrlList))
@@ -90,8 +89,6 @@ namespace BeginSEO.ModelView
                         EmployList.Add(I);
                     });
                 }));
-
-                Tools.Dispatcher(() => ShowModal.Closing());
             }).Start();
         }
         /// <summary>

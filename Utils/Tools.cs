@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -87,13 +88,13 @@ namespace BeginSEO.Utils
         /// <summary>
         /// 对代理进行测速
         /// </summary>
-        public static async Task<(int Speed, ProxyStatus status)> TextSpeed(string IP, string port)
+        public static async Task<(int Speed, ProxyStatus status)> TextSpeed(string IP, string port, CancellationToken cancellationToken)
         {
             try
             {
                 // 创建一个 WebRequest 对象
                 WebRequest request = WebRequest.Create("https://www.baidu.com");
-                request.Timeout = 10000;
+                request.Timeout = 10000; // 设置请求超时时间为10秒
 
                 // 设置代理服务器
                 request.Proxy = new WebProxy($"http://{IP}:{port}");
@@ -102,21 +103,24 @@ namespace BeginSEO.Utils
                 Stopwatch stopwatch = Stopwatch.StartNew();
 
                 // 发送请求并获取响应
-                using (WebResponse response = await request.GetResponseAsync())
+                using (WebResponse response = await request.GetResponseAsync().WithCancellation(cancellationToken))
                 {
                     if (((HttpWebResponse)response).StatusCode != HttpStatusCode.OK)
                     {
                         return (-1, ProxyStatus.Error);
                     }
-                    // 输出响应时间
-                    return ((int)stopwatch.ElapsedMilliseconds, ProxyStatus.Success);
                 }
+                // 输出响应时间
+                return ((int)stopwatch.ElapsedMilliseconds, ProxyStatus.Success);
             }
-            catch (WebException ex)
+            catch (Exception ex)
             {
+                // 其他未知异常
                 return (-1, ProxyStatus.Error);
             }
         }
+
+
         /// <summary>
         /// UI线程内执行操作
         /// </summary>

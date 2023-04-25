@@ -123,7 +123,9 @@ namespace BeginSEO.Components
             {
                 var list = KeyWords.Where(I => I.Type != true)
                     .Where(I => IsLevel ? I.level == -1 : true)
-                    .OrderBy(I=>I.level);
+                    .OrderBy(I=>I.level)
+                    // 先修改字数多的关键词
+                    .ThenByDescending(I=> I.Key.Length);
                 foreach (var item in list)
                 {
                     string[] splitText = item.Value.Split(new char[] { ',' });

@@ -84,27 +84,25 @@ namespace BeginSEO.View
         /// <param name="e"></param>
         private async void TestSpeed_Click(object sender, RoutedEventArgs e)
         {
-            Tools.Dispatcher(()=> ShowModal.ShowLoading());
+            Tools.Dispatcher(() => ShowModal.ShowLoading());
             var ProxyLists = new List<Task>();
-            var data = DataAccess.Entity<Proxys>().Where(I=>I.Status == ProxyStatus.Success);
-            int HandleCount = 0;
+            var data = DataAccess.Entity<Proxys>().Where(I=> I.Status == ProxyStatus.Success);
+            // 限制并发任务的数量
+            //SemaphoreSlim semaphore = new SemaphoreSlim(10);
             foreach (var item in data)
             {
                 ProxyLists.Add(Task.Run(async () =>
                 {
-                    var (speed, status) = await Tools.TextSpeed(item.IP, item.Port);
-                    item.Status = status;
+                    /// 10秒后强制暂停测速
+                    var canCell = new CancellationTokenSource(10000);
+                    var (speed, status) = await Tools.TextSpeed(item.IP, item.Port, canCell.Token);
+                    item.Status = status; 
                     item.Speed = speed;
-                    HandleCount++;
-                    if (HandleCount % 10 == 0 || HandleCount <= ProxyLists.Count)
-                    {
-                        await DataAccess.BeginContext.SaveChangesAsync();
-                    }
                 }));
             }
             await Task.WhenAll(ProxyLists);
             await DataAccess.BeginContext.SaveChangesAsync();
-            Tools.Dispatcher(()=>ShowModal.Closing());
+            Tools.Dispatcher(() => ShowModal.Closing());
         }
     }
 }
