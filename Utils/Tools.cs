@@ -100,7 +100,7 @@ namespace BeginSEO.Utils
                 request.Proxy = new WebProxy($"http://{IP}:{port}");
 
                 // 测速
-                Stopwatch stopwatch = Stopwatch.StartNew();
+                //Stopwatch stopwatch = Stopwatch.StartNew();
 
                 // 发送请求并获取响应
                 using (WebResponse response = await request.GetResponseAsync().WithCancellation(cancellationToken))
@@ -111,7 +111,8 @@ namespace BeginSEO.Utils
                     }
                 }
                 // 输出响应时间
-                return ((int)stopwatch.ElapsedMilliseconds, ProxyStatus.Success);
+                //return ((int)stopwatch.ElapsedMilliseconds, ProxyStatus.Success);
+                return (Tools.GetPingDelay(IP), ProxyStatus.Success);
             }
             catch (Exception ex)
             {

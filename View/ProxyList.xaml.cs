@@ -86,9 +86,10 @@ namespace BeginSEO.View
         /// <param name="e"></param>
         private async void TestSpeed_Click(object sender, RoutedEventArgs e)
         {
-            Tools.Dispatcher(() => ShowModal.ShowLoading());
+            await ShowToast.Show("测速时请勿使用代理，否则会影响准确性.",ShowToast.Type.Info);
+            ShowModal.ShowLoading();
             var ProxyLists = new List<Task>();
-            var data = DataAccess.Entity<Proxys>().Where(I=> I.Status == ProxyStatus.Success);
+            var data = DataAccess.Entity<Proxys>().Where(I=> (TestAllProxy.IsChecked == false || I.Status == ProxyStatus.Success));
             // 限制并发任务的数量
             //SemaphoreSlim semaphore = new SemaphoreSlim(10);
             foreach (var item in data)
@@ -105,6 +106,16 @@ namespace BeginSEO.View
             await Task.WhenAll(ProxyLists);
             await DataAccess.BeginContext.SaveChangesAsync();
             Tools.Dispatcher(() => ShowModal.Closing());
+        }
+
+        private void RemoveAllProxy_Click(object sender, RoutedEventArgs e)
+        {
+            var entity = DataAccess.Entity<Proxys>();
+            foreach (var item in entity)
+            {
+                entity.Remove(item);
+            }
+            DataAccess.SaveChanges();
         }
     }
 }

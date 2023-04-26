@@ -20,6 +20,17 @@
                   Content="抓取网络ip"
                   ToolTip="抓取网络ip，这些ip都是免费的可用性未知。" />
             <RepeatButton
+                  Content="删除所有IP"
+                  Margin="10 0"
+                  Click="RemoveAllProxy_Click"
+                  ToolTip="删除所有IP" />
+            <TextBlock Text="测速所有IP地址"
+                       VerticalAlignment="Center"
+                       Margin="10 0"/>
+            <ToggleButton x:Name="TestAllProxy"
+                  Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                  ToolTip="如果开启此选项则测速所有IP，否则只对测速成功或者为测速的节点测速." />
+            <RepeatButton
                   Content="测速"
                   Margin="10 0"
                   Click="TestSpeed_Click"
