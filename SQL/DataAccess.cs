@@ -76,7 +76,7 @@ namespace BeginSEO.SQL
             var find = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
             if (find != null)
             {
-                update(item, predicate);
+                Update(item, predicate);
             }
             else
             {
@@ -87,26 +87,36 @@ namespace BeginSEO.SQL
         /// 使用反射获取所有属性，对比新旧数据进行修改
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="Value">新值</param>
+        /// <param name="newValue">新值</param>
         /// <param name="predicate">判断条件</param>
-        public static void update<T>(T Value, Expression<Func<T, bool>> predicate = null) where T : class
+        public static void Update<T>(T newValue, Expression<Func<T, bool>> predicate = null) where T : class
         {
             var data = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
-            if (data != null)
-                foreach (var item in data.mGetPropertys())
+            if (data == null)
+            {
+                return;
+            }
+
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                var keyAttribute = property.GetCustomAttribute<KeyAttribute>();
+                // 不修改主键
+                if (keyAttribute != null)
                 {
-                    var ItemAttribute = item.GetCustomAttribute<KeyAttribute>();
-                    // 不修改键名
-                    if (ItemAttribute == null)
-                    {
-                        var newValue = Value.mGetProperyValue<T, object>(item.Name);
-                        if (newValue != null )
-                        {
-                            item.SetValue(data, newValue);
-                        }
-                    }
+                    continue;
                 }
+
+                var value = property.GetValue(newValue);
+                if (value != null)
+                {
+                    property.SetValue(data, value);
+                }
+            }
+
             SaveChanges();
         }
+
     }
 }

@@ -56,26 +56,28 @@ namespace BeginSEO.View
         /// <param name="e"></param>
         private void GrabProxy_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(ShowModal.ShowLoading);
-            new Thread(() =>
+            ShowModal.ShowLoading();
+            Task.Run(async () =>
             {
-                var result = HTTP.Get89Proxy(new Progress<Proxys>((res) =>
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        var IsExist = DataAccess.Entity<Proxys>().FirstOrDefault(I => I.IP == res.IP && I.Port == res.Port);
-                        if (IsExist == null)
-                        {
-                            DataAccess.Entity<Proxys>().Add(res);
-                        }
+                var proxyList = await GrabProxys.RequestAll();
 
-                    });
-                }), new Progress<bool>((res) =>
+                await Dispatcher.Invoke(async () =>
                 {
-                    Dispatcher.Invoke(ShowModal.Closing);
-                    DataAccess.SaveChanges();
-                }));
-            }).Start();
+                    await ShowToast.Show($"成功获取{proxyList.Count}个IP代理..");
+                    Proxys proxys = null;
+                    while (proxyList.TryDequeue(out proxys))
+                    {
+                        var findData = DataAccess.Entity<Proxys>().FirstOrDefault(I => I.IP == proxys.IP && I.Port == proxys.Port);
+                        if (findData != null)
+                        {
+                            continue;
+                        }
+                        DataAccess.Entity<Proxys>().Add(proxys);
+                    }
+                    await DataAccess.BeginContext.SaveChangesAsync();
+                    ShowModal.Closing();
+                });
+            });
         }
         /// <summary>
         /// 对节点测速

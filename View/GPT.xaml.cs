@@ -19,7 +19,7 @@ namespace BeginSEO.Components
     /// <summary>
     /// GPT.xaml 的交互逻辑
     /// </summary>
-    [Pages("Chat GPT")]
+    //[Pages("Chat GPT")]
     public partial class GPT : UserControl
     {
         public GPT()

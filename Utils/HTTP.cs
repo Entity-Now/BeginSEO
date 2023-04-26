@@ -19,6 +19,8 @@ using System.Runtime.Remoting.Contexts;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using System.Windows;
 using System.Diagnostics;
+using System.Collections;
+using Newtonsoft.Json.Linq;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -328,71 +330,7 @@ namespace BeginSEO.Utils {
             }
             return ErrorList;
         }
-        /// <summary>
-        /// 获取快代理的ip地址，不过用不到了（有官方api）
-        /// </summary>
-        /// <param name="Progress"></param>
-        /// <returns></returns>
-        public static async Task GetProxys(IProgress<Proxys> Progress)
-        {
-            for (int i = 1; i < 2; i++)
-            {
 
-                var ProxyResult = await Get($"https://www.kuaidaili.com/free/inha/{i}/");
-                if (!ProxyResult.IsSuccessStatusCode)
-                {
-                    continue;
-                }
-                var HTMLResult = await ProxyResult.Content.ReadAsStringAsync();
-                int StartIndex = HTMLResult.IndexOf("<tbody>");
-                int EndIndex = HTMLResult.IndexOf("</tbody>") + 8;
-                HTMLResult = HTMLResult.Substring(StartIndex, EndIndex - StartIndex);
-                XmlDocument Xml = new XmlDocument();
-                Xml.LoadXml(Tools.HTMLtoXML(HTMLResult));
-                var GetXml = Xml.SelectNodes(@"(//tr/td[@data-title='IP'] | //tr/td[@data-title='PORT'])");
-                for (int j = 0; j < GetXml.Count; j += 2)
-                {
-                    var item = new Proxys
-                    {
-                        IP = GetXml[j].InnerText,
-                        Port = GetXml[j + 1].InnerText,
-                    };
-                    DataAccess.Entity<Proxys>().Add(item);
-                    DataAccess.SaveChanges();
-                    Progress.Report(item);
-                }
-            }
-        }
-        /// <summary>
-        /// 获取89ip的代理
-        /// </summary>
-        /// <param name="size"></param>
-        /// <returns></returns>
-        public static async Task<bool> Get89Proxy(IProgress<Proxys> pop,IProgress<bool> result, int size = 3796)
-        {
-            var getResult = await Get($"http://api.89ip.cn/tqdl.html?api=1&num={size}&port=&address=&isp=");
-            if (!getResult.IsSuccessStatusCode)
-            {
-                result.Report(false);
-                return false;
-            }
-            var ProxyHtml = await getResult.Content.ReadAsStringAsync();
-            var ProxyList = Regex.Matches(ProxyHtml, @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}");
-            foreach (Match item in ProxyList)
-            {
-                var proxy = Tools.SplitIpAndPort(item.Value);
-
-                pop.Report(new Proxys
-                {
-                    IP = proxy[0],
-                    Port = proxy[1],
-                    Speed = 0,
-                    Status = 0,
-                });
-            }
-            result.Report(true);
-            return true;
-        }
         public static async Task<HttpResponseMessage> Get(string url, string cookies = null,string user_Agent = null, WebProxy proxy = null)
         {
             try

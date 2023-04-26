@@ -119,27 +119,31 @@ namespace BeginSEO.Components
         string replice(string Source = null, bool IsLevel = false)
         {
             string Text = Source ?? frontText.Text;
-            if (Text.Length > 0)
+            if (string.IsNullOrWhiteSpace(Text))
             {
-                var list = KeyWords.Where(I => I.Type != true)
-                    .Where(I => IsLevel ? I.level == -1 : true)
-                    .OrderBy(I=>I.level)
-                    // 先修改字数多的关键词
-                    .ThenByDescending(I=> I.Key.Length);
-                foreach (var item in list)
-                {
-                    string[] splitText = item.Value.Split(new char[] { ',' });
-                    string newString = splitText[new Random().Next(splitText.Length)];
-                    // 随机选择一个
-                    Text = Text.Replace(item.Key, newString);
+                ShowToast.Show("请输入要替换的文本",ShowToast.Type.Error);
+                return Text;
+            }
 
-                }
-                behindText.Text = Text;
-            }
-            else
+            var list = KeyWords
+                .Where(I => I.Type != true)
+                .Where(I => !IsLevel || I.level == -1) // 使用逻辑非和简化条件判断
+                .OrderByDescending(I => I.Key.Length)
+                .ThenBy(I => I.level);
+
+            var random = new Random(); // 创建一个随机数生成器，以便避免在循环中多次创建
+
+            foreach (var item in list)
             {
-                MessageBox.Show("请输入要替换的文本");
+                string[] splitText = item.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                if (splitText.Length == 0) continue; // 跳过没有值的关键词
+
+                string newString = splitText[random.Next(splitText.Length)];
+                Text = Text.Replace(item.Key, newString);
             }
+
+            behindText.Text = Text;
+
             return Text;
         }
         private void clean_Click(object sender, RoutedEventArgs e)
@@ -151,64 +155,66 @@ namespace BeginSEO.Components
         private async void CopyAndDelete_Click(object sender, RoutedEventArgs e)
         {
             ShowModal.ShowLoading();
-            var temp = Clipboard.GetText();
+            // 获取剪切板的数据
+            var clipboardText = Clipboard.GetText();
+
             if (string.IsNullOrEmpty(frontText.Text))
             {
-                if (!string.IsNullOrEmpty(temp))
+                if (!string.IsNullOrEmpty(clipboardText))
                 {
-                    frontText.Text = temp;
+                    frontText.Text = clipboardText;
                 }
             }
 
-            string TempValue = replice(frontText.Text, true);
+            string tempValue = replice(frontText.Text, true) ?? string.Empty;
+
             // 5118智能原创
+
             if (Original.IsChecked == true)
             {
-                var OriginalResult = await _5188Tools.Original(TempValue, string.IsNullOrEmpty(Strict.Text) ? "0" : Strict.Text);
-                if (OriginalResult == null || OriginalResult.errcode != "0")
+                var originalResult = await _5188Tools.Original(tempValue, string.IsNullOrEmpty(Strict.Text) ? "0" : Strict.Text);
+                if (originalResult?.errcode != "0")
                 {
                     await ShowToast.Show("智能原创失败", ShowToast.Type.Error);
                 }
                 else
                 {
-                    float Schedule = float.Parse(OriginalResult.like) * 100;
-                    OriginalValue.Value = Schedule;
-                    OriginalText.Text = $"{Schedule}%";
-                    TempValue = OriginalResult.data;
+                    float schedule = float.Parse(originalResult.like) * 100;
+                    OriginalValue.Value = schedule;
+                    OriginalText.Text = $"{schedule}%";
+                    tempValue = originalResult.data;
                     await ShowToast.Show("智能原创成功", ShowToast.Type.Success);
                 }
             }
-            // 5118一键换词
-            if (ReplaceKeyWord.IsChecked == true)
+            else if (ReplaceKeyWord.IsChecked == true)
             {
-                var FilterKeyWord = KeyWords.Where(I => I.Type == true)
-                    .Select(I => I.Value.Replace(",","|"))
-                    // 第一个关键词无需添加‘|’
-                    .Aggregate(string.Empty,(A, B)=> A + (A != string.Empty ? "|" : string.Empty) + B);
+                var filterKeyWord = KeyWords.Where(kw => kw.Type)
+                    .Select(kw => kw.Value.Replace(",", "|"))
+                    .Aggregate(string.Empty, (a, b) => $"{a}|{b}");
 
-                var ReKeyword = await _5188Tools.ReplaceKeyWord(!string.IsNullOrEmpty(TempValue) ? TempValue : frontText.Text, FilterKeyWord);
+                var reKeyword = await _5188Tools.ReplaceKeyWord(!string.IsNullOrEmpty(tempValue) ? tempValue : frontText.Text, filterKeyWord);
 
-                if (ReKeyword == null || ReKeyword.errcode != "0")
+                if (reKeyword?.errcode != "0")
                 {
                     await ShowToast.Show("一键换词失败", ShowToast.Type.Error);
                 }
                 else
                 {
-                    float Schedule = float.Parse(ReKeyword.like) * 100;
-                    OriginalValue.Value = Schedule;
-                    OriginalText.Text = $"{Schedule}%";
-                    TempValue = ReKeyword.data;
+                    float schedule = float.Parse(reKeyword.like) * 100;
+                    OriginalValue.Value = schedule;
+                    OriginalText.Text = $"{schedule}%";
+                    tempValue = reKeyword.data;
                     await ShowToast.Show("一键换词成功", ShowToast.Type.Success);
-
                 }
             }
-            // replice
-            replice(!string.IsNullOrEmpty(TempValue) ? TempValue : frontText.Text);
-            // 设置到剪切板
+
+            replice(tempValue);
+
             if (IsCopy.IsChecked == true)
             {
                 Clipboard.SetText(behindText.Text);
             }
+
             ShowModal.Closing();
         }
 
