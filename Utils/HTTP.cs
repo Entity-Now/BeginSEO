@@ -21,6 +21,8 @@ using System.Windows;
 using System.Diagnostics;
 using System.Collections;
 using Newtonsoft.Json.Linq;
+using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -131,59 +133,7 @@ namespace BeginSEO.Utils {
             "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.2 Safari/530.5",
             "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2117.157 Safari/537.36"
         };
-        public static List<string> Baidu_Url = new List<string>()
-        {
-            "www.baidu.com",
-            "180.97.33.107",
-            "180.97.33.108",
-            "180.101.50.188",
-            "180.101.50.242",
-            "39.156.69.79",
-            "39.156.69.80",
-            //"220.181.38.149",
-            //"220.181.38.148",
-            "123.125.115.111",
-            "123.125.115.110",
-            "104.193.88.77",
-            "104.193.88.123",
-            "14.215.177.38",
-            "14.215.177.39"
-        };
-        /// <summary>
-        /// 从响应结果中获取cookies
-        /// </summary>
-        /// <param name="CookieJar"></param>
-        /// <param name="Url"></param>
-        /// <param name="Cookies"></param>
-        public static void Replace(this CookieContainer CookieJar, string Url, ref List<Cookie> Cookies)
-        {
-            var uri = new Uri(Url);
-            var responseCookie = CookieJar.GetCookies(uri);
-            foreach (Cookie item in responseCookie)
-            {
-                if (item.Name == "BAIDUID_BFESS")
-                {
-                    File.WriteAllText("BAIDUID_BFESS.txt",item.Value);
-                }
-                var findCookie = Cookies.Find(I => I.Name == item.Name);
-                if (findCookie != null && findCookie != default)
-                {
-                    findCookie = item;
-                }
-                else
-                {
-                    Cookies.Add(item);
-                }
-            }
-            if (Cookies.Find(I=>I.Name == "BAIDUID_BFESS") == null)
-            {
-                if (File.Exists("BAIDUID_BFESS.txt"))
-                {
-                    var BAIDUID = File.ReadAllText("BAIDUID_BFESS.txt");
-                    Cookies.Add(new Cookie("BAIDUID_BFESS", BAIDUID) { Domain = "baidu.com"});
-                }
-            }
-        }
+
         public static void GetCookies(this HttpResponseMessage result,string Host)
         {
             var head = result.Headers.GetValues("Set-Cookie");
@@ -214,14 +164,7 @@ namespace BeginSEO.Utils {
                 DataAccess.SaveChanges();
             }
         }
-        private static void GetHost(ref string host)
-        {
-            host = HTTP.Baidu_Url[new Random().Next(0, HTTP.Baidu_Url.Count)];
-            if (Tools.GetPingDelay(host) < 0)
-            {
-                GetHost(ref host);
-            }
-        }
+
         private static void GetUserAgent(ref string userAgent, int index = 0)
         {
             if (index != 0 && index < User_Agent.Count)
@@ -233,103 +176,126 @@ namespace BeginSEO.Utils {
                 userAgent = User_Agent[new Random().Next(User_Agent.Count)];
             }
         }
-
         /// <summary>
-        /// 批量查询百度收录状况
+        /// 对代理进行测速
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="Progress"></param>
         /// <returns></returns>
-        public static async Task<List<string>> MultipleRequest(List<string> url, IProgress<EmployData> Progress)
+        static async Task<Proxys> GetRandomProxy()
         {
-            string UrlTemplate = @"http://{0}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={1}&rsv_spt=1";
-            string Host = "www.baidu.com";
+            Proxys proxy;
+            do
+            {
+                proxy = DataAccess.Entity<Proxys>()
+                    .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
+                    .AsEnumerable() // Guid.NewGuid不支持翻译为Sql语句
+                    .OrderBy(p => Guid.NewGuid())
+                    .FirstOrDefault();
+                if (proxy != null)
+                {
+                    var TestSpeed = await Tools.TestProxySpeed(proxy, CancellationToken.None);
+                    if (TestSpeed.Speed > 0)
+                    {
+                        return TestSpeed;
+                    }
+                }
+            } while (proxy != null);
+
+            // 所有的代理都测试失败了
+            return null;
+        }
+
+        public static async Task<List<string>> MultipleRequest(List<string> urls, bool useProxy, IProgress<EmployData> progress)
+        {
+            const string urlTemplate = @"http://{0}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={1}&rsv_spt=1";
+            const string host = "www.baidu.com";
             string userAgent = "";
-            int Count = 0;
+            int count = 0;
             WebProxy proxy = null;
-            // 获取cookie，并拼接成字符串
-            //string cookies = DataAccess.Entity<TempCookie>()
-            //                        .Where(i => i.Host == Host && i.TopTime > i.CreateTime)
-            //                        .Select(i => i.CookieValue)
-            //                        .AsEnumerable()
-            //                        .Aggregate(string.Empty, (s, c) => s + c);
-            List<string> ErrorList = new List<string>();
-            foreach (var item in url)
+            var errorList = new List<string>();
+
+            var random = new Random();
+
+            foreach (var item in urls)
             {
                 string status = "未收录";
                 string color = "#FF2B00";
-                string requestUrl = string.Format(UrlTemplate, Host, item);
-                try
-                {
-                    if (string.IsNullOrEmpty(item.Trim()))
-                    {
-                        continue;
-                    }
-                    // 每请求3次更换一次user_agent
-                    if (Count % 3 == 0)
-                    {
-                        GetUserAgent(ref userAgent, Count);
-                    }
-                    // 请求
-                    await Task.Delay(new Random().Next(0, 3000));
-                    var response = await HTTP.Get(requestUrl, string.Empty, userAgent, proxy);
-                    if (response.StatusCode == HttpStatusCode.Found)
-                    {
-                        status = "需要验证";
-                        ErrorList.Add(requestUrl);
-                    }
-                    if (response.Headers.TryGetValues("Location", out IEnumerable<string> location))
-                    {
-                        status = "需要验证";
-                        ErrorList.Add(requestUrl);
-                    }
-                    // 检查响应状态是否成功
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // 获取cookie
-                        response.GetCookies(Host);
-                        string Content = Content = await response.Content.ReadAsStringAsync();
+                string requestUrl = string.Format(urlTemplate, host, item);
 
-                        if (!string.IsNullOrEmpty(Content))
+                if (string.IsNullOrEmpty(item.Trim()))
+                {
+                    continue;
+                }
+
+                // 每请求3次更换一次user_agent
+                if (count % 3 == 0)
+                {
+                    GetUserAgent(ref userAgent, count);
+
+                    if (useProxy)
+                    {
+                        var tempProxy = await GetRandomProxy();
+                        proxy = new WebProxy($"http://{tempProxy.IP}:{tempProxy.Port}");
+                    }
+                }
+
+                // 请求
+                await Task.Delay(random.Next(0, 3000));
+
+                var response = await HTTP.Get(requestUrl, string.Empty, userAgent, proxy);
+
+                if (response.StatusCode == HttpStatusCode.Found ||
+                    response.Headers.TryGetValues("Location", out _))
+                {
+                    status = "需要验证";
+                    errorList.Add(requestUrl);
+                }
+                else if (response.IsSuccessStatusCode)
+                {
+                    // 获取cookie
+                    response.GetCookies(host);
+
+                    string content = await response.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        var regex = new Regex(@"(?<=mu="").*(?="")", RegexOptions.Compiled);
+                        var matches = regex.Matches(content);
+
+                        foreach (Match match in matches)
                         {
-                            var ExistList = Regex.Matches(Content, @"(?<=mu="").*(?="")")
-                                                             .Cast<Match>()
-                                                             .Where(I => I.Value.Trim().Contains(item.Trim()));
-                            if (ExistList.Count() > 0)
+                            if (match.Value.Trim().Contains(item.Trim()))
                             {
                                 status = "已收录";
                                 color = "#0e79b2";
+                                break;
                             }
                         }
-                        else
-                        {
-                            status = "请求内容为空";
-                            ErrorList.Add(item);
-                        }
-
                     }
                     else
                     {
-                        status = "请求失败";
-                        ErrorList.Add(item);
+                        status = "请求内容为空";
+                        errorList.Add(item);
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    status = e.Message;
-                    ErrorList.Add(item);
+                    status = "请求失败";
+                    errorList.Add(item);
                 }
-                Progress.Report(new EmployData()
+
+                progress.Report(new EmployData()
                 {
-                    ID = ++Count,
+                    ID = ++count,
                     Status = status,
                     Url = item,
                     Color = color,
                     LinkUrl = requestUrl.Trim()
                 });
             }
-            return ErrorList;
+
+            return errorList;
         }
+
 
         public static async Task<HttpResponseMessage> Get(string url, string cookies = null,string user_Agent = null, WebProxy proxy = null)
         {

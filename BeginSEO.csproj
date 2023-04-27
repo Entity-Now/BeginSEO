@@ -283,6 +283,9 @@
     <Compile Include="Utils\5188Tools.cs" />
     <Compile Include="Utils\ChatGPT.cs" />
     <Compile Include="Utils\GrabProxys.cs" />
+    <Compile Include="Utils\Spider\ArticleData.cs" />
+    <Compile Include="Utils\Spider\IGrabRequest.cs" />
+    <Compile Include="Utils\Spider\PerformGrab.cs" />
     <Compile Include="Utils\Throttle.cs" />
     <Compile Include="Utils\WithCancellation.cs" />
     <Compile Include="View\GPT.xaml.cs">

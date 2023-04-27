@@ -57,6 +57,15 @@ namespace BeginSEO.ModelView
             }
         }
         public List<string> ErrorList { get; set; } = null;
+        public bool _UseProxy;
+        public bool UseProxy
+        {
+            get => _UseProxy;
+            set
+            {
+                SetProperty(ref _UseProxy, value);
+            }
+        }
         public ICommand ReHandleCommand { get; set; }
         public ICommand Handle { get; set; }
         public ICommand ClearList { get; set; }
@@ -68,42 +77,62 @@ namespace BeginSEO.ModelView
         /// <summary>
         /// 查询收录的链接
         /// </summary>
-        void GetEmploy() {
+        private async Task GetEmployAsync(List<string> urlList)
+        {
             // 清空列表
             Clear();
-            if (string.IsNullOrEmpty(UrlList))
+            if (urlList == null || !urlList.Any())
             {
                 return;
             }
-            // 分割地址
-            List<string> urlList = UrlList.Split('\r').ToList();
-            Employ(urlList);
-        }
-        void Employ(List<string> urlList)
-        {
-            new Thread(async () => {
-                ErrorList = await HTTP.MultipleRequest(urlList, new Progress<EmployData>(I =>
+            try
+            {
+                ErrorList = await HTTP.MultipleRequest(urlList, UseProxy, new Progress<EmployData>(I =>
                 {
                     Tools.Dispatcher(() =>
                     {
                         EmployList.Add(I);
                     });
                 }));
-            }).Start();
+            }
+            catch (Exception ex)
+            {
+                // 异常处理
+                await ShowToast.Show(ex.Message, ShowToast.Type.Error);
+            }
         }
+
         /// <summary>
         /// 重新查询失败的链接
         /// </summary>
-        void ReHandle()
+        private async Task ReHandleAsync()
         {
-            if (ErrorList == null)
+            if (ErrorList == null || !ErrorList.Any())
             {
-                ShowToast.Show("没有查询失败的链接");
+                await ShowToast.Show("没有查询失败的链接");
+                return;
             }
-            else
+            try
             {
-                Employ(ErrorList);
+                await GetEmployAsync(ErrorList);
             }
+            catch (Exception ex)
+            {
+                // 异常处理
+                await ShowToast.Show(ex.Message, ShowToast.Type.Error);
+            }
+        }
+
+        private void GetEmploy()
+        {
+            // 分割地址
+            List<string> urlList = UrlList.Split('\r').ToList();
+            _ = GetEmployAsync(urlList);
+        }
+
+        private void ReHandle()
+        {
+            _ = ReHandleAsync();
         }
         public ICommand CommandRemove { get; set; }
         public void Remove(EmployData listViewItem)

@@ -36,7 +36,12 @@
                     Orientation="Horizontal">
             <Button Content="重新查询失败的链接"
                     Style="{StaticResource MaterialDesignPaperButton}"
-                    Command="{Binding ReHandleCommand}"/>
+                    Command="{Binding ReHandleCommand}"
+                    Margin="10 0"/>
+            <CheckBox IsChecked="{Binding UseProxy}"
+                  Content="使用IP代理"
+                  Style="{StaticResource MaterialDesignCheckBox}"
+                  Margin="10 0"/>
             <Button Content="一键查收录"
                     Style="{StaticResource MaterialDesignPaperButton}"
                     Command="{Binding Handle}"/>

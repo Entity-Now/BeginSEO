@@ -13,6 +13,19 @@ namespace BeginSEO.ModelView
 {
     public class SettingsViewModel : ObservableObject
     {
+        public string _OpenAiKey;
+        public string OpenAiKey
+        {
+            get
+            {
+
+                return getValue(ref _OpenAiKey, SettingsEnum.OpenAi.ToString());
+            }
+            set
+            {
+                setValue(ref _OpenAiKey, SettingsEnum.OpenAi.ToString(), value);
+            }
+        }
         /// <summary>
         /// 智能原创KEY
         /// </summary>

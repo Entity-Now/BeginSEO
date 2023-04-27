@@ -88,22 +88,16 @@ namespace BeginSEO.View
         {
             await ShowToast.Show("测速时请勿使用代理，否则会影响准确性.",ShowToast.Type.Info);
             ShowModal.ShowLoading();
-            var ProxyLists = new List<Task>();
-            var data = DataAccess.Entity<Proxys>().Where(I=> (TestAllProxy.IsChecked == false || I.Status == ProxyStatus.Success));
+            var data = DataAccess.Entity<Proxys>().Where(I=> (TestAllProxy.IsChecked == true || I.Status == ProxyStatus.Success));
             // 限制并发任务的数量
-            //SemaphoreSlim semaphore = new SemaphoreSlim(10);
-            foreach (var item in data)
+            var CancellToken = new CancellationTokenSource();
+            var testSpeed = await Tools.TestProxySpeeds(data.ToList(), CancellToken.Token);
+            foreach (var item in testSpeed)
             {
-                ProxyLists.Add(Task.Run(async () =>
-                {
-                    /// 10秒后强制暂停测速
-                    var canCell = new CancellationTokenSource(10000);
-                    var (speed, status) = await Tools.TextSpeed(item.IP, item.Port, canCell.Token);
-                    item.Status = status; 
-                    item.Speed = speed;
-                }));
+                var findProxy = data.First(I=> I.IP == item.IP && I.Port == item.Port);
+                findProxy.Status = item.Status;
+                findProxy.Speed = item.Speed;
             }
-            await Task.WhenAll(ProxyLists);
             await DataAccess.BeginContext.SaveChangesAsync();
             Tools.Dispatcher(() => ShowModal.Closing());
         }

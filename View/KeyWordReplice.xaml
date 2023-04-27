@@ -160,7 +160,7 @@
             <!--状态显示-->
             <StackPanel Grid.Row="5" Orientation="Horizontal"
                         Margin="10 5">
-                <TextBlock Text="原创度："/>
+                <TextBlock Text="相似度（建议低于70%）："/>
                 <ProgressBar
                       x:Name="OriginalValue"
                       Height="10"

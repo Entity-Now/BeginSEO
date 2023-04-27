@@ -11,26 +11,17 @@
     <StackPanel Orientation="Vertical">
         <Components:Card VerticalContentAlignment="Stretch">
             <Components:Card.Title>
-                <TextBlock Text="获取网络代理"/>
+                <TextBlock Text="Chat GPT KEY"/>
             </Components:Card.Title>
             <Components:Card.Description>
-                <TextBlock Text="获取网络上的免费代理IP。"
+                <TextBlock Text="Chat GPT 的API 密钥"
                            Foreground="{DynamicResource Text_Primary_Brush}"/>
             </Components:Card.Description>
             <Components:Card.Button>
-                <Button Content="获取"/>
-            </Components:Card.Button>
-        </Components:Card>
-        <Components:Card VerticalContentAlignment="Stretch">
-            <Components:Card.Title>
-                <TextBlock Text="测速代理"/>
-            </Components:Card.Title>
-            <Components:Card.Description>
-                <TextBlock Text="将所有获取到的代理ip测速，并筛选无用的代理。"
-                           Foreground="{DynamicResource Text_Primary_Brush}"/>
-            </Components:Card.Description>
-            <Components:Card.Button>
-                <Button Content="操作"/>
+                <TextBox 
+                    Text="{Binding OpenAiKey}"
+                    materialDesign:HintAssist.Hint="请到OpenAI 后台获取"
+                    MinWidth="64"/>
             </Components:Card.Button>
         </Components:Card>
         <Components:Card VerticalContentAlignment="Stretch">

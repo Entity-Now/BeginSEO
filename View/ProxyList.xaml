@@ -10,11 +10,15 @@
         <CollectionViewSource x:Key="ViewProxyList"/>
     </UserControl.Resources>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="61*"/>
+            <ColumnDefinition Width="19*"/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="6">
+        <StackPanel Orientation="Horizontal" Margin="6,6,6,6" Grid.ColumnSpan="2">
             <RepeatButton
                   Click="GrabProxy_Click"
                   Content="抓取网络ip"
@@ -38,7 +42,7 @@
         </StackPanel>
         <ListView Grid.Row="1" 
                   ItemsSource="{Binding Source={StaticResource ViewProxyList}}"
-                  Loaded="ListView_Loaded">
+                  Loaded="ListView_Loaded" Grid.ColumnSpan="2">
             <ListView.View>
                 <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="所有代理IP">
                     <GridViewColumn Header="IP" DisplayMemberBinding="{Binding IP}"/>

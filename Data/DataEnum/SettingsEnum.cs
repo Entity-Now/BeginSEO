@@ -11,6 +11,7 @@ namespace BeginSEO.Data.DataEnum
         Detection,
         ReplaceKeyWord,
         Contrast,
-        Original
+        Original,
+        OpenAi
     }
 }

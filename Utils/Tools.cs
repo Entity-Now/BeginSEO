@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
@@ -120,7 +121,77 @@ namespace BeginSEO.Utils
                 return (-1, ProxyStatus.Error);
             }
         }
+        /// <summary>
+        /// 对IP进行测速
+        /// </summary>
+        /// <param name="proxyAddress"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<Proxys> TestProxySpeed(Proxys proxy, CancellationToken cancellationToken)
+        {
+            using (var handler = new HttpClientHandler())
+            {
+                handler.Proxy = new WebProxy($"http://{proxy.IP}:{proxy.Port}");
+                using (var client = new HttpClient(handler))
+                {
+                    var url = "https://www.baidu.com/";
+                    var stopwatch = new Stopwatch();
+                    try
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
 
+                        // 重试次数
+                        int retryCount = 2;
+
+                        while (retryCount-- > 0)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            // 开始计时
+                            stopwatch.Restart();
+
+                            // 发送 GET 请求
+                            var response = await client.GetAsync(url, cancellationToken);
+
+                            // 停止计时
+                            stopwatch.Stop();
+
+                            // 如果响应状态码为成功，则返回响应时间
+                            if (response.IsSuccessStatusCode)
+                            {
+                                proxy.Speed = (int)stopwatch.Elapsed.TotalMilliseconds;
+                                proxy.Status = ProxyStatus.Success;
+                                break;
+                            }
+
+                            // 响应状态码不成功，进行重试
+                            await Task.Delay(1000, cancellationToken);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // 如果请求出现异常，则认为代理 IP 不可用
+                        proxy.Status = ProxyStatus.Error;
+                        proxy.Speed = -1;
+                    }
+                }
+            }
+
+            return proxy;
+        }
+        /// <summary>
+        /// 批量测速
+        /// </summary>
+        /// <param name="proxyAddresses"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static async Task<List<Proxys>> TestProxySpeeds(List<Proxys> proxyAddresses, CancellationToken cancellationToken)
+        {
+            var tasks = proxyAddresses.Select(proxy => TestProxySpeed(proxy, cancellationToken));
+            var responseTimes = await Task.WhenAll(tasks);
+
+            return responseTimes.ToList();
+        }
 
         /// <summary>
         /// UI线程内执行操作
