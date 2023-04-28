@@ -271,6 +271,8 @@
       <DependentUpon>Loading.xaml</DependentUpon>
     </Compile>
     <Compile Include="Convert\BoolToColor.cs" />
+    <Compile Include="Data\Article.cs" />
+    <Compile Include="Data\DataEnum\ArticleEnum.cs" />
     <Compile Include="Data\DataEnum\SettingsEnum.cs" />
     <Compile Include="Data\ProxyStatus.cs" />
     <Compile Include="Data\Settings.cs" />
@@ -283,11 +285,14 @@
     <Compile Include="Utils\5188Tools.cs" />
     <Compile Include="Utils\ChatGPT.cs" />
     <Compile Include="Utils\GrabProxys.cs" />
-    <Compile Include="Utils\Spider\ArticleData.cs" />
-    <Compile Include="Utils\Spider\IGrabRequest.cs" />
+    <Compile Include="Utils\Spider\FuHeGrab.cs" />
+    <Compile Include="Utils\Spider\AGrab.cs" />
     <Compile Include="Utils\Spider\PerformGrab.cs" />
     <Compile Include="Utils\Throttle.cs" />
     <Compile Include="Utils\WithCancellation.cs" />
+    <Compile Include="View\About.xaml.cs">
+      <DependentUpon>About.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
     </Compile>
@@ -317,6 +322,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Components\Loading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\About.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

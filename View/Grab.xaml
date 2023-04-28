@@ -23,7 +23,7 @@
                                Margin="10 0"
                                VerticalAlignment="Center"/>
                     <TextBox Grid.Column="1"
-                             material:HintAssist.Hint="请输入要抓取的标题关键词，多个词请用英文的逗号隔开(,)"
+                             material:HintAssist.Hint="请输入要抓取的标题关键词"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                 </Grid>
                 <Grid Margin="0 10">
@@ -42,7 +42,7 @@
                             Content="百度咨询"
                             IsSelected="True" />
                         <ListBoxItem
-                            Content="全民健康网" />
+                            Content="家庭在线医生" />
                         <ListBoxItem
                             Content="复合健康"
                             IsEnabled="True" />
@@ -53,6 +53,7 @@
                                Margin="10 0"
                                VerticalAlignment="Center"/>
                     <TextBox material:HintAssist.Hint="设置抓取数量" Text="10"/>
+                    <CheckBox Content="启用代理"/>
                     <Button Margin="10 0"
                           Content="抓取文章"
                           Style="{StaticResource MaterialDesignRaisedSecondaryButton}"

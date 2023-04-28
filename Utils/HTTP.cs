@@ -23,6 +23,8 @@ using System.Collections;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using System.Windows.Media.Animation;
+using System.ComponentModel;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -203,7 +205,51 @@ namespace BeginSEO.Utils {
             // 所有的代理都测试失败了
             return null;
         }
+        /// <summary>
+        /// 批量请求
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<bool> MultipleGet(List<string> Url, bool UseProxy, IProgress<(string, int, HttpResponseMessage)> Report)
+        {
+            int Aggregate = 0;
+            string userAgent = string.Empty;
+            string host = string.Empty;
+            var random = new Random();
+            WebProxy Proxy = null;
+            foreach (var item in Url)
+            {
+                if (Aggregate % 3 == 0)
+                {
+                    GetUserAgent(ref userAgent, Aggregate);
+                    if (UseProxy)
+                    {
+                        var tempProxy = await GetRandomProxy();
+                        host = $"http://{tempProxy.IP}:{tempProxy.Port}";
+                        Proxy = new WebProxy(host);
+                    }
+                }
 
+                int RequestError = 0;
+                do
+                {
+                    await Task.Delay(random.Next(3000));
+                    var request = await HTTP.Get(item, string.Empty, userAgent, Proxy);
+                    if (!request.IsSuccessStatusCode)
+                    {
+                        ++RequestError;
+                    }
+                    else
+                    {
+                        // 获取cookie
+                        request.GetCookies(host);
+                        Report.Report((item, Aggregate, request));
+                        ++Aggregate;
+                    }
+                } while (RequestError != 0 && RequestError < 3);
+            }
+
+            return true;
+        }
         public static async Task<List<string>> MultipleRequest(List<string> urls, bool useProxy, IProgress<EmployData> progress)
         {
             const string urlTemplate = @"http://{0}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={1}&rsv_spt=1";

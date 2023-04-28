@@ -9,18 +9,18 @@ namespace BeginSEO.Utils.Spider
 {
     public class PerformGrab
     {
-        public PerformGrab(IGrabRequest grab) 
+        public PerformGrab(AGrab grab) 
         {
             
         }
-        public IGrabRequest CreateGrab(string name)
+        public AGrab CreateGrab(string name)
         {
             var type = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .FirstOrDefault(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && typeof(IGrabRequest).IsAssignableFrom(t));
+                .FirstOrDefault(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase) && typeof(AGrab).IsAssignableFrom(t));
             if (type != null)
             {
-                return Activator.CreateInstance(type) as IGrabRequest;
+                return Activator.CreateInstance(type) as AGrab;
             }
             return null;
         }

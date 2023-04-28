@@ -32,9 +32,19 @@ namespace BeginSEO.Utils
         /// 返回一个时间戳
         /// </summary>
         /// <returns></returns>
-        public static string GetTimeStamp()
+        public static string GetTimeStamp(this DateTime date)
         {
-            return $"{(DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000}";
+            return $"{(date.ToUniversalTime().Ticks - 621355968000000000) / 10000000}";
+        }
+        /// <summary>
+        /// 生成指定的时间范围，用于百度搜索
+        /// </summary>
+        /// <returns></returns>
+        public static string GetBaiduTime(int LastDay = 30)
+        {
+            var LastTime = DateTime.Now.AddDays(LastDay);
+            var query = $"stf={LastTime.GetDateTimeFormats()},{DateTime.Now.GetTimeStamp()}|stftype=1";
+            return WebUtility.UrlEncode(query);
         }
         /// <summary>
         /// 检测一个地址的延迟

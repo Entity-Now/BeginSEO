@@ -21,9 +21,6 @@ using System.IO.Compression;
 using System.IO;
 using BrotliSharpLib;
 using System.Windows.Threading;
-using System.Windows.Controls;
-using BeginSEO.SQL;
-using System.Threading;
 
 namespace BeginSEO.ModelView
 {
@@ -56,7 +53,6 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _UrlList, value);
             }
         }
-        public List<string> ErrorList { get; set; } = null;
         public bool _UseProxy;
         public bool UseProxy
         {
@@ -87,12 +83,62 @@ namespace BeginSEO.ModelView
             }
             try
             {
-                ErrorList = await HTTP.MultipleRequest(urlList, UseProxy, new Progress<EmployData>(I =>
+                Action<EmployData> addList = (item) =>
                 {
-                    Tools.Dispatcher(() =>
+                    Dispatcher.CurrentDispatcher.Invoke(() =>
                     {
-                        EmployList.Add(I);
+                        EmployList.Add(item);
                     });
+                };
+                const string urlTemplate = @"http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={0}&rsv_spt=1";
+                var Empoly = urlList.Select((I)=> string.Format(urlTemplate, I)).ToList();
+                await HTTP.MultipleGet(Empoly, UseProxy, new Progress<(string, int, HttpResponseMessage)>(async item =>
+                {
+                    (string url,int Aggregate, HttpResponseMessage response) = item;
+                    var ReturnItem = new EmployData
+                    {
+                        ID = Aggregate,
+                        Color = "#FF2B00",
+                        LinkUrl = url,
+                        Status = "请求失败",
+                        Url = urlList[Aggregate].Trim()
+                    };
+                    if (response.StatusCode == HttpStatusCode.Found || !response.IsSuccessStatusCode)
+                    {
+                        ReturnItem.Status = "请求失败，状态码错误。";
+                        addList(ReturnItem);
+                        return;
+                    }
+                    if (response.Headers.TryGetValues("Location", out _))
+                    {
+                        ReturnItem.Status = "请求失败，请求次数过多出现验证码。";
+                        addList(ReturnItem);
+                        return;
+                    }
+                    string content = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(content))
+                    {
+                        ReturnItem.Status = "请求失败，请求结果为空。";
+                        addList(ReturnItem);
+                        return;
+                    }
+
+                    var regex = new Regex(@"(?<=mu="").*(?="")", RegexOptions.Compiled);
+                    var IsEmpoly = regex.Matches(content).Cast<Match>().Select(I=>I.Value.Trim())
+                        .FirstOrDefault(I=> I.Contains(ReturnItem.Url));
+
+                    if (IsEmpoly != null)
+                    {
+                        ReturnItem.Status = "已收录";
+                        ReturnItem.Color = "#0e79b2";
+                        addList(ReturnItem);
+                    }
+                    else
+                    {
+                        ReturnItem.Status = "未收录";
+                        ReturnItem.Color = "#FF2B00";
+                        addList(ReturnItem);
+                    }
                 }));
             }
             catch (Exception ex)
@@ -107,6 +153,7 @@ namespace BeginSEO.ModelView
         /// </summary>
         private async Task ReHandleAsync()
         {
+            var ErrorList = EmployList.Where(I=>I.Status != "已收录" && I.Status != "未收录").Select(I=>I.Url).ToList();
             if (ErrorList == null || !ErrorList.Any())
             {
                 await ShowToast.Show("没有查询失败的链接");
@@ -126,7 +173,7 @@ namespace BeginSEO.ModelView
         private void GetEmploy()
         {
             // 分割地址
-            List<string> urlList = UrlList.Split('\r').ToList();
+            List<string> urlList = UrlList.Trim().Split('\r').ToList();
             _ = GetEmployAsync(urlList);
         }
 

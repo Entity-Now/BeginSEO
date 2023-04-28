@@ -26,7 +26,7 @@ namespace BeginSEO.Components
     /// <summary>
     /// KeyWordReplice.xaml 的交互逻辑
     /// </summary>
-    [Pages("关键词替换")]
+    [Pages("关键词替换", IsHome:true)]
     public partial class KeyWordReplice : UserControl
     {
         CollectionViewSource KeyWordSource;
@@ -186,7 +186,7 @@ namespace BeginSEO.Components
                     await ShowToast.Show("智能原创成功", ShowToast.Type.Success);
                 }
             }
-            else if (ReplaceKeyWord.IsChecked == true)
+            if (ReplaceKeyWord.IsChecked == true)
             {
                 var filterKeyWord = KeyWords.Where(kw => kw.Type)
                     .Select(kw => kw.Value.Replace(",", "|"))

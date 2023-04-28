@@ -38,7 +38,9 @@ namespace BeginSEO
             // 初始化数据库
             DataAccess.init();
 
-            var data = getReflex.Get<PagesAttribute>("BeginSEO").OrderBy(I=>I.Name);
+            var data = getReflex.Get<PagesAttribute>("BeginSEO")
+                .OrderBy(I=> I.GetCustomAttribute<PagesAttribute>().Orderby)
+                .ThenByDescending(I=> I.GetCustomAttribute<PagesAttribute>().Name.Length);
             foreach (var page in data)
             {
                 var PageInfo = page.GetCustomAttribute<PagesAttribute>();
@@ -47,23 +49,28 @@ namespace BeginSEO
                     Content = PageInfo.Name,
                     Height = 32,
                     Margin = new Thickness(1),
-                    Style = (Style)FindResource("m_Radio")
+                    Style = (Style)FindResource("m_Radio"),
+                    IsChecked = PageInfo.IsHome
                 };
+                object temp_page = null;
+                if (PageList.ContainsKey(PageInfo.Name))
+                {
+                    temp_page = PageList[PageInfo.Name];
+                }
+                else
+                {
+                    temp_page = Activator.CreateInstance(page);
+                    PageList.Add(PageInfo.Name, temp_page);
+                }
                 rb.Click += (sender, e) =>
                 {
-                    object temp_page = null;
-                    if (PageList.ContainsKey(PageInfo.Name))
-                    {
-                        temp_page = PageList[PageInfo.Name];
-                    }
-                    else
-                    {
-                        temp_page = Activator.CreateInstance(page);
-                        PageList.Add(PageInfo.Name, temp_page);
-                    }
                     MainContent.Content = temp_page;
                 };
                 NavList.Children.Add(rb);
+                if (PageInfo.IsHome)
+                {
+                    MainContent.Content = temp_page;
+                }
             }
         }
 

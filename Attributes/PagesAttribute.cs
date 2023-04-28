@@ -9,9 +9,13 @@ namespace BeginSEO.Attributes
     public class PagesAttribute : Attribute
     {
         public string Name { get; set; }
-        public PagesAttribute(string name) 
+        public bool IsHome { get; set; }
+        public int Orderby { get; set; }
+        public PagesAttribute(string name, int orderby = 1000, bool IsHome = false) 
         { 
             Name = name;
+            this.Orderby = orderby;
+            this.IsHome = IsHome;
         }
     }
 }
