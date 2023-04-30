@@ -29,9 +29,15 @@ namespace BeginSEO.Data
         /// </summary>
         public double Contrast { get; set; }
         /// <summary>
-        /// 是否以及使用
+        /// 此篇文章是否已经使用
         /// </summary>
         public bool IsUse { get; set; }
+        public bool IsUseRewrite { get; set; }
+        public bool IsUseReplaceKeyword { get; set; }
+        /// <summary>
+        /// 是否人工检查过
+        /// </summary>
+        public bool IsInspect { get; set; }
         /// <summary>
         /// 文章类型
         /// </summary>

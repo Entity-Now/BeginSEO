@@ -25,6 +25,7 @@ using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using System.Windows.Media.Animation;
 using System.ComponentModel;
+using BeginSEO.View;
 
 namespace BeginSEO.Utils {
     public enum RequestType {
@@ -166,8 +167,12 @@ namespace BeginSEO.Utils {
                 DataAccess.SaveChanges();
             }
         }
-
-        private static void GetUserAgent(ref string userAgent, int index = 0)
+        public static string GetUserAgent(int index = 0)
+        {
+            string userAgent = string.Empty;
+            return GetUserAgent(ref userAgent);
+        }
+        public static string GetUserAgent(ref string userAgent, int index = 0)
         {
             if (index != 0 && index < User_Agent.Count)
             {
@@ -177,33 +182,91 @@ namespace BeginSEO.Utils {
             {
                 userAgent = User_Agent[new Random().Next(User_Agent.Count)];
             }
+            return userAgent;
         }
         /// <summary>
         /// 对代理进行测速
         /// </summary>
         /// <returns></returns>
-        static async Task<Proxys> GetRandomProxy()
+        public static async Task<string> GetRandomProxy(this IEnumerable<Proxys> proxy)
         {
-            Proxys proxy;
-            do
+            Proxys item = null;
+            item = proxy.OrderBy(p => Guid.NewGuid())
+            .FirstOrDefault();
+
+            if (item != null)
             {
-                proxy = DataAccess.Entity<Proxys>()
-                    .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
-                    .AsEnumerable() // Guid.NewGuid不支持翻译为Sql语句
-                    .OrderBy(p => Guid.NewGuid())
-                    .FirstOrDefault();
-                if (proxy != null)
+                var TestSpeed = await Tools.TestProxySpeed(item, CancellationToken.None);
+                if (TestSpeed.Speed > 0)
                 {
-                    var TestSpeed = await Tools.TestProxySpeed(proxy, CancellationToken.None);
-                    if (TestSpeed.Speed > 0)
-                    {
-                        return TestSpeed;
-                    }
+                    return $"http://{TestSpeed.IP}:{TestSpeed.Port}";
                 }
-            } while (proxy != null);
+                else
+                {
+                    return await proxy.GetRandomProxy();
+                }
+            }
 
             // 所有的代理都测试失败了
             return null;
+        }
+        /// <summary>
+        /// 使用代理多线程请求
+        /// </summary>
+        public static async Task MultiplePorxyGet(List<string> Url, IProgress<(string, int, HttpResponseMessage)> Report)
+        {
+            int Aggregate = 0;
+            var random = new Random();
+            // 异步锁，只允许一个线程执行某个操作
+            //SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+            var ProxyList = await DataAccess.Entity<Proxys>()
+                                .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
+                                .ToListAsync();// Guid.NewGuid不支持翻译为Sql语句;
+            // 设置最大并发线程数为 5
+            ParallelOptions parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 5 };
+
+            Parallel.ForEach(Url, parallelOptions, async (item) =>
+            {
+                if (string.IsNullOrEmpty(item.Trim()))
+                {
+                    return;
+                }
+                string host = string.Empty;
+                string userAgent = GetUserAgent(Aggregate);
+                // 获取随机代理，start
+                //try
+                //{
+                //    await _semaphore.WaitAsync();
+                //}
+                //finally { _semaphore.Release(); }
+                host = await ProxyList.GetRandomProxy();
+                WebProxy Proxy = new WebProxy(host);
+                // 如果请求错误则尝试重新请求
+                int RequestError = 0;
+                do
+                {
+                    try
+                    {
+                        var request = await HTTP.Get(item, string.Empty, userAgent, Proxy);
+                        if (!request.IsSuccessStatusCode)
+                        {
+                            await Task.Delay(random.Next(3000));
+                            ++RequestError;
+                        }
+                        else
+                        {
+                            // 获取cookie
+                            request.GetCookies(host);
+                            Report.Report((item, Aggregate, request));
+                            ++Aggregate;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        ++RequestError;
+                    }
+                } while (RequestError > 0 && RequestError < 3);
+            });
         }
         /// <summary>
         /// 批量请求
@@ -215,16 +278,31 @@ namespace BeginSEO.Utils {
             string userAgent = string.Empty;
             string host = string.Empty;
             var random = new Random();
+            IEnumerable<Proxys> ProxyList;
+            if (UseProxy)
+            {
+                ProxyList = DataAccess.Entity<Proxys>()
+                                .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
+                                .AsEnumerable();// Guid.NewGuid不支持翻译为Sql语句;
+            }
+            else
+            {
+                ProxyList = Enumerable.Empty<Proxys>();
+            }
+
             WebProxy Proxy = null;
             foreach (var item in Url)
             {
+                if (string.IsNullOrEmpty(item.Trim()))
+                {
+                    continue;
+                }
                 if (Aggregate % 3 == 0)
                 {
                     GetUserAgent(ref userAgent, Aggregate);
                     if (UseProxy)
                     {
-                        var tempProxy = await GetRandomProxy();
-                        host = $"http://{tempProxy.IP}:{tempProxy.Port}";
+                        host = await ProxyList.GetRandomProxy();
                         Proxy = new WebProxy(host);
                     }
                 }
@@ -232,116 +310,32 @@ namespace BeginSEO.Utils {
                 int RequestError = 0;
                 do
                 {
-                    await Task.Delay(random.Next(3000));
-                    var request = await HTTP.Get(item, string.Empty, userAgent, Proxy);
-                    if (!request.IsSuccessStatusCode)
+                    try
+                    {
+                        await Task.Delay(random.Next(3000));
+                        var request = await HTTP.Get(item, string.Empty, userAgent, Proxy);
+                        if (!request.IsSuccessStatusCode)
+                        {
+                            ++RequestError;
+                        }
+                        else
+                        {
+                            // 获取cookie
+                            request.GetCookies(host);
+                            Report.Report((item, Aggregate, request));
+                            ++Aggregate;
+                        }
+                    }
+                    catch (Exception)
                     {
                         ++RequestError;
                     }
-                    else
-                    {
-                        // 获取cookie
-                        request.GetCookies(host);
-                        Report.Report((item, Aggregate, request));
-                        ++Aggregate;
-                    }
+
                 } while (RequestError != 0 && RequestError < 3);
             }
 
             return true;
         }
-        public static async Task<List<string>> MultipleRequest(List<string> urls, bool useProxy, IProgress<EmployData> progress)
-        {
-            const string urlTemplate = @"http://{0}/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={1}&rsv_spt=1";
-            const string host = "www.baidu.com";
-            string userAgent = "";
-            int count = 0;
-            WebProxy proxy = null;
-            var errorList = new List<string>();
-
-            var random = new Random();
-
-            foreach (var item in urls)
-            {
-                string status = "未收录";
-                string color = "#FF2B00";
-                string requestUrl = string.Format(urlTemplate, host, item);
-
-                if (string.IsNullOrEmpty(item.Trim()))
-                {
-                    continue;
-                }
-
-                // 每请求3次更换一次user_agent
-                if (count % 3 == 0)
-                {
-                    GetUserAgent(ref userAgent, count);
-
-                    if (useProxy)
-                    {
-                        var tempProxy = await GetRandomProxy();
-                        proxy = new WebProxy($"http://{tempProxy.IP}:{tempProxy.Port}");
-                    }
-                }
-
-                // 请求
-                await Task.Delay(random.Next(0, 3000));
-
-                var response = await HTTP.Get(requestUrl, string.Empty, userAgent, proxy);
-
-                if (response.StatusCode == HttpStatusCode.Found ||
-                    response.Headers.TryGetValues("Location", out _))
-                {
-                    status = "需要验证";
-                    errorList.Add(requestUrl);
-                }
-                else if (response.IsSuccessStatusCode)
-                {
-                    // 获取cookie
-                    response.GetCookies(host);
-
-                    string content = await response.Content.ReadAsStringAsync();
-
-                    if (!string.IsNullOrEmpty(content))
-                    {
-                        var regex = new Regex(@"(?<=mu="").*(?="")", RegexOptions.Compiled);
-                        var matches = regex.Matches(content);
-
-                        foreach (Match match in matches)
-                        {
-                            if (match.Value.Trim().Contains(item.Trim()))
-                            {
-                                status = "已收录";
-                                color = "#0e79b2";
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        status = "请求内容为空";
-                        errorList.Add(item);
-                    }
-                }
-                else
-                {
-                    status = "请求失败";
-                    errorList.Add(item);
-                }
-
-                progress.Report(new EmployData()
-                {
-                    ID = ++count,
-                    Status = status,
-                    Url = item,
-                    Color = color,
-                    LinkUrl = requestUrl.Trim()
-                });
-            }
-
-            return errorList;
-        }
-
 
         public static async Task<HttpResponseMessage> Get(string url, string cookies = null,string user_Agent = null, WebProxy proxy = null)
         {

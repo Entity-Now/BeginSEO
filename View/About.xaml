@@ -13,9 +13,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="关于我们" Foreground="{DynamicResource AttentionToActionBrush}"/>
+            <TextBlock Text="关于我们" Foreground="{DynamicResource InfoBrush}"/>
             <Material:Card Margin="14" Padding="14" MinHeight="32">
-                <TextBlock Text="BeginSEO是一款开源程序，用于替换关键词、查询百度收录等" TextWrapping="Wrap"/>
+                <TextBlock Text="BeginSEO是一款功能强大的开源软件，旨在帮助您轻松实现搜索引擎优化。它可以查询网站在百度的收录情况，一键替换关键词，提高文章排名，并提供爬虫抓取网络文章功能，帮助您快速获取有价值的内容。同时，它的源码托管于Github，您可以自由定制和修改其功能，满足个性化需求。不论您是SEO初学者还是专业人士，BeginSEO都将成为您必不可少的工具，让搜索引擎优化更加开放、自由。" TextWrapping="Wrap" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
             </Material:Card>
         </StackPanel>
         

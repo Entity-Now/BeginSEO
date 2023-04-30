@@ -92,16 +92,17 @@ namespace BeginSEO.ModelView
                 };
                 const string urlTemplate = @"http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&tn=baidu&wd={0}&rsv_spt=1";
                 var Empoly = urlList.Select((I)=> string.Format(urlTemplate, I)).ToList();
-                await HTTP.MultipleGet(Empoly, UseProxy, new Progress<(string, int, HttpResponseMessage)>(async item =>
+                // 处理请求结果
+                var Report = new Progress<(string, int, HttpResponseMessage)>(async item =>
                 {
-                    (string url,int Aggregate, HttpResponseMessage response) = item;
+                    (string url, int Aggregate, HttpResponseMessage response) = item;
                     var ReturnItem = new EmployData
                     {
                         ID = Aggregate,
                         Color = "#FF2B00",
                         LinkUrl = url,
                         Status = "请求失败",
-                        Url = urlList[Aggregate].Trim()
+                        Url = urlList.FirstOrDefault(I=> string.Format(urlTemplate, I) == url)
                     };
                     if (response.StatusCode == HttpStatusCode.Found || !response.IsSuccessStatusCode)
                     {
@@ -124,8 +125,8 @@ namespace BeginSEO.ModelView
                     }
 
                     var regex = new Regex(@"(?<=mu="").*(?="")", RegexOptions.Compiled);
-                    var IsEmpoly = regex.Matches(content).Cast<Match>().Select(I=>I.Value.Trim())
-                        .FirstOrDefault(I=> I.Contains(ReturnItem.Url));
+                    var IsEmpoly = regex.Matches(content).Cast<Match>().Select(I => I.Value.Trim())
+                        .FirstOrDefault(I => I.Contains(ReturnItem.Url));
 
                     if (IsEmpoly != null)
                     {
@@ -139,7 +140,15 @@ namespace BeginSEO.ModelView
                         ReturnItem.Color = "#FF2B00";
                         addList(ReturnItem);
                     }
-                }));
+                });
+                if (UseProxy)
+                {
+                    HTTP.MultiplePorxyGet(Empoly, Report);
+                }
+                else
+                {
+                    await HTTP.MultipleGet(Empoly, UseProxy, Report);
+                }
             }
             catch (Exception ex)
             {

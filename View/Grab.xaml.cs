@@ -1,4 +1,5 @@
 ﻿using BeginSEO.Attributes;
+using BeginSEO.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,11 @@ namespace BeginSEO.View
     [Pages("抓取文章")]
     public partial class Grab : UserControl
     {
+        GrabViewModel viewModel { get; set; } = new GrabViewModel();
         public Grab()
         {
             InitializeComponent();
+            this.DataContext = viewModel;
         }
     }
 }

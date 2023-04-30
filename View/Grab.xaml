@@ -23,6 +23,7 @@
                                Margin="10 0"
                                VerticalAlignment="Center"/>
                     <TextBox Grid.Column="1"
+                             Text="{Binding KeyWord}"
                              material:HintAssist.Hint="请输入要抓取的标题关键词"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                 </Grid>
@@ -35,33 +36,28 @@
                                Margin="10 0"
                                VerticalAlignment="Center"/>
                     <ListBox Grid.Column="1"
-                            Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
-                        <ListBoxItem
-                            Content="39疾病" />
-                        <ListBoxItem
-                            Content="百度咨询"
-                            IsSelected="True" />
-                        <ListBoxItem
-                            Content="家庭在线医生" />
-                        <ListBoxItem
-                            Content="复合健康"
-                            IsEnabled="True" />
-                     </ListBox>
+                             ItemsSource="{Binding Tpes}"
+                             Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                    </ListBox>
                 </Grid>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="抓取数量" 
                                Margin="10 0"
                                VerticalAlignment="Center"/>
-                    <TextBox material:HintAssist.Hint="设置抓取数量" Text="10"/>
-                    <CheckBox Content="启用代理"/>
+                    <TextBox material:HintAssist.Hint="设置抓取数量"
+                             Text="{Binding GrabCount}"/>
+                    <CheckBox x:Name="UseProxy"
+                              IsChecked="{Binding IsUseProxy}"
+                        Content="启用代理"/>
                     <Button Margin="10 0"
                           Content="抓取文章"
+                            Command="{Binding GrabCommand}"
                           Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
                           ToolTip="抓取网络文章" />
                 </StackPanel>
             </StackPanel>
         </material:Card>
-        <ListView Grid.Row="1" Margin="10">
+        <ListView ItemsSource="{Binding ArticleData}" Grid.Row="1" Margin="10">
             <ListView.View>
                 <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="抓取的文章列表">
                     <GridViewColumn Header="序号"/>
