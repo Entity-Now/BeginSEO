@@ -21,21 +21,16 @@ namespace BeginSEO.ModelView
         {
             GrabCommand = new RelayCommand(async () =>
             {
-                if (string.IsNullOrEmpty(KeyWord))
+                if (string.IsNullOrEmpty(GrabLink))
                 {
-                    await ShowToast.Show("请输入关键词", ShowToast.Type.Error);
+                    await ShowToast.Show("请输入要抓取的页面~", ShowToast.Type.Error);
                     return;
                 }
-                var grab = new FuHeGrab(KeyWord);
-                var result =  await grab.Grab(IsUseProxy);
-                if (result != null)
-                {
-                    MessageBox.Show(result.Aggregate(string.Empty, (newVal, oldVal) => newVal + "\n" + oldVal));
-                }
-                else
-                {
-                    await ShowToast.Show("请求错误", ShowToast.Type.Error);
-                }
+                var _39Grab = new _39Article();
+                var run = new GrabArticle(_39Grab, GrabLink, GrabCount);
+                var result = await run.Grab(IsUseProxy);
+                // 
+                run.GrabArticles(result, IsUseProxy);
             });
         }
         public ICommand GrabCommand { get; set; }
@@ -43,7 +38,7 @@ namespace BeginSEO.ModelView
         public List<string> Tpes
         {
             get => _Types;
-            set
+            set 
             {
                 _Types = value;
                 SetProperty(ref _Types, value);
@@ -69,14 +64,14 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _GrabCount, value);
             }
         }
-        public string _KeyWord;
-        public string KeyWord
+        public string _GrabLink;
+        public string GrabLink
         {
-            get => _KeyWord;
+            get => _GrabLink;
             set
             {
-                _KeyWord = value;
-                SetProperty(ref _KeyWord, value);
+                _GrabLink = value;
+                SetProperty(ref _GrabLink, value);
             }
         }
         public ObservableCollection<Article> _GrabList;

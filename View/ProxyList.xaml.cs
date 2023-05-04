@@ -42,12 +42,16 @@ namespace BeginSEO.View
             InitializeComponent();
             ViewProxyList = (CollectionViewSource)FindResource(nameof(ViewProxyList));
         }
-
-        private void ListView_Loaded(object sender, RoutedEventArgs e)
+        void Load()
         {
-            DataAccess.Entity<Proxys>().Where(I=>I.Status == ProxyStatus.Success).Load();
+            DataAccess.Entity<Proxys>().Where(I => I.Status == ProxyStatus.Success).Load();
             ViewProxyList.Source = DataAccess.Entity<Proxys>().Local.ToObservableCollection();
         }
+        void reload()
+        {
+            ViewProxyList.View.Refresh();
+        }
+        private void ListView_Loaded(object sender, RoutedEventArgs e) => Load();
         /// <summary>
         /// 获取网络IP
         /// </summary>
@@ -75,6 +79,8 @@ namespace BeginSEO.View
                     }
                     await DataAccess.BeginContext.SaveChangesAsync();
                     ShowModal.Closing();
+                    // refresh
+                    reload();
                 });
             });
         }
@@ -99,6 +105,8 @@ namespace BeginSEO.View
             }
             await DataAccess.BeginContext.SaveChangesAsync();
             Tools.Dispatcher(() => ShowModal.Closing());
+            // refresh
+            reload();
         }
 
         private void RemoveAllProxy_Click(object sender, RoutedEventArgs e)

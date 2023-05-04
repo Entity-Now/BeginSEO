@@ -19,12 +19,12 @@
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="要抓取的文章关键词"
+                    <TextBlock Grid.Column="0" Text="要抓取的链接"
                                Margin="10 0"
                                VerticalAlignment="Center"/>
                     <TextBox Grid.Column="1"
-                             Text="{Binding KeyWord}"
-                             material:HintAssist.Hint="请输入要抓取的标题关键词"
+                             Text="{Binding GrabLink}"
+                             material:HintAssist.Hint="请输入文章列表页面，以便抓取"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
                 </Grid>
                 <Grid Margin="0 10">
@@ -37,7 +37,7 @@
                                VerticalAlignment="Center"/>
                     <ListBox Grid.Column="1"
                              ItemsSource="{Binding Tpes}"
-                             Style="{StaticResource MaterialDesignFilterChipPrimaryListBox}">
+                             Style="{StaticResource MaterialDesignChoiceChipListBox}">
                     </ListBox>
                 </Grid>
                 <StackPanel Orientation="Horizontal">

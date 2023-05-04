@@ -1,4 +1,5 @@
-﻿using BeginSEO.Data.DataEnum;
+﻿using BeginSEO.Attributes;
+using BeginSEO.Data.DataEnum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace BeginSEO.Data
 {
+    [database]
     public class Article
     {
         [Key]
