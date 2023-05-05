@@ -20,7 +20,7 @@ namespace BeginSEO.Utils.Spider
 
         public override string xGetPages()
         {
-            return @"//p[contains(@class, 'pageno')]/span[(position() = 2 or position()  = last() - 1)]"; 
+            return @"//p[contains(@class, 'pageno')]/span[(position() = last() - 1)]"; 
         }
     }
 }

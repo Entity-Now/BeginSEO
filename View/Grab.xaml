@@ -5,10 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:BeginSEO.View"
+             xmlns:Convert="clr-namespace:BeginSEO.Convert"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="ArticleData" Source="{Binding GrabList}"/>
+        <Convert:EncodingConver x:Key="Encoding"/>
+        <Convert:BoolToString x:Key="BoolToString"/>
+        <Convert:EnumToString x:Key="EnumToString"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -37,34 +45,51 @@
                                VerticalAlignment="Center"/>
                     <ListBox Grid.Column="1"
                              ItemsSource="{Binding Tpes}"
-                             Style="{StaticResource MaterialDesignChoiceChipListBox}">
+                             Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
                     </ListBox>
                 </Grid>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="抓取数量" 
-                               Margin="10 0"
-                               VerticalAlignment="Center"/>
+                            Margin="10 0"
+                            VerticalAlignment="Center"/>
                     <TextBox material:HintAssist.Hint="设置抓取数量"
-                             Text="{Binding GrabCount}"/>
+                            Text="{Binding GrabCount}"/>
                     <CheckBox x:Name="UseProxy"
-                              IsChecked="{Binding IsUseProxy}"
-                        Content="启用代理"/>
+                            IsChecked="{Binding IsUseProxy}"
+                            Content="启用代理"/>
                     <Button Margin="10 0"
-                          Content="抓取文章"
+                            Content="抓取文章"
                             Command="{Binding GrabCommand}"
-                          Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
-                          ToolTip="抓取网络文章" />
+                            Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
+                            ToolTip="抓取网络文章" />
+                    <Button Content="删除所有文章"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Command="{Binding RemoveAllCommand}"/>
+                    <CheckBox
+                          Content="一键换词"
+                          IsChecked="{Binding IsReplaceKeyWord}"
+                          Margin="5 0"
+                          Style="{StaticResource MaterialDesignLightCheckBox}" />
+                    <Button
+                          Content="一键伪原创"
+                          Style="{StaticResource MaterialDesignOutlinedButton}"
+                          ToolTip="伪原创所有文章" />
                 </StackPanel>
             </StackPanel>
         </material:Card>
-        <ListView ItemsSource="{Binding ArticleData}" Grid.Row="1" Margin="10">
-            <ListView.View>
-                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="抓取的文章列表">
-                    <GridViewColumn Header="序号"/>
-                    <GridViewColumn Header="标题"/>
-                    <GridViewColumn Header="原文链接"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <Grid  Grid.Row="2" Margin="10">
+            <ListView ItemsSource="{Binding Source={StaticResource ArticleData}}">
+                <ListView.View>
+                    <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="抓取的文章列表">
+                        <GridViewColumn Header="标题" DisplayMemberBinding="{Binding Title}"/>
+                        <GridViewColumn Header="原创度" DisplayMemberBinding="{Binding Contrast}"/>
+                        <GridViewColumn Header="状态" DisplayMemberBinding="{Binding IsUse,Converter={StaticResource BoolToString}, ConverterParameter=已使用|未使用}"/>
+                        <GridViewColumn Header="是否已重写" DisplayMemberBinding="{Binding IsUseRewrite,Converter={StaticResource BoolToString}, ConverterParameter=已重写|未重写}"/>
+                        <GridViewColumn Header="是否已换词" DisplayMemberBinding="{Binding IsUseReplaceKeyword,Converter={StaticResource BoolToString}, ConverterParameter=已换词|未换词}"/>
+                        <GridViewColumn Header="所属平台" DisplayMemberBinding="{Binding Type,Converter={StaticResource EnumToString},ConverterParameter=39健康网|家庭医生|复合健康}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>

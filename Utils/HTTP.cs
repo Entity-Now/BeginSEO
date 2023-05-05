@@ -137,17 +137,22 @@ namespace BeginSEO.Utils {
             "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2117.157 Safari/537.36"
         };
 
-        public static void GetCookies(this HttpResponseMessage result,string Host)
+        public static void GetCookies(this HttpResponseMessage result, string Host, string proxyId)
         {
-            var head = result.Headers.GetValues("Set-Cookie");
+            IEnumerable<string> head = new List<string>();
+            if (!result.Headers.TryGetValues("Set-Cookie", out head))
+            {
+                return;
+            }
             foreach (var item in head)
             {
                 string GetCookieValue = Regex.Match(item, @".*?;").Value;
                 string Key = Regex.Match(GetCookieValue, @".+?(?==)").Value;
                 var data = DataAccess.Entity<TempCookie>()
-                                 .FirstOrDefault(I => I.Host == Host && I.CookieKey == Key);
+                                 .FirstOrDefault(I => I.Host == Host && I.CookieKey == Key && I.ProxyId == proxyId);
                 if (data != null)
                 {
+                    data.ProxyId = proxyId;
                     data.CookieKey = Key;
                     data.CookieValue = GetCookieValue;
                     data.CreateTime = DateTime.Now;
@@ -157,6 +162,7 @@ namespace BeginSEO.Utils {
                 {
                     DataAccess.Entity<TempCookie>().Add(new TempCookie
                     {
+                        ProxyId = proxyId,
                         Host = Host,
                         CookieKey = Key,
                         CookieValue = GetCookieValue,
@@ -231,7 +237,7 @@ namespace BeginSEO.Utils {
                 {
                     return;
                 }
-                string host = string.Empty;
+                string ProxyId = string.Empty;
                 string userAgent = GetUserAgent(Aggregate);
                 // 获取随机代理，start
                 //try
@@ -239,8 +245,8 @@ namespace BeginSEO.Utils {
                 //    await _semaphore.WaitAsync();
                 //}
                 //finally { _semaphore.Release(); }
-                host = await ProxyList.GetRandomProxy();
-                WebProxy Proxy = new WebProxy(host);
+                ProxyId = await ProxyList.GetRandomProxy();
+                WebProxy Proxy = new WebProxy(ProxyId);
                 // 如果请求错误则尝试重新请求
                 int RequestError = 0;
                 do
@@ -256,7 +262,7 @@ namespace BeginSEO.Utils {
                         else
                         {
                             // 获取cookie
-                            request.GetCookies(host);
+                            request.GetCookies(Tools.GetDomain(item) ,ProxyId);
                             Report.Report((item, Aggregate, request));
                             ++Aggregate;
                         }
@@ -321,7 +327,7 @@ namespace BeginSEO.Utils {
                         else
                         {
                             // 获取cookie
-                            request.GetCookies(host);
+                            request.GetCookies(Tools.GetDomain(item), host);
                             Report.Report((item, Aggregate, request));
                             ++Aggregate;
                         }
@@ -376,6 +382,7 @@ namespace BeginSEO.Utils {
                 }
 
                 var client = new HttpClient(handler);
+                client.Timeout = TimeSpan.FromSeconds(10000);
 
                 foreach (var header in headers)
                 {

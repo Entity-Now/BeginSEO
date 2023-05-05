@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using static BeginSEO.Utils.HTTP;
 
 namespace BeginSEO.Utils.Spider
@@ -66,16 +67,17 @@ namespace BeginSEO.Utils.Spider
         }
         public async void GrabArticles(List<string> Links, bool IsUseProxy)
         {
+            Tools.Dispatcher(ShowModal.ShowLoading);
             var func = new Progress<(string, int, HttpResponseMessage)>(async val =>
             {
                 var (url, aggregate, res) = val;
+
                 if (!res.IsSuccessStatusCode)
                 {
                     await ShowToast.Show($"请求失败：{url}~",ShowToast.Type.Error);
                     return;
                 }
-                string Content = await res.Content.ReadAsStringAsync();
-                var result = Article.DeSerializeArticle(Content);
+                var result = await Article.DeSerializeArticle(res);
                 DataAccess.Entity<Article>().Add(new Data.Article
                 {
                     Content = result.Content,
@@ -95,6 +97,7 @@ namespace BeginSEO.Utils.Spider
             {
                 await MultipleGet(Links ?? ArticleList, IsUseProxy, func);
             }
+            Tools.Dispatcher(ShowModal.Closing);
         }
     }
 }

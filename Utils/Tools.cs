@@ -9,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -87,6 +88,47 @@ namespace BeginSEO.Utils
         {
             var ipAndPort = ip.Split(':');
             return ipAndPort;
+        }
+        /// <summary>
+        /// 使用正则表达式获取链接中的域名
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string GetDomain(string value)
+        {
+            string regex = @"(?<=://)[\w.-]+(?<=\.)\w+";
+            var verify = Regex.Match(value, regex);
+            if (verify.Success)
+            {
+                return verify.Value;
+            }
+            return string.Empty;
+        }
+        // 将字符串从 指定的编码转换为 UTF-8 编码
+        public static string ConverEncoding(string type, string val)
+        {
+            byte[] gb2312Bytes = Encoding.GetEncoding(type).GetBytes(val);
+            byte[] utf8Bytes = Encoding.Convert(Encoding.GetEncoding(type), Encoding.UTF8, gb2312Bytes);
+            return Encoding.UTF8.GetString(utf8Bytes);
+        }
+        /// <summary>
+        /// 将HTML转换为指定的编码
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static async Task<string> GetHtmlFromUrl(HttpResponseMessage res, Encoding encoding)
+        {
+            var bys = await res.Content.ReadAsByteArrayAsync();
+            string htmlString = encoding.GetString(bys);
+
+            HtmlDocument htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlString);
+
+            // 将 HTML 文档中的编码设置为指定的编码
+            htmlDoc.OptionDefaultStreamEncoding = encoding;
+
+            return htmlDoc.DocumentNode.InnerHtml;
         }
         public static string SerializerJson(object obj)
         {

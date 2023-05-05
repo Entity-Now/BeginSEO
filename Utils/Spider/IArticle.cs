@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +22,6 @@ namespace BeginSEO.Utils.Spider
         /// </summary>
         public virtual double inCount { get; set; } = 13;
         public virtual ArticleEnum Type { get; set; } = ArticleEnum._39;
-        public string LastPage { get; set; }
         public string NextPage { get; set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace BeginSEO.Utils.Spider
             var html = new HtmlDocument();
             html.LoadHtml(content);
             var search = html.DocumentNode.SelectNodes(xGetLinks());
-            if (search.Count <= 0)
+            if (search == null || search.Count <= 0)
             {
                 return null;
             }
@@ -59,18 +59,18 @@ namespace BeginSEO.Utils.Spider
             }
             // 获取页码
             var findLinks = html.DocumentNode.SelectNodes(xGetPages());
-            LastPage = findLinks[0].InnerText;
-            NextPage = findLinks[1].InnerText;
+            NextPage = findLinks[0].InnerText;
             return links;
         }
         /// <summary>
         /// 解析HTML，返回文章
         /// </summary>
         /// <returns></returns>
-        public virtual IArticle DeSerializeArticle(string content)
+        public virtual async Task<IArticle> DeSerializeArticle(HttpResponseMessage res)
         {
             var html = new HtmlDocument();
-            html.LoadHtml(content);
+            html.LoadHtml(await Tools.GetHtmlFromUrl(res, Encoding.GetEncoding("GB2312")));
+
             Content = html.DocumentNode.SelectNodes(xGetContent()).Aggregate(string.Empty, (newVal, oldVal) =>
             {
                 return newVal + "\n" + oldVal.InnerText;

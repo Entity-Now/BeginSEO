@@ -259,6 +259,9 @@
       <DependentUpon>Loading.xaml</DependentUpon>
     </Compile>
     <Compile Include="Convert\BoolToColor.cs" />
+    <Compile Include="Convert\BoolToString.cs" />
+    <Compile Include="Convert\EncodingConver.cs" />
+    <Compile Include="Convert\EnumToString.cs" />
     <Compile Include="Data\Article.cs" />
     <Compile Include="Data\DataEnum\ArticleEnum.cs" />
     <Compile Include="Data\DataEnum\SettingsEnum.cs" />
@@ -273,6 +276,7 @@
       <DependentUpon>20230504075438__addArticle.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
+    <Compile Include="ModelView\ArticelViewModel.cs" />
     <Compile Include="ModelView\GrabViewModel.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Model\EmployData.cs" />
@@ -286,6 +290,9 @@
     <Compile Include="Utils\WithCancellation.cs" />
     <Compile Include="View\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Article.xaml.cs">
+      <DependentUpon>Article.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\GPT.xaml.cs">
       <DependentUpon>GPT.xaml</DependentUpon>
@@ -320,6 +327,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\About.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Article.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
