@@ -48,9 +48,8 @@ namespace BeginSEO.Utils.Spider
                     ++RequestError;
                     continue;
                 }
-                string content = await result.Content.ReadAsStringAsync();
                 // 获取所有文章数量
-                var Links = Article.DeSerializeLinks(content);
+                var Links = await Article.DeSerializeLinks(result);
                 ArticleList.AddRange(Links);
 
                 int residue = (int)Math.Ceiling((double)(GrabCount / (Article.inCount * unfinished)));
@@ -62,6 +61,15 @@ namespace BeginSEO.Utils.Spider
                 }
 
             } while ((RequestError > 0 && RequestError < 3) || unfinished > 1);
+            // 判断数据库里面是否已存在改文章，一篇文章不抓取第二次
+            foreach (var item in ArticleList.ToList())
+            {
+                var data = DataAccess.Entity<Article>().FirstOrDefault(I => I.Url == item);
+                if (data != null)
+                {
+                    ArticleList.Remove(item);
+                }
+            }
 
             return ArticleList;
         }

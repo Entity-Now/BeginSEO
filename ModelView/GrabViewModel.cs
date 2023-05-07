@@ -24,6 +24,13 @@ namespace BeginSEO.ModelView
         {
             GrabCommand = new RelayCommand(GrabHandle);
             RemoveAllCommand = new RelayCommand(RemoveAllHandle);
+            SelectCommand = new RelayCommand<Article>(SelectHandle);
+            BackCommand = new RelayCommand(() => Page = 0);
+            CopyCommand = new RelayCommand(() =>
+            {
+                Clipboard.SetText(InArticle.Rewrite);
+                ShowToast.Show("已复制成功.");
+            });
             // load data
             LoadData();
         }
@@ -61,6 +68,26 @@ namespace BeginSEO.ModelView
                 }
             });
         }
+        public ICommand OriginalCommand { get; set; }
+        public void OriginalHandle()
+        {
+            var data = DataAccess.Entity<Article>().Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false);
+            
+        }
+        /// <summary>
+        /// 选择文章
+        /// </summary>
+        public ICommand SelectCommand { get; set; }
+        public void SelectHandle(Article val)
+        {
+            InArticle = val;
+            Page = 1;
+        }
+        /// <summary>
+        /// 返回主页
+        /// </summary>
+        public ICommand BackCommand { get; set; }
+        public ICommand CopyCommand { get; set; }
         public List<string> _Types = new List<string> { "39疾病","全名健康网"};
         public List<string> Tpes
         {
@@ -69,6 +96,27 @@ namespace BeginSEO.ModelView
             {
                 _Types = value;
                 SetProperty(ref _Types, value);
+            }
+        }
+        public int _Page = 0;
+        public int Page
+        {
+            get { return _Page; }
+            set
+            {
+                SetProperty(ref _Page, value);
+            }
+        }
+        /// <summary>
+        /// 当前选中的文章
+        /// </summary>
+        public Article _InArticle;
+        public Article InArticle
+        {
+            get { return _InArticle; }
+            set
+            {
+                SetProperty(ref _InArticle, value);
             }
         }
         public bool _IsReplaceKeyWord = false;

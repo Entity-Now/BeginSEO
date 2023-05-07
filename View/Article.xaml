@@ -4,38 +4,109 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BeginSEO.View"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:Convert="clr-namespace:BeginSEO.Convert"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="ArticleData" Source="{Binding GrabList}"/>
+        <Convert:BoolToString x:Key="BoolToString"/>
+        <Convert:EnumToString x:Key="EnumToString"/>
+        <Convert:BoolToColor x:Key="BoolToColor"/>
+    </UserControl.Resources>
+    <Grid Cursor="">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width=".3*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <!--标题-->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="13*"/>
+                <ColumnDefinition Width="115*"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="文章标题"
-                       Margin="10 0"
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Command="{Binding BackCommand}">
+                <materialDesign:PackIcon Kind="ArrowLeftCircle"
+                    FontSize="48"
+                    Width="32"
+                    Height="32"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" />
+            </Button>
+            <TextBlock Grid.Column="1"
+                       Text="文章标题"
+                       Margin="10,0,10,0"
                        VerticalAlignment="Center"/>
-            <TextBox Grid.Column="1"
-                     materialDesign:HintAssist.Hint="请输入文章标题..."/>
+            <TextBox Grid.Column="2"
+                     Text="{Binding InArticle.Title}"
+                     materialDesign:HintAssist.Hint="请输入文章标题..." Grid.ColumnSpan="2"/>
+            <Button Grid.Column="4" Content="复制" Command="{Binding CopyCommand}"/>
         </Grid>
         <Grid Grid.Row="1" Margin="0 5 0 20">
-            <TextBox 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox Text="{Binding InArticle.Content}"
                 VerticalContentAlignment="Top"
                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                materialDesign:HintAssist.Hint="文章内容"
+                materialDesign:HintAssist.Hint="原文章内容"
+                MaxLength="50000"
+                Margin="0 10 0 20"
+                VerticalScrollBarVisibility="Auto"
+                TextWrapping="Wrap" AcceptsReturn="True"/>
+            <TextBox Grid.Row="1" Text="{Binding InArticle.Rewrite}"
+                VerticalContentAlignment="Top"
+                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                materialDesign:HintAssist.Hint="伪原创后的内容"
                 MaxLength="50000"
                 VerticalScrollBarVisibility="Auto"
                 TextWrapping="Wrap" AcceptsReturn="True"/>
         </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <TextBlock Text="是否已经伪原创：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
+            <TextBlock Text="{Binding InArticle.IsUseRewrite,Converter={StaticResource BoolToString}, ConverterParameter=已重写|未重写}"/>
+            <Separator Width="10" Margin="10 0"/>
+            <TextBlock Text="是否已经智能换词：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
+            <TextBlock Text="{Binding InArticle.IsUseReplaceKeyword,Converter={StaticResource BoolToString}, ConverterParameter=已换词|未换词}"/>
+            <Separator Width="10" Margin="10 0"/>
+            <TextBlock Text="文章相似度：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
+            <TextBlock Text="{Binding InArticle.Contrast}"/>
+            <Separator Width="10" Margin="10 0"/>
+            <TextBlock Text="文章是否已经使用：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
+            <TextBlock Text="{Binding InArticle.IsUse,Converter={StaticResource BoolToString}, ConverterParameter=已使用|未使用}"
+                                               Foreground="{Binding IsUse,Converter={StaticResource BoolToColor}}"/>
+        </StackPanel>
+        <!--侧边栏-->
+        <TextBlock Text="文章列表"
+                   Grid.Column="1"
+                   Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        <ListBox x:Name="ArticleList"
+                 Grid.Column="1"
+                 Grid.Row="1"
+                 Grid.RowSpan="5"
+                 ItemsSource="{Binding GrabList}"
+                 d:ItemsSource="{d:SampleData ItemCount=5}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:InvokeCommandAction Command="{Binding SelectCommand}" CommandParameter="{Binding ElementName=ArticleList, Path=SelectedItem}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Title}" MinWidth="64"
+                               Foreground="{Binding IsUse,Converter={StaticResource BoolToColor}}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </UserControl>

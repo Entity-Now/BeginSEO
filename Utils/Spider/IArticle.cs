@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BeginSEO.Utils.Spider
@@ -21,45 +22,58 @@ namespace BeginSEO.Utils.Spider
         /// 每页默认有13条数据
         /// </summary>
         public virtual double inCount { get; set; } = 13;
-        public virtual ArticleEnum Type { get; set; } = ArticleEnum._39;
+        public virtual ArticleEnum Type { get; set; } = ArticleEnum.Null;
         public string NextPage { get; set; }
 
         /// <summary>
         /// 此函数返回一个xpath的指令，用于查询页面内的文章链接
         /// </summary>
         /// <returns></returns>
-        public abstract string xGetLinks();
+        public abstract string xGetLinks(string url);
         /// <summary>
         /// 此函数返回一个xpath的指令，用于查询文章内容
         /// </summary>
         /// <returns></returns>
-        public abstract string xGetContent();
+        public abstract string xGetContent(string url);
         /// <summary>
         /// 此函数返回一个xpath的指令，用于查询分页
         /// </summary>
         /// <returns></returns>
-        public abstract string xGetPages();
+        public abstract string xGetPages(string url);
         /// <summary>
         /// 解析
         /// </summary>
         /// <returns></returns>
-        public virtual List<string> DeSerializeLinks(string content)
+        public virtual async Task<List<string>> DeSerializeLinks(HttpResponseMessage res)
         {
+            string content = await res.Content.ReadAsStringAsync();
+            string host = res.RequestMessage.RequestUri.Host;
             var links = new List<string>();
             var html = new HtmlDocument();
             html.LoadHtml(content);
-            var search = html.DocumentNode.SelectNodes(xGetLinks());
+            var search = html.DocumentNode.SelectNodes(xGetLinks(host));
             if (search == null || search.Count <= 0)
             {
                 return null;
             }
-            foreach ( var link in search )
+            foreach (var link in search)
             {
-                links.Add(link.GetAttributeValue("href","null"));
+                links.Add(link.GetAttributeValue("href", "null"));
             }
             // 获取页码
-            var findLinks = html.DocumentNode.SelectNodes(xGetPages());
-            NextPage = findLinks[0].InnerText;
+            var findLinks = html.DocumentNode.SelectSingleNode(xGetPages(host));
+            NextPage = findLinks.GetAttributeValue("href", "null");
+            if (!Regex.IsMatch(@"[\w.-]+(?<=\.)\w+", NextPage))
+            {
+                if (NextPage.IndexOf('/') == 0)
+                {
+                    NextPage = $"https://{host}/{NextPage}";
+                }
+                else
+                {
+                    NextPage = $"{res.RequestMessage.RequestUri.AbsoluteUri}/{NextPage}";
+                }
+            }
             return links;
         }
         /// <summary>
@@ -68,10 +82,11 @@ namespace BeginSEO.Utils.Spider
         /// <returns></returns>
         public virtual async Task<IArticle> DeSerializeArticle(HttpResponseMessage res)
         {
+            string host = res.RequestMessage.RequestUri.Host;
             var html = new HtmlDocument();
             html.LoadHtml(await Tools.GetHtmlFromUrl(res, Encoding.GetEncoding("GB2312")));
 
-            Content = html.DocumentNode.SelectNodes(xGetContent()).Aggregate(string.Empty, (newVal, oldVal) =>
+            Content = html.DocumentNode.SelectNodes(xGetContent(host)).Aggregate(string.Empty, (newVal, oldVal) =>
             {
                 return newVal + "\n" + oldVal.InnerText;
             });

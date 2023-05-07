@@ -10,6 +10,7 @@ namespace BeginSEO.Data.DataEnum
     {
         _39,
         _family,
-        _fuhe
+        _fuhe,
+        Null
     }
 }

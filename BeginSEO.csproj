@@ -141,6 +141,9 @@
     <Reference Include="Microsoft.EntityFrameworkCore.Sqlite, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.EntityFrameworkCore.Sqlite.Core.3.1.0\lib\netstandard2.0\Microsoft.EntityFrameworkCore.Sqlite.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Extensions.Caching.Abstractions.3.1.0\lib\netstandard2.0\Microsoft.Extensions.Caching.Abstractions.dll</HintPath>
     </Reference>
@@ -231,6 +234,9 @@
       <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -276,10 +282,12 @@
       <DependentUpon>20230504075438__addArticle.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
-    <Compile Include="ModelView\ArticelViewModel.cs" />
+    <Compile Include="ModelView\ArticleViewModel.cs" />
     <Compile Include="ModelView\GrabViewModel.cs" />
+    <Compile Include="ModelView\KeyWordReplaceViewModel.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Model\EmployData.cs" />
+    <Compile Include="Model\ReplaceKeyWord.cs" />
     <Compile Include="Utils\5188Tools.cs" />
     <Compile Include="Utils\ChatGPT.cs" />
     <Compile Include="Utils\GrabProxys.cs" />
@@ -346,7 +354,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\KeyWordReplice.xaml">
+    <Page Include="View\KeyWordReplace.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -365,8 +373,8 @@
     <Compile Include="View\Employ.xaml.cs">
       <DependentUpon>Employ.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\KeyWordReplice.xaml.cs">
-      <DependentUpon>KeyWordReplice.xaml</DependentUpon>
+    <Compile Include="View\KeyWordReplace.xaml.cs">
+      <DependentUpon>KeyWordReplace.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\ExcelEmploy.cs" />
     <Compile Include="MainWindow.xaml.cs">

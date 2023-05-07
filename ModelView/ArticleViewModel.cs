@@ -10,7 +10,7 @@ using System.Windows.Data;
 
 namespace BeginSEO.ModelView
 {
-    public class ArticelViewModel : ObservableObject
+    public class ArticleViewModel : ObservableObject
     {
         public string _Title;
         public string Title
