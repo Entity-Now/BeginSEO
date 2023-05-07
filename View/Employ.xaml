@@ -9,7 +9,7 @@
              x:Name="EmployControl"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <DiscreteObjectKeyFrame x:Key="ControlContext" Value="{Binding ElementName=EmployControl}"/>
+        <DiscreteObjectKeyFrame x:Key="ControlContext" Value="{Binding DataContext,ElementName=EmployControl}"/>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -69,13 +69,13 @@
                         <Setter.Value>
                             <ContextMenu>
                                 <MenuItem Header="复制" 
-                                          Command="{Binding Value.DataContext.CommandCopy,Source={StaticResource ControlContext}}"
+                                          Command="{Binding Value.CommandCopy,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
                                 <MenuItem Header="只显示已收录的链接" 
-                                          Command="{Binding Value.DataContext.CommandShowEmploy,Source={StaticResource ControlContext}}"
+                                          Command="{Binding Value.CommandShowEmploy,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
                                 <MenuItem Header="删除" 
-                                          Command="{Binding Value.DataContext.CommandRemove,Source={StaticResource ControlContext}}"
+                                          Command="{Binding Value.CommandRemove,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
                                 
                             </ContextMenu>

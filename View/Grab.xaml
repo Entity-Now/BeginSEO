@@ -56,30 +56,31 @@
                         </Grid>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="抓取数量" 
-                            Margin="10 0"
-                            VerticalAlignment="Center"/>
+                                Margin="10 0"
+                                VerticalAlignment="Center"/>
                             <TextBox material:HintAssist.Hint="设置抓取数量"
-                            Text="{Binding GrabCount}"/>
+                                Text="{Binding GrabCount}"/>
                             <CheckBox x:Name="UseProxy"
-                            IsChecked="{Binding IsUseProxy}"
-                            Content="启用代理"/>
+                                IsChecked="{Binding IsUseProxy}"
+                                Content="启用代理"/>
                             <Button Margin="10 0"
-                            Content="抓取文章"
-                            Command="{Binding GrabCommand}"
-                            Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
-                            ToolTip="抓取网络文章" />
+                                Content="抓取文章"
+                                Command="{Binding GrabCommand}"
+                                Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
+                                ToolTip="抓取网络文章" />
                             <Button Content="删除所有文章"
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Command="{Binding RemoveAllCommand}"/>
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Command="{Binding RemoveAllCommand}"/>
                             <CheckBox
-                          Content="一键换词"
-                          IsChecked="{Binding IsReplaceKeyWord}"
-                          Margin="5 0"
-                          Style="{StaticResource MaterialDesignLightCheckBox}" />
+                                Content="一键换词"
+                                IsChecked="{Binding IsReplaceKeyWord}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
                             <Button
-                          Content="一键伪原创"
-                          Style="{StaticResource MaterialDesignOutlinedButton}"
-                          ToolTip="伪原创所有文章" Cursor="Hand" />
+                                Content="一键伪原创"
+                                Command="{Binding OriginalCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                ToolTip="伪原创所有文章" Cursor="Hand" />
                         </StackPanel>
                     </StackPanel>
                 </material:Card>

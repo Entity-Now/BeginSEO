@@ -93,7 +93,12 @@ namespace BeginSEO.Utils.Spider
                     IsInspect = false,
                     Title = result.Title,
                     Type = Article.Type,
-                    Url = url
+                    Url = url,
+                    IsUse = false,
+                    IsUseReplaceKeyword = false,
+                    IsUseRewrite = false,
+                    Contrast = 0,
+                    Rewrite = string.Empty
                 });
                 await DataAccess.BeginContext.SaveChangesAsync();
             });

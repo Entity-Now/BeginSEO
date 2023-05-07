@@ -61,11 +61,11 @@ namespace BeginSEO.Utils
         {
             try
             {
-                var Data = DataAccess.Entity<Settings>().FirstOrDefault(I => I.Name == Sm.ToString());
+                var Context = DataAccess.GetDbContext();
+                var Data = Context.Set<Settings>().FirstOrDefault(I => I.Name == Sm.ToString());
                 if (Data == null)
                 {
-                    await ShowToast.Show("您还未添加API的key，请到设置页面添加KEY", ShowToast.Type.Success);
-                    return default(T);
+                    throw new Exception("您还未添加API的key，请到设置页面添加KEY");
                 }
                 var http = new HttpClient();
                 http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Data.Value);
@@ -74,8 +74,7 @@ namespace BeginSEO.Utils
             }
             catch (Exception e)
             {
-                await ShowToast.Show(e.Message, ShowToast.Type.Success);
-                return default(T);
+                throw e;
             }
         }
         /// <summary>

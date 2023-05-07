@@ -14,20 +14,60 @@ using System.Windows;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System.Runtime.Remoting.Contexts;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace BeginSEO.SQL
 {
     public static class DataAccess
     {
-        public static dataBank BeginContext { get; set; }
+        private static readonly object _lock = new object();
+        private static readonly ThreadLocal<dataBank> _threadLocalDbContext = new ThreadLocal<dataBank>();
+        public static dataBank BeginContext
+        {
+            get => GetDbContext();
+        }
+        /// <summary>
+        /// 获取数据库实例
+        /// </summary>
+        /// <returns></returns>
+        public static dataBank GetDbContext()
+        {
+            if (_threadLocalDbContext.Value == null)
+            {
+                lock (_lock)
+                {
+                    if (_threadLocalDbContext.Value == null)
+                    {
+                        _threadLocalDbContext.Value = new dataBank();
+                    }
+                }
+            }
+
+            return _threadLocalDbContext.Value;
+        }
+
+        public static async Task<dataBank> GetDbContextAsync()
+        {
+            if (_threadLocalDbContext.Value == null)
+            {
+                lock (_lock)
+                {
+                    if (_threadLocalDbContext.Value == null)
+                    {
+                        _threadLocalDbContext.Value = new dataBank();
+                    }
+                }
+            }
+
+            return await Task.FromResult(_threadLocalDbContext.Value);
+        }
+
         public static void init()
         {
-            if (BeginContext == null || BeginContext == default)
-            {
-                BeginContext = new dataBank();
-            }
+            var context = GetDbContext();
             // 初始化
-            var Ensure = BeginContext.Database.EnsureCreated();
+            var Ensure = context.Database.EnsureCreated();
             if (Ensure)
             {
                 if (File.Exists("KeyWordLists.json"))
@@ -40,11 +80,11 @@ namespace BeginSEO.SQL
                     }
                 }
             }
-            if (BeginContext.Database.GetPendingMigrations().Any())
+            if (context.Database.GetPendingMigrations().Any())
             {
                 try
                 {
-                    BeginContext.Database.Migrate(); //执行迁移
+                    context.Database.Migrate(); //执行迁移
                 }
                 catch (Exception e)
                 {
@@ -52,6 +92,11 @@ namespace BeginSEO.SQL
                 }
             }
         }
+        /// <summary>
+        /// 获取数据库实体
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static DbSet<T> Entity<T>() where T : class
         {
             return BeginContext.Set<T>();

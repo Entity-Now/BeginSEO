@@ -1,4 +1,5 @@
 ﻿using BeginSEO.Data;
+using BeginSEO.Model;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
 using BeginSEO.Utils.Spider;
@@ -11,10 +12,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace BeginSEO.ModelView
 {
@@ -26,6 +29,7 @@ namespace BeginSEO.ModelView
             RemoveAllCommand = new RelayCommand(RemoveAllHandle);
             SelectCommand = new RelayCommand<Article>(SelectHandle);
             BackCommand = new RelayCommand(() => Page = 0);
+            OriginalCommand = new RelayCommand(OriginalHandle);
             CopyCommand = new RelayCommand(() =>
             {
                 Clipboard.SetText(InArticle.Rewrite);
@@ -71,8 +75,28 @@ namespace BeginSEO.ModelView
         public ICommand OriginalCommand { get; set; }
         public void OriginalHandle()
         {
-            var data = DataAccess.Entity<Article>().Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false);
-            
+            var model = new Model.ReplaceKeyWord();
+            var data = DataAccess.Entity<Article>()
+                    .Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false)
+                    .ToList();
+            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async i =>
+            {
+                var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(i.Content, "3", true, IsReplaceKeyWord);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var context = DataAccess.GetDbContext();
+                    var find = context.Set<Article>().FirstOrDefault(I => I.Url == i.Url);
+                    if (find != null)
+                    {
+                        find.IsUseReplaceKeyword = IsReplaceKeyWord;
+                        find.Rewrite = OriginalValue;
+                        find.Contrast = ContrastValue;
+                        find.IsUseRewrite = true;
+                        find.Title = model.replice(find.Title).Result;
+                        context.SaveChanges();
+                    }
+                });
+            });
         }
         /// <summary>
         /// 选择文章

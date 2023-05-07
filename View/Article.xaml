@@ -84,7 +84,7 @@
             <Separator Width="10" Margin="10 0"/>
             <TextBlock Text="文章是否已经使用：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
             <TextBlock Text="{Binding InArticle.IsUse,Converter={StaticResource BoolToString}, ConverterParameter=已使用|未使用}"
-                                               Foreground="{Binding IsUse,Converter={StaticResource BoolToColor}}"/>
+                                               Foreground="{Binding InArticle.IsUse,Converter={StaticResource BoolToColor}}"/>
         </StackPanel>
         <!--侧边栏-->
         <TextBlock Text="文章列表"
