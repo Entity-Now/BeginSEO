@@ -21,7 +21,11 @@ namespace BeginSEO.Data
         /// </summary>
         public string Url { get; set; }
         public string Title { get; set; }
+        public string KeyWord { get; set; }
+        public string Description { get; set; }
+        public string Tag { get; set; }
         public string Content { get; set; }
+        public string Other { get; set; }
         /// <summary>
         /// 智能原创后的文章
         /// </summary

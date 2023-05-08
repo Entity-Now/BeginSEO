@@ -41,20 +41,25 @@ namespace BeginSEO.Utils.Spider
                 {"news.fh21.com.cn","article-content" },
                 {"disease.39.net","page4txt" },
                 {"cm.39.net","art_con" },
+                {"yyk.familydoctor.com.cn", "zwen" }
             };
             List<string> LinksTemplate = new List<string>()
             {
                 // 39
-                @"//ul[@class='{0}']/li/*/a/@href",
+                @"//ul[contains(@class, '{0}')]/li/*/a/@href",
                 // 复合的
-                @"//div[contains(@class, 'tsyl-list')]/div/div/a/@href"
+                @"//div[contains(@class, '{0}')]/div/div/a/@href",
+                // 家庭医生
+                @"//ul[contains(@class, '{0}')]/li/*/a/@href",
             };
             List<string> PageTemplate = new List<string>()
             {
                 // 39
                 @"//p[contains(@class, '{0}')]/*[(position() = last() - 1)]/a/@href",
                 // 复合
-                @"//div[contains(@class, 'page-main')]/li[(position() = last() - 1)]/a/@href"
+                @"//div[contains(@class, '{0}')]/li[(position() = last() - 1)]/a/@href",
+                // 家庭医生
+                @"//div[contains(@class, '{0}')]//a[(position() = last() - 1)]/@href"
             };
             // Key的三个参数分别是 模板索引、文章列表、分页列表
             Dictionary<string, (int, string, string)> LinksStation = new Dictionary<string, (int, string, string)>()
@@ -64,6 +69,7 @@ namespace BeginSEO.Utils.Spider
                 {"news.fh21.com.cn",(1, "left fll" , "page-main")},
                 {"disease.39.net",(0, "pclist", "docFlip") },
                 {"yyk.39.net",(0, "newslist", "pageno") },
+                {"yyk.familydoctor.com.cn",(2, "tart", "fye") }
             };
             if (type == Types.Links)
             {

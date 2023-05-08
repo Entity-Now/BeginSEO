@@ -30,6 +30,7 @@ namespace BeginSEO.ModelView
             SelectCommand = new RelayCommand<Article>(SelectHandle);
             BackCommand = new RelayCommand(() => Page = 0);
             OriginalCommand = new RelayCommand(OriginalHandle);
+            ChangeState = new RelayCommand<bool>(ChangeStateHandle);
             CopyCommand = new RelayCommand(() =>
             {
                 Clipboard.SetText(InArticle.Rewrite);
@@ -55,6 +56,18 @@ namespace BeginSEO.ModelView
             // 
             run.GrabArticles(result, IsUseProxy);
         }
+        /// <summary>
+        /// 修改文章状态
+        /// </summary>
+        public ICommand ChangeState { get; set; }
+        public void ChangeStateHandle(bool IsCheck)
+        {
+            InArticle.IsUse = IsCheck;
+            DataAccess.SaveChanges();
+        }
+        /// <summary>
+        /// 删除所有文章
+        /// </summary>
         public ICommand RemoveAllCommand { get; set; }
         public void RemoveAllHandle()
         {
@@ -62,30 +75,32 @@ namespace BeginSEO.ModelView
             {
                 if (res)
                 {
-                    var data = DataAccess.Entity<Article>().ToArray();
+                    var data = GrabList.ToArray();
                     foreach (var item in data)
                     {
-                        DataAccess.Entity<Article>().Remove(item);
+                        GrabList.Remove(item);
                     }
                     await DataAccess.BeginContext.SaveChangesAsync();
                     await ShowToast.Show("已删除");
                 }
             });
         }
+        /// <summary>
+        /// 对文章进行伪原创
+        /// </summary>
         public ICommand OriginalCommand { get; set; }
         public void OriginalHandle()
         {
+            ShowModal.ShowLoading();
             var model = new Model.ReplaceKeyWord();
-            var data = DataAccess.Entity<Article>()
-                    .Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false)
-                    .ToList();
+            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false).ToList();
+            int Aggregate = data.Count;
             Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async i =>
             {
                 var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(i.Content, "3", true, IsReplaceKeyWord);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    var context = DataAccess.GetDbContext();
-                    var find = context.Set<Article>().FirstOrDefault(I => I.Url == i.Url);
+                    var find = GrabList.FirstOrDefault(I => I.Url == i.Url);
                     if (find != null)
                     {
                         find.IsUseReplaceKeyword = IsReplaceKeyWord;
@@ -93,9 +108,15 @@ namespace BeginSEO.ModelView
                         find.Contrast = ContrastValue;
                         find.IsUseRewrite = true;
                         find.Title = model.replice(find.Title).Result;
-                        context.SaveChanges();
+                        DataAccess.SaveChanges();
                     }
                 });
+                Interlocked.Decrement(ref Aggregate);
+                if (Aggregate <= 0)
+                {
+                    ShowModal.Closing();
+                    Sort();
+                }
             });
         }
         /// <summary>

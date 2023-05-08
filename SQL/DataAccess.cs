@@ -23,10 +23,8 @@ namespace BeginSEO.SQL
     {
         private static readonly object _lock = new object();
         private static readonly ThreadLocal<dataBank> _threadLocalDbContext = new ThreadLocal<dataBank>();
-        public static dataBank BeginContext
-        {
-            get => GetDbContext();
-        }
+
+        public static dataBank BeginContext => GetDbContext();
         /// <summary>
         /// 获取数据库实例
         /// </summary>
@@ -46,7 +44,10 @@ namespace BeginSEO.SQL
 
             return _threadLocalDbContext.Value;
         }
-
+        /// <summary>
+        /// 异步获取数据库实例
+        /// </summary>
+        /// <returns></returns>
         public static async Task<dataBank> GetDbContextAsync()
         {
             if (_threadLocalDbContext.Value == null)
@@ -62,23 +63,17 @@ namespace BeginSEO.SQL
 
             return await Task.FromResult(_threadLocalDbContext.Value);
         }
-
-        public static void init()
+        /// <summary>
+        /// 初始化数据库
+        /// </summary>
+        public static void Init()
         {
             var context = GetDbContext();
             // 初始化
             var Ensure = context.Database.EnsureCreated();
             if (Ensure)
             {
-                if (File.Exists("KeyWordLists.json"))
-                {
-                    var json = File.ReadAllText("KeyWordLists.json");
-                    var data = JsonConvert.DeserializeObject<List<KeyWord>>(json);
-                    foreach (var item in data)
-                    {
-                        Inser<KeyWord>(item);
-                    }
-                }
+                SeedData();
             }
             if (context.Database.GetPendingMigrations().Any())
             {
@@ -88,29 +83,40 @@ namespace BeginSEO.SQL
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
+                    LogException(e);
                 }
             }
         }
-        /// <summary>
-        /// 获取数据库实体
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+
+        private static void SeedData()
+        {
+            if (File.Exists("KeyWordLists.json"))
+            {
+                var json = File.ReadAllText("KeyWordLists.json");
+                var data = JsonConvert.DeserializeObject<List<KeyWord>>(json);
+                foreach (var item in data)
+                {
+                    Insert(item);
+                }
+            }
+        }
+
         public static DbSet<T> Entity<T>() where T : class
         {
             return BeginContext.Set<T>();
         }
+
         public static void SaveChanges()
         {
             BeginContext.SaveChanges();
         }
-        public static void Inser<T>(T item) where T : class
+
+        public static void Insert<T>(T item) where T : class
         {
-            BeginContext.Set<T>()
-                .Add(item);
+            BeginContext.Set<T>().Add(item);
             BeginContext.SaveChanges();
         }
+
         /// <summary>
         /// 如果数据不存在则插入，如果存在则更新
         /// </summary>
@@ -125,7 +131,7 @@ namespace BeginSEO.SQL
             }
             else
             {
-                Inser(item);
+                Insert(item);
             }
         }
         /// <summary>
@@ -162,6 +168,17 @@ namespace BeginSEO.SQL
 
             SaveChanges();
         }
+        private static void LogException(Exception e)
+        {
+            // 记录日志
+        }
 
+        public static void Dispose()
+        {
+            if (_threadLocalDbContext.IsValueCreated)
+            {
+                _threadLocalDbContext.Value.Dispose();
+            }
+        }
     }
 }

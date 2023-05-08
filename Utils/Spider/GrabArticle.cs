@@ -49,15 +49,19 @@ namespace BeginSEO.Utils.Spider
                     continue;
                 }
                 // 获取所有文章数量
-                var Links = await Article.DeSerializeLinks(result);
+                var (Links, NextPage) = await Article.DeSerializeLinks(result);
                 ArticleList.AddRange(Links);
 
                 int residue = (int)Math.Ceiling((double)(GrabCount / (Article.inCount * unfinished)));
                 if (residue != 1)
                 {
                     await Task.Delay(random.Next(3000));
-                    this.Link = Article.NextPage;
+                    this.Link = NextPage;
                     ++unfinished;
+                }
+                else
+                {
+                    unfinished = 1;
                 }
 
             } while ((RequestError > 0 && RequestError < 3) || unfinished > 1);
@@ -70,7 +74,8 @@ namespace BeginSEO.Utils.Spider
                     ArticleList.Remove(item);
                 }
             }
-
+            // 去重
+            ArticleList.Distinct();
             return ArticleList;
         }
         public async void GrabArticles(List<string> Links, bool IsUseProxy)

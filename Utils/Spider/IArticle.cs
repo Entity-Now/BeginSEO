@@ -44,7 +44,7 @@ namespace BeginSEO.Utils.Spider
         /// 解析
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<List<string>> DeSerializeLinks(HttpResponseMessage res)
+        public virtual async Task<(List<string>, string)> DeSerializeLinks(HttpResponseMessage res)
         {
             string content = await res.Content.ReadAsStringAsync();
             string host = res.RequestMessage.RequestUri.Host;
@@ -54,7 +54,7 @@ namespace BeginSEO.Utils.Spider
             var search = html.DocumentNode.SelectNodes(xGetLinks(host));
             if (search == null || search.Count <= 0)
             {
-                return null;
+                return (null, null);
             }
             foreach (var link in search)
             {
@@ -67,14 +67,14 @@ namespace BeginSEO.Utils.Spider
             {
                 if (NextPage.IndexOf('/') == 0)
                 {
-                    NextPage = $"https://{host}/{NextPage}";
+                    NextPage = $"https://{host}{NextPage}";
                 }
                 else
                 {
                     NextPage = $"{res.RequestMessage.RequestUri.AbsoluteUri}/{NextPage}";
                 }
             }
-            return links;
+            return (links, NextPage);
         }
         /// <summary>
         /// 解析HTML，返回文章

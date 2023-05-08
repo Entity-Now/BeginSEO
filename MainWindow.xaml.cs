@@ -36,7 +36,7 @@ namespace BeginSEO
             // 注入提示框
             Inject();
             // 初始化数据库
-            DataAccess.init();
+            DataAccess.Init();
 
             var data = getReflex.Get<PagesAttribute>("BeginSEO")
                 .OrderBy(I=> I.GetCustomAttribute<PagesAttribute>().Orderby)

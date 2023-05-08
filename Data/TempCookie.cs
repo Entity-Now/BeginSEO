@@ -28,6 +28,8 @@ namespace BeginSEO.Data
         public string Host { get; set; }
         public string CookieKey { get; set; }
         public string CookieValue { get; set; }
+        public string Path { get; set; }
+        public string Domain { get; set; }
         public DateTime CreateTime { get; set; }
         /// <summary>
         /// 过期时间

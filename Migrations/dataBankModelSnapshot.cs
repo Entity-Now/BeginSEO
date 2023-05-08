@@ -28,6 +28,9 @@ namespace BeginSEO.Migrations
                     b.Property<double>("Contrast")
                         .HasColumnType("REAL");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("GrabTime")
                         .HasColumnType("TEXT");
 
@@ -43,7 +46,16 @@ namespace BeginSEO.Migrations
                     b.Property<bool>("IsUseRewrite")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("KeyWord")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Other")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Rewrite")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tag")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -138,7 +150,13 @@ namespace BeginSEO.Migrations
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Domain")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Host")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProxyId")
