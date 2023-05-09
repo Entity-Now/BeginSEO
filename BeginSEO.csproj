@@ -281,6 +281,7 @@
     <Compile Include="Data\DataEnum\ArticleEnum.cs" />
     <Compile Include="Data\DataEnum\LoginType.cs" />
     <Compile Include="Data\DataEnum\SettingsEnum.cs" />
+    <Compile Include="Data\Header.cs" />
     <Compile Include="Data\ProxyStatus.cs" />
     <Compile Include="Data\Settings.cs" />
     <Compile Include="Migrations\20230421075242_update_keyword.cs" />
@@ -294,6 +295,14 @@
     <Compile Include="Migrations\20230508071248_update_Article.cs" />
     <Compile Include="Migrations\20230508071248_update_Article.designer.cs">
       <DependentUpon>20230508071248_update_Article.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230508080350_update_TempCookies.cs" />
+    <Compile Include="Migrations\20230508080350_update_TempCookies.designer.cs">
+      <DependentUpon>20230508080350_update_TempCookies.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20230509024615_add_Header.cs" />
+    <Compile Include="Migrations\20230509024615_add_Header.designer.cs">
+      <DependentUpon>20230509024615_add_Header.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\dataBankModelSnapshot.cs" />
     <Compile Include="ModelView\ArticleViewModel.cs" />

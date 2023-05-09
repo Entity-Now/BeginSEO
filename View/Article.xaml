@@ -15,7 +15,7 @@
         <Convert:BoolToColor x:Key="BoolToColor"/>
     </UserControl.Resources>
     <materialDesign:Transitioner SelectedIndex="0"
-                                 d:SelectedIndex="1"
+                                 d:SelectedIndex="0"
                                  AutoApplyTransitionOrigins="True">
         <materialDesign:TransitionerSlide>
             <Grid>
