@@ -115,7 +115,6 @@ namespace BeginSEO.ModelView
                 if (Aggregate <= 0)
                 {
                     ShowModal.Closing();
-                    Sort();
                 }
             });
         }
@@ -220,22 +219,6 @@ namespace BeginSEO.ModelView
         {
             DataAccess.Entity<Article>().Load();
             GrabList = DataAccess.Entity<Article>().Local.ToObservableCollection();
-            Sort();
-        }
-        /// <summary>
-        /// 对数据进行过滤、排序
-        /// </summary>
-        public void Sort()
-        {
-            // 获取 ObservableCollection 的默认视图
-            ICollectionView view = CollectionViewSource.GetDefaultView(GrabList);
-
-            // 设置排序规则
-            view.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Ascending));
-
-            // 刷新视图
-            view.Refresh();
-
         }
     }
 }

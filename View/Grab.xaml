@@ -6,11 +6,15 @@
              xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:BeginSEO.View"
              xmlns:Convert="clr-namespace:BeginSEO.Convert"
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="ArticleData" Source="{Binding GrabList}"/>
+        <CollectionViewSource x:Key="ArticleData" Source="{Binding GrabList}">
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="IsUse" Direction="Ascending" />
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
         <Convert:BoolToString x:Key="BoolToString"/>
         <Convert:EnumToString x:Key="EnumToString"/>
         <Convert:BoolToColor x:Key="BoolToColor"/>

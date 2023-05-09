@@ -312,6 +312,7 @@
     <Compile Include="Model\EmployData.cs" />
     <Compile Include="Model\ReplaceKeyWord.cs" />
     <Compile Include="Utils\5188Tools.cs" />
+    <Compile Include="Utils\BoolComparer.cs" />
     <Compile Include="Utils\ChatGPT.cs" />
     <Compile Include="Utils\GrabProxys.cs" />
     <Compile Include="Utils\Spider\GrabArticle.cs" />
