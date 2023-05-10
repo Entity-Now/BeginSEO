@@ -144,9 +144,9 @@ namespace BeginSEO.ModelView
             var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(InArticle.Rewrite, "3", InArticle.IsUseRewrite, InArticle.IsUseReplaceKeyword);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var data = GrabList.FirstOrDefault(I=>I.Url == InArticle.Url);
-                data.Rewrite = OriginalValue;
-                data.Contrast = ContrastValue;
+                //var data = GrabList.FirstOrDefault(I=>I.Url == InArticle.Url);
+                InArticle.Rewrite = OriginalValue;
+                InArticle.Contrast = ContrastValue;
                 DataAccess.SaveChanges();
                 if (InArticle.IsUseRewrite)
                 {
