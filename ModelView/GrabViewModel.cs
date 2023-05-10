@@ -31,6 +31,7 @@ namespace BeginSEO.ModelView
             BackCommand = new RelayCommand(() => Page = 0);
             OriginalCommand = new RelayCommand(OriginalHandle);
             ChangeState = new RelayCommand<bool>(ChangeStateHandle);
+            InOriginalCommand = new RelayCommand(InOriginalHandle);
             CopyCommand = new RelayCommand(() =>
             {
                 Clipboard.SetText(InArticle.Rewrite);
@@ -93,7 +94,7 @@ namespace BeginSEO.ModelView
         {
             ShowModal.ShowLoading();
             var model = new Model.ReplaceKeyWord();
-            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false).ToList();
+            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0).ToList();
             int Aggregate = data.Count;
             Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async i =>
             {
@@ -132,6 +133,32 @@ namespace BeginSEO.ModelView
         /// </summary>
         public ICommand BackCommand { get; set; }
         public ICommand CopyCommand { get; set; }
+        /// <summary>
+        /// 对选定的文章进行伪原创
+        /// </summary>
+        public ICommand InOriginalCommand { get; set; }
+        public async void InOriginalHandle()
+        {
+            Tools.Dispatcher(ShowModal.ShowLoading);
+            var model = new Model.ReplaceKeyWord();
+            var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(InArticle.Rewrite, "3", InArticle.IsUseRewrite, InArticle.IsUseReplaceKeyword);
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var data = GrabList.FirstOrDefault(I=>I.Url == InArticle.Url);
+                data.Rewrite = OriginalValue;
+                data.Contrast = ContrastValue;
+                DataAccess.SaveChanges();
+                if (InArticle.IsUseRewrite)
+                {
+                    ShowToast.Show(O_msg, O_Status ? ShowToast.Type.Success : ShowToast.Type.Warning);
+                }
+                if (InArticle.IsUseReplaceKeyword)
+                {
+                    ShowToast.Show(R_msg, O_Status ? ShowToast.Type.Success : ShowToast.Type.Warning);
+                }
+                ShowModal.Closing();
+            });
+        }
         public List<string> _Types = new List<string> { "39疾病","全名健康网"};
         public List<string> Tpes
         {

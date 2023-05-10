@@ -70,6 +70,7 @@
                         <materialDesign:Card Margin="5 0" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
                             <Menu>
                                 <MenuItem Header="复制" Command="{Binding CopyCommand}"/>
+                                <MenuItem Header="重新伪原创" Command="{Binding InOriginalCommand}"/>
                                 <MenuItem Header="发布">
                                     <MenuItem Header="复合">
                                         <MenuItem Header="特色医疗"/>
