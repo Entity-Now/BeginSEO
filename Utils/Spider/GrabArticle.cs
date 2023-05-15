@@ -75,7 +75,7 @@ namespace BeginSEO.Utils.Spider
                 }
             }
             // 去重
-            ArticleList.Distinct();
+            ArticleList = ArticleList.Distinct().ToList();
             return ArticleList;
         }
         public async void GrabArticles(List<string> Links, bool IsUseProxy)

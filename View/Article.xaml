@@ -70,7 +70,7 @@
                         <materialDesign:Card Margin="5 0" Background="{DynamicResource {x:Static SystemColors.MenuHighlightBrushKey}}">
                             <Menu>
                                 <MenuItem Header="复制" Command="{Binding CopyCommand}"/>
-                                <MenuItem Header="重新伪原创" Command="{Binding InOriginalCommand}"/>
+                                <MenuItem Header="重新伪原创" Command="{Binding InOriginalCommand}" CommandParameter="{Binding InArticle}"/>
                                 <MenuItem Header="发布">
                                     <MenuItem Header="复合">
                                         <MenuItem Header="特色医疗"/>
@@ -88,7 +88,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBox Text="{Binding InArticle.Content}"
+                    <TextBox Text="{Binding InArticle.Content, Mode=TwoWay}"
                             VerticalContentAlignment="Top"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             materialDesign:HintAssist.Hint="原文章内容"
@@ -96,7 +96,7 @@
                             Margin="0 10 0 20"
                             VerticalScrollBarVisibility="Auto"
                             TextWrapping="Wrap" AcceptsReturn="True"/>
-                    <TextBox Grid.Row="1" Text="{Binding InArticle.Rewrite}"
+                    <TextBox Grid.Row="1" Text="{Binding InArticle.Rewrite, Mode=TwoWay}"
                             VerticalContentAlignment="Top"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             materialDesign:HintAssist.Hint="伪原创后的内容"
@@ -112,7 +112,7 @@
                     <TextBlock Text="{Binding InArticle.IsUseReplaceKeyword,Converter={StaticResource BoolToString}, ConverterParameter=已换词|未换词}"/>
                     <Separator Width="10" Margin="10 0"/>
                     <TextBlock Text="文章相似度：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
-                    <TextBlock Text="{Binding InArticle.Contrast}"/>
+                    <TextBlock Text="{Binding InArticle.Contrast, Mode=TwoWay}"/>
                     <Separator Width="10" Margin="10 0"/>
                     <TextBlock Text="文章是否已经使用：" Foreground="{DynamicResource MaterialDesignLightForeground}"/>
                     <TextBlock Text="{Binding InArticle.IsUse,Converter={StaticResource BoolToString}, ConverterParameter=已使用|未使用}"

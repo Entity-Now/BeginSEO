@@ -71,7 +71,9 @@ namespace BeginSEO.Utils.Spider
                 }
                 else
                 {
-                    NextPage = $"{res.RequestMessage.RequestUri.AbsoluteUri}/{NextPage}";
+                    var Path = res.RequestMessage.RequestUri.AbsoluteUri;
+                    var lastIndex = Path.LastIndexOf("/");
+                    NextPage = $"{Path.Substring(0, lastIndex)}/{NextPage}";
                 }
             }
             return (links, NextPage);
