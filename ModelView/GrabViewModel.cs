@@ -96,11 +96,11 @@ namespace BeginSEO.ModelView
             var model = new Model.ReplaceKeyWord();
             var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0).ToList();
             int Aggregate = data.Count;
-            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 5 }, async i =>
+            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async i =>
             {
-                var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(i.Content, "3", true, IsReplaceKeyWord);
-                Application.Current.Dispatcher.Invoke(() =>
+                try
                 {
+                    var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(i.Content, "3", true, IsReplaceKeyWord);
                     var find = GrabList.FirstOrDefault(I => I.Url == i.Url);
                     if (find != null)
                     {
@@ -108,15 +108,30 @@ namespace BeginSEO.ModelView
                         find.Rewrite = OriginalValue;
                         find.Contrast = ContrastValue;
                         find.IsUseRewrite = true;
-                        find.Title = model.replice(find.Title).Result;
-                        DataAccess.SaveChanges();
+                        find.Title = await model.replice(find.Title);
                     }
-                });
-                Interlocked.Decrement(ref Aggregate);
-                if (Aggregate <= 0)
-                {
-                    ShowModal.Closing();
+                    Interlocked.Decrement(ref Aggregate);
+                    if (Aggregate % 10 == 0)
+                    {
+                        await DataAccess.BeginContext.SaveChangesAsync();
+                    }
+                    if (Aggregate <= 0)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            DataAccess.SaveChanges();
+                            ShowModal.Closing();
+                        });
+                    }
                 }
+                catch (Exception e)
+                {
+                    Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        ShowToast.Show(e.Message, ShowToast.Type.Info);
+                    });
+                }
+
             });
         }
         /// <summary>
