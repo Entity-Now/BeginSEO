@@ -100,14 +100,16 @@ namespace BeginSEO.ModelView
             {
                 try
                 {
-                    var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(i.Content, "3", true, IsReplaceKeyWord);
+                    string waitStr = string.IsNullOrEmpty(i.Rewrite) ? i.Content : i.Rewrite;
+                    var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
                     var find = GrabList.FirstOrDefault(I => I.Url == i.Url);
                     if (find != null)
                     {
-                        find.IsUseReplaceKeyword = IsReplaceKeyWord;
+                        find.IsUseReplaceKeyword = R_Status;
                         find.Rewrite = OriginalValue;
                         find.Contrast = ContrastValue;
-                        find.IsUseRewrite = true;
+                        find.IsUseRewrite = O_Status;
+
                         find.Title = await model.replice(find.Title);
                         await DataAccess.BeginContext.SaveChangesAsync();
                     }
@@ -256,7 +258,9 @@ namespace BeginSEO.ModelView
         /// </summary>
         public void LoadData()
         {
-            DataAccess.Entity<Article>().Load();
+            DataAccess.Entity<Article>()
+                .Where(I=> !I.IsUse)
+                .Load();
             GrabList = DataAccess.Entity<Article>().Local.ToObservableCollection();
         }
     }
