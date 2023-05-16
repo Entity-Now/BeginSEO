@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using BeginSEO.Data.DataEnum;
+using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,14 @@ namespace BeginSEO.Utils
             }
             Snackbar.Background = GetColor(type);
             Open(Content);
+            // 通过反射输出日志
+            getReflex.InvokeStaticMethod(typeof(Logging), type.ToString(), Content);
         }
+        public static async Task Info(string Content) => await Show(Content, Type.Info);
+        public static async Task Warning(string Content) => await Show(Content, Type.Warning);
+        public static async Task Success(string Content) => await Show(Content, Type.Success);
+        public static async Task Error(string Content) => await Show(Content, Type.Error);
+
         static Brush GetColor(Type type)
         {
             switch (type)

@@ -112,19 +112,6 @@
                                 <GridViewColumn Header="所属平台" DisplayMemberBinding="{Binding Type,Converter={StaticResource EnumToString},ConverterParameter=39健康网|家庭医生|复合健康|未设置}"/>
                             </GridView>
                         </ListView.View>
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="ContextMenu">
-                                    <Setter.Value >
-                                        <ContextMenu>
-                                            <MenuItem Header="重新伪原创" 
-                                                      Command="{Binding DataContext.InOriginalCommand}"
-                                                      CommandParameter="{Binding}"/>
-                                        </ContextMenu>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
                     </ListView>
                 </Grid>
             </Grid>

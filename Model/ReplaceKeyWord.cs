@@ -56,7 +56,7 @@ namespace BeginSEO.Model
             if (IsOriginal)
             {
                 var originalResult = await _5188Tools.Original(tempValue, string.IsNullOrEmpty(strict) ? "0" : strict);
-                if (originalResult?.errcode != "0")
+                if (originalResult == null || originalResult?.errcode != "0")
                 {
                     (O_Msg, O_Status) = ("智能原创失败", false);
                 }
@@ -78,7 +78,7 @@ namespace BeginSEO.Model
 
                 var reKeyword = await _5188Tools.ReplaceKeyWord(tempValue, filterKeyWord);
 
-                if (reKeyword?.errcode != "0")
+                if (reKeyword == null || reKeyword?.errcode != "0")
                 {
                     (R_Msg, R_Status) = ("一键换词失败", false);
                 }

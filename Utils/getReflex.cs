@@ -50,6 +50,18 @@ namespace BeginSEO.Utils
             }
         }
         /// <summary>
+        /// 调用静态类中的静态方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="MethodName"></param>
+        /// <param name="arg"></param>
+        public static void InvokeStaticMethod(Type type, string MethodName, params object[] arg)
+        {
+            var method = type.GetMethod(MethodName);
+            method?.Invoke(null, arg);
+
+        }
+        /// <summary>
         /// 获取对象的propertys
         /// </summary>
         /// <typeparam name="T"></typeparam>

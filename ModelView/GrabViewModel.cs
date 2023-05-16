@@ -96,7 +96,7 @@ namespace BeginSEO.ModelView
             var model = new Model.ReplaceKeyWord();
             var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0).ToList();
             int Aggregate = data.Count;
-            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async i =>
+            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 2 }, async i =>
             {
                 try
                 {
@@ -109,12 +109,9 @@ namespace BeginSEO.ModelView
                         find.Contrast = ContrastValue;
                         find.IsUseRewrite = true;
                         find.Title = await model.replice(find.Title);
-                    }
-                    Interlocked.Decrement(ref Aggregate);
-                    if (Aggregate % 10 == 0)
-                    {
                         await DataAccess.BeginContext.SaveChangesAsync();
                     }
+                    Interlocked.Decrement(ref Aggregate);
                     if (Aggregate <= 0)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -126,10 +123,7 @@ namespace BeginSEO.ModelView
                 }
                 catch (Exception e)
                 {
-                    Application.Current?.Dispatcher.Invoke(() =>
-                    {
-                        ShowToast.Show(e.Message, ShowToast.Type.Info);
-                    });
+                    Logging.Error($"GrabViewModel OriginalHandle error_msg: {e.Message}");
                 }
 
             });

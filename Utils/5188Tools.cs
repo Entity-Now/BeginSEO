@@ -69,12 +69,15 @@ namespace BeginSEO.Utils
                 }
                 var http = new HttpClient();
                 http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Data.Value);
+                /// 5秒超时
+                //http.Timeout = new TimeSpan(5000);
                 var result = await http.Post(url, body, RequestType.FormData);
                 return Tools.DeSerializeJson<T>(result);
             }
             catch (Exception e)
             {
-                throw e;
+                Logging.Error($"_5188Tools Request error_msg: {e.Message}");
+                return default(T);
             }
         }
         /// <summary>

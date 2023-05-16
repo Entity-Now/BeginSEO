@@ -169,6 +169,8 @@ namespace BeginSEO.Utils
             }
             catch (Exception ex)
             {
+
+                Logging.Error($"Tools TextSpeed ERROR MESSAGE{ex.Message}, IP={IP}");
                 // 其他未知异常
                 return (-1, ProxyStatus.Error);
             }
@@ -220,11 +222,13 @@ namespace BeginSEO.Utils
                             await Task.Delay(1000, cancellationToken);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
                         // 如果请求出现异常，则认为代理 IP 不可用
                         proxy.Status = ProxyStatus.Error;
                         proxy.Speed = -1;
+
+                        Logging.Error($"Tools TestProxySpeed ERROR MESSAGE{ex.Message}, IP={proxy.IP}");
                     }
                 }
             }

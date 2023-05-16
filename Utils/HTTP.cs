@@ -401,6 +401,7 @@ namespace BeginSEO.Utils {
             }
             catch (Exception e)
             {
+                Logging.Error($"HTTP GET ERROR MESSAGE{e.Message}");
                 throw e;
             }
         }
