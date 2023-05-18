@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,15 +24,18 @@ namespace BeginSEO.ModelView
 {
     public class GrabViewModel : ObservableObject
     {
-        public GrabViewModel() 
+        readonly dataBank Db;
+        public GrabViewModel(dataBank _Db) 
         {
+            Db = _Db;
             GrabCommand = new RelayCommand(GrabHandle);
             RemoveAllCommand = new RelayCommand(RemoveAllHandle);
             SelectCommand = new RelayCommand<Article>(SelectHandle);
             BackCommand = new RelayCommand(() => Page = 0);
-            OriginalCommand = new RelayCommand(OriginalHandle);
+            OriginalCommand = new AsyncRelayCommand(OriginalHandle);
             ChangeState = new RelayCommand<bool>(ChangeStateHandle);
             InOriginalCommand = new RelayCommand<Article>(InOriginalHandle);
+            RemoveDuplicateCommand = new RelayCommand(RemoveDuplicate);
             CopyCommand = new RelayCommand(() =>
             {
                 Clipboard.SetText(InArticle.Rewrite);
@@ -52,7 +56,7 @@ namespace BeginSEO.ModelView
                 return;
             }
             var _39Grab = new _39Article();
-            var run = new GrabArticle(_39Grab, GrabLink, GrabCount);
+            var run = new GrabArticle(Db, _39Grab, GrabLink, GrabCount);
             var result = await run.Grab(IsUseProxy);
             // 
             run.GrabArticles(result, IsUseProxy);
@@ -64,7 +68,7 @@ namespace BeginSEO.ModelView
         public void ChangeStateHandle(bool IsCheck)
         {
             InArticle.IsUse = IsCheck;
-            DataAccess.SaveChanges();
+            Db.SaveChanges();
         }
         /// <summary>
         /// 删除所有文章
@@ -81,54 +85,117 @@ namespace BeginSEO.ModelView
                     {
                         GrabList.Remove(item);
                     }
-                    await DataAccess.BeginContext.SaveChangesAsync();
+                    await Db.SaveChangesAsync();
                     await ShowToast.Show("已删除");
                 }
             });
+        }
+        public ICommand RemoveDuplicateCommand { get; set; }
+        public void RemoveDuplicate()
+        {
+            ShowModal.Show("提示", "这将删除所有重复的文章~", async (res) =>
+            {
+                if (res)
+                {
+                    var duplicateUrl = GrabList
+                        .GroupBy(p => p.Url)
+                        .Where(g => g.Count() > 1)
+                        .ToList();
+
+                    foreach (var item in duplicateUrl)
+                    {
+                        var residue = item.Skip(1);
+                        if (residue.Count() > 0)
+                        {
+                            Db.Set<Article>().RemoveRange(residue);
+                        }
+                    }
+                    Db.SaveChanges();
+                }
+            });
+
         }
         /// <summary>
         /// 对文章进行伪原创
         /// </summary>
         public ICommand OriginalCommand { get; set; }
-        public void OriginalHandle()
+        public async Task OriginalHandle()
         {
             ShowModal.ShowLoading();
             var model = new Model.ReplaceKeyWord();
-            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0).ToList();
-            int Aggregate = data.Count;
-            Parallel.ForEach(data, new ParallelOptions { MaxDegreeOfParallelism = 2 }, async i =>
+            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0)
+                .Take(5);
+            foreach (var item in data)
             {
-                try
+                // 执行网络请求的代码
+                string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
+                var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
+                string title = await model.replice(item.Title);
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    string waitStr = string.IsNullOrEmpty(i.Rewrite) ? i.Content : i.Rewrite;
-                    var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
-                    var find = GrabList.FirstOrDefault(I => I.Url == i.Url);
-                    if (find != null)
+                    item.IsUseReplaceKeyword = R_Status;
+                    item.Rewrite = OriginalValue;
+                    item.Contrast = ContrastValue;
+                    item.IsUseRewrite = O_Status;
+                    item.Title = title;
+                    var result = Db.SaveChanges();
+                    if (result <= 0)
                     {
-                        find.IsUseReplaceKeyword = R_Status;
-                        find.Rewrite = OriginalValue;
-                        find.Contrast = ContrastValue;
-                        find.IsUseRewrite = O_Status;
-
-                        find.Title = await model.replice(find.Title);
-                        await DataAccess.BeginContext.SaveChangesAsync();
+                        ShowToast.Error("保存失败~");
                     }
-                    Interlocked.Decrement(ref Aggregate);
-                    if (Aggregate <= 0)
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            DataAccess.SaveChanges();
-                            ShowModal.Closing();
-                        });
-                    }
-                }
-                catch (Exception e)
-                {
-                    Logging.Error($"GrabViewModel OriginalHandle error_msg: {e.Message}");
-                }
+                });
+            }
+            //int maxConcurrentRequests = 5; // 同时允许的最大请求数量
+            //int requestsPerSecond = 5; // 每秒允许的请求数量
 
-            });
+            //var semaphore = new SemaphoreSlim(maxConcurrentRequests, maxConcurrentRequests);
+            //var tasks = new List<Task>();
+
+            //foreach(var item in data)
+            //{
+            //    await semaphore.WaitAsync(); // 等待可用的信号量
+
+            //    tasks.Add(Task.Run(async () =>
+            //    {
+            //        try
+            //        {
+            //            // 执行网络请求的代码
+            //            string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
+            //            var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
+            //            string title = await model.replice(item.Title);
+            //            Application.Current.Dispatcher.Invoke(()=>
+            //            {
+            //                item.IsUseReplaceKeyword = R_Status;
+            //                item.Rewrite = OriginalValue;
+            //                item.Contrast = ContrastValue;
+            //                item.IsUseRewrite = O_Status;
+            //                item.Title = title;
+            //                var result = Db.SaveChanges();
+            //                if (result <= 0)
+            //                {
+            //                    ShowToast.Error("保存失败~");
+            //                }
+            //            });
+            //        }
+            //        finally
+            //        {
+            //            semaphore.Release(); // 释放信号量
+            //        }
+            //    }));
+
+            //    if (tasks.Count >= requestsPerSecond)
+            //    {
+            //        await Task.WhenAny(tasks); // 等待每秒请求限制
+            //        tasks.RemoveAll(t => t.IsCompleted);
+            //        await Task.Delay(1000 / requestsPerSecond); // 等待1秒
+            //    }
+            //}
+
+            //await Task.WhenAll(tasks); // 等待所有请求完成
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            //    ShowModal.Closing();
+            //});
         }
         /// <summary>
         /// 选择文章
@@ -160,7 +227,7 @@ namespace BeginSEO.ModelView
                     //var data = GrabList.FirstOrDefault(I=>I.Url == InArticle.Url);
                     item.Rewrite = OriginalValue;
                     item.Contrast = ContrastValue;
-                    DataAccess.SaveChanges();
+                    Db.SaveChanges();
                     if (item.IsUseRewrite)
                     {
                         ShowToast.Show(O_msg, O_Status ? ShowToast.Type.Success : ShowToast.Type.Warning);
@@ -258,10 +325,10 @@ namespace BeginSEO.ModelView
         /// </summary>
         public void LoadData()
         {
-            DataAccess.Entity<Article>()
+            Db.Set<Article>()
                 .Where(I=> !I.IsUse)
                 .Load();
-            GrabList = DataAccess.Entity<Article>().Local.ToObservableCollection();
+            GrabList = Db.Set<Article>().Local.ToObservableCollection();
         }
     }
 }

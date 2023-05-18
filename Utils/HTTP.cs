@@ -139,6 +139,7 @@ namespace BeginSEO.Utils {
 
         public static void GetCookies(this HttpResponseMessage result, string Host, string proxyId)
         {
+            var dbContext = ServiceLocator.GetService<dataBank>();
             IEnumerable<string> head = new List<string>();
             if (!result.Headers.TryGetValues("Set-Cookie", out head))
             {
@@ -148,7 +149,7 @@ namespace BeginSEO.Utils {
             {
                 string GetCookieValue = Regex.Match(item, @".*?;").Value;
                 string Key = Regex.Match(GetCookieValue, @".+?(?==)").Value;
-                var data = DataAccess.Entity<TempCookie>()
+                var data = dbContext.Set<TempCookie>()
                                  .FirstOrDefault(I => I.Host == Host && I.CookieKey == Key && I.ProxyId == proxyId);
                 if (data != null)
                 {
@@ -160,7 +161,7 @@ namespace BeginSEO.Utils {
                 }
                 else
                 {
-                    DataAccess.Entity<TempCookie>().Add(new TempCookie
+                    dbContext.Set<TempCookie>().Add(new TempCookie
                     {
                         ProxyId = proxyId,
                         Host = Host,
@@ -170,7 +171,7 @@ namespace BeginSEO.Utils {
                         TopTime = DateTime.Now.AddHours(24)
                     });
                 }
-                DataAccess.SaveChanges();
+                dbContext.SaveChanges();
             }
         }
         public static string GetUserAgent(int index = 0)
@@ -225,7 +226,8 @@ namespace BeginSEO.Utils {
             var random = new Random();
             // 异步锁，只允许一个线程执行某个操作
             //SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-            var ProxyList = await DataAccess.Entity<Proxys>()
+            var dbContext = ServiceLocator.GetService<dataBank>();
+            var ProxyList = await dbContext.Set<Proxys>()
                                 .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
                                 .ToListAsync();// Guid.NewGuid不支持翻译为Sql语句;
             // 设置最大并发线程数为 5
@@ -280,6 +282,7 @@ namespace BeginSEO.Utils {
         /// <returns></returns>
         public static async Task<bool> MultipleGet(List<string> Url, bool UseProxy, IProgress<(string, int, HttpResponseMessage)> Report)
         {
+            var dbContext = ServiceLocator.GetService<dataBank>();
             int Aggregate = 0;
             string userAgent = string.Empty;
             string host = string.Empty;
@@ -287,7 +290,7 @@ namespace BeginSEO.Utils {
             IEnumerable<Proxys> ProxyList;
             if (UseProxy)
             {
-                ProxyList = DataAccess.Entity<Proxys>()
+                ProxyList = dbContext.Set<Proxys>()
                                 .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
                                 .AsEnumerable();// Guid.NewGuid不支持翻译为Sql语句;
             }

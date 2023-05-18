@@ -24,12 +24,10 @@ namespace BeginSEO.View
     [Pages("设置")]
     public partial class Settings : UserControl
     {
-        SettingsViewModel viewModel;
+        public static Type MyType = typeof(SettingsViewModel);
         public Settings()
         {
             InitializeComponent();
-            viewModel = new SettingsViewModel();
-            this.DataContext = viewModel;
         }
     }
 }

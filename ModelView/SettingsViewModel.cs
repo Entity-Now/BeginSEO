@@ -13,6 +13,11 @@ namespace BeginSEO.ModelView
 {
     public class SettingsViewModel : ObservableObject
     {
+        public readonly dataBank Db;
+        public SettingsViewModel(dataBank _db) 
+        {
+            Db = _db;
+        }
         public string _OpenAiKey;
         public string OpenAiKey
         {
@@ -101,12 +106,12 @@ namespace BeginSEO.ModelView
         }
         string Get(string name)
         {
-            var data = DataAccess.Entity<Data.Settings>().FirstOrDefault(I => I.Name == name);
+            var data = Db.Set<Data.Settings>().FirstOrDefault(I => I.Name == name);
             return data != null ? data.Value : string.Empty;
         }
         void Inser(string name, string value)
         {
-            DataAccess.InsertOrUpdate<Data.Settings>(new Data.Settings()
+            Db.InsertOrUpdate<Data.Settings>(new Data.Settings()
             {
                 Name = name,
                 Value = value

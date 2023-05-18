@@ -21,97 +21,7 @@ namespace BeginSEO.SQL
 {
     public static class DataAccess
     {
-        private static readonly object _lock = new object();
-        private static readonly ThreadLocal<dataBank> _threadLocalDbContext = new ThreadLocal<dataBank>();
-
-        public static dataBank BeginContext => GetDbContext();
-        /// <summary>
-        /// 获取数据库实例
-        /// </summary>
-        /// <returns></returns>
-        public static dataBank GetDbContext()
-        {
-            if (_threadLocalDbContext.Value == null)
-            {
-                lock (_lock)
-                {
-                    if (_threadLocalDbContext.Value == null)
-                    {
-                        _threadLocalDbContext.Value = new dataBank();
-                    }
-                }
-            }
-
-            return _threadLocalDbContext.Value;
-        }
-        /// <summary>
-        /// 异步获取数据库实例
-        /// </summary>
-        /// <returns></returns>
-        public static async Task<dataBank> GetDbContextAsync()
-        {
-            if (_threadLocalDbContext.Value == null)
-            {
-                lock (_lock)
-                {
-                    if (_threadLocalDbContext.Value == null)
-                    {
-                        _threadLocalDbContext.Value = new dataBank();
-                    }
-                }
-            }
-
-            return await Task.FromResult(_threadLocalDbContext.Value);
-        }
-        /// <summary>
-        /// 初始化数据库
-        /// </summary>
-        public static void Init()
-        {
-            var context = GetDbContext();
-            // 初始化
-            var Ensure = context.Database.EnsureCreated();
-            if (Ensure)
-            {
-                SeedData();
-            }
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                try
-                {
-                    context.Database.Migrate(); //执行迁移
-                }
-                catch (Exception e)
-                {
-                    LogException(e);
-                }
-            }
-        }
-
-        private static void SeedData()
-        {
-            if (File.Exists("KeyWordLists.json"))
-            {
-                var json = File.ReadAllText("KeyWordLists.json");
-                var data = JsonConvert.DeserializeObject<List<KeyWord>>(json);
-                foreach (var item in data)
-                {
-                    Insert(item);
-                }
-            }
-        }
-
-        public static DbSet<T> Entity<T>() where T : class
-        {
-            return BeginContext.Set<T>();
-        }
-
-        public static void SaveChanges()
-        {
-            BeginContext.SaveChanges();
-        }
-
-        public static void Insert<T>(T item) where T : class
+        public static void Insert<T>(this dataBank BeginContext, T item) where T : class
         {
             BeginContext.Set<T>().Add(item);
             BeginContext.SaveChanges();
@@ -122,16 +32,16 @@ namespace BeginSEO.SQL
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="item"></param>
-        public static void InsertOrUpdate<T>(T item, Expression<Func<T, bool>> predicate = null) where T : class
+        public static void InsertOrUpdate<T>(this dataBank BeginContext, T item, Expression<Func<T, bool>> predicate = null) where T : class
         {
-            var find = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
+            var find = predicate == null ? BeginContext.Set<T>().FirstOrDefault() : BeginContext.Set<T>().FirstOrDefault(predicate);
             if (find != null)
             {
-                Update(item, predicate);
+                BeginContext.Update(find, predicate);
             }
             else
             {
-                Insert(item);
+                BeginContext.Insert(item);
             }
         }
         /// <summary>
@@ -140,10 +50,10 @@ namespace BeginSEO.SQL
         /// <typeparam name="T"></typeparam>
         /// <param name="newValue">新值</param>
         /// <param name="predicate">判断条件</param>
-        public static void Update<T>(T newValue, Expression<Func<T, bool>> predicate = null) where T : class
+        public static void Update<T>(this dataBank BeginContext, T newValue, Expression<Func<T, bool>> predicate = null) where T : class
         {
-            var data = predicate == null ? Entity<T>().FirstOrDefault() : Entity<T>().FirstOrDefault(predicate);
-            if (data == null)
+            var find = predicate == null ? BeginContext.Set<T>().FirstOrDefault() : BeginContext.Set<T>().FirstOrDefault(predicate);
+            if (find == null)
             {
                 return;
             }
@@ -162,23 +72,15 @@ namespace BeginSEO.SQL
                 var value = property.GetValue(newValue);
                 if (value != null)
                 {
-                    property.SetValue(data, value);
+                    property.SetValue(find, value);
                 }
             }
 
-            SaveChanges();
+            BeginContext.SaveChanges();
         }
         private static void LogException(Exception e)
         {
             // 记录日志
-        }
-
-        public static void Dispose()
-        {
-            if (_threadLocalDbContext.IsValueCreated)
-            {
-                _threadLocalDbContext.Value.Dispose();
-            }
         }
     }
 }

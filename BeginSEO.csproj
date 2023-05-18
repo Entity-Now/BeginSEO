@@ -314,6 +314,7 @@
     <Compile Include="ModelView\ArticleViewModel.cs" />
     <Compile Include="ModelView\GrabViewModel.cs" />
     <Compile Include="ModelView\KeyWordReplaceViewModel.cs" />
+    <Compile Include="ModelView\ProxyListViewModel.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Model\EmployData.cs" />
     <Compile Include="Model\ReplaceKeyWord.cs" />
@@ -322,6 +323,7 @@
     <Compile Include="Utils\ChatGPT.cs" />
     <Compile Include="Utils\GrabProxys.cs" />
     <Compile Include="Utils\Logging.cs" />
+    <Compile Include="Utils\ServiceLocator.cs" />
     <Compile Include="Utils\Spider\GrabArticle.cs" />
     <Compile Include="Utils\Spider\IArticle.cs" />
     <Compile Include="Utils\Spider\_39Article.cs" />

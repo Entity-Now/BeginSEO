@@ -25,12 +25,10 @@ namespace BeginSEO.Components
     [Pages("百度收录查询")]
     public partial class Employ : UserControl
     {
-        public EmployViewModel ViewModel { get; set; }
+        public static Type MyType = typeof(EmployViewModel);
         public Employ()
         {
             InitializeComponent();
-            ViewModel = new EmployViewModel();
-            this.DataContext = ViewModel;
         }
     }
 }

@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <CollectionViewSource x:Key="ViewProxyList"/>
+        <CollectionViewSource x:Key="ViewProxyList" Source="{Binding ProxyList}"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -20,29 +20,30 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="6,6,6,6" Grid.ColumnSpan="2">
             <RepeatButton
-                  Click="GrabProxy_Click"
+                  Command="{Binding GrabProxysCommand}"
                   Content="抓取网络ip"
                   ToolTip="抓取网络ip，这些ip都是免费的可用性未知。" />
             <RepeatButton
                   Content="删除所有IP"
                   Margin="10 0"
-                  Click="RemoveAllProxy_Click"
+                    Command="{Binding RemoveAllCommand}"
                   ToolTip="删除所有IP" />
             <TextBlock Text="测速所有IP地址"
                        VerticalAlignment="Center"
                        Margin="10 0"/>
             <ToggleButton x:Name="TestAllProxy"
-                  Style="{StaticResource MaterialDesignSwitchToggleButton}"
-                  ToolTip="如果开启此选项则测速所有IP，否则只对测速成功或者为测速的节点测速." />
+                          IsChecked="{Binding IsUseProxy}"
+                          Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                          ToolTip="如果开启此选项则测速所有IP，否则只对测速成功或者为测速的节点测速." />
             <RepeatButton
                   Content="测速"
                   Margin="10 0"
-                  Click="TestSpeed_Click"
+                  Command="{Binding TestSpeedProxyCommand}"
                   ToolTip="测速已抓取的代理IP" />
         </StackPanel>
         <ListView Grid.Row="1" 
                   ItemsSource="{Binding Source={StaticResource ViewProxyList}}"
-                  Loaded="ListView_Loaded" Grid.ColumnSpan="2">
+                  Grid.ColumnSpan="2">
             <ListView.View>
                 <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="所有代理IP">
                     <GridViewColumn Header="IP" DisplayMemberBinding="{Binding IP}"/>

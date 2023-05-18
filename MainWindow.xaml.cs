@@ -21,6 +21,7 @@ using BeginSEO.Model;
 using BeginSEO.ModelView;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BeginSEO
 {
@@ -35,9 +36,7 @@ namespace BeginSEO
             InitializeComponent();
             // 注入提示框
             Inject();
-            // 初始化数据库
-            DataAccess.Init();
-
+            // 获取所有窗口
             var data = getReflex.Get<PagesAttribute>("BeginSEO")
                 .OrderBy(I=> I.GetCustomAttribute<PagesAttribute>().Orderby)
                 .ThenByDescending(I=> I.GetCustomAttribute<PagesAttribute>().Name.Length);
@@ -60,7 +59,17 @@ namespace BeginSEO
                 else
                 {
                     temp_page = Activator.CreateInstance(page);
-                    PageList.Add(PageInfo.Name, temp_page);
+                    if (temp_page is UserControl home)
+                    { 
+                        Type Page_Type = (Type)temp_page.GetType().GetField("MyType")?.GetValue(null);
+                        if (Page_Type != null)
+                        {
+                            var GetRequiredService = typeof(IServiceProvider).GetMethod("GetService")
+                                .Invoke(App.Current.Services, new object[] { Page_Type });
+                            home.DataContext = GetRequiredService;
+                        }
+                        PageList.Add(PageInfo.Name, home);
+                    }
                 }
                 rb.Click += (sender, e) =>
                 {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using BeginSEO.Data;
 using BeginSEO.Data.DataEnum;
 using BeginSEO.SQL;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace BeginSEO.Utils
@@ -61,7 +62,7 @@ namespace BeginSEO.Utils
         {
             try
             {
-                var Context = DataAccess.GetDbContext();
+                var Context = ServiceLocator.GetService<dataBank>(); ;
                 var Data = Context.Set<Settings>().FirstOrDefault(I => I.Name == Sm.ToString());
                 if (Data == null)
                 {

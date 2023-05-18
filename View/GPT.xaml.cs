@@ -1,4 +1,5 @@
 ﻿using BeginSEO.Attributes;
+using BeginSEO.ModelView;
 using System;
 using System.Collections.Generic;
 using System.Linq;

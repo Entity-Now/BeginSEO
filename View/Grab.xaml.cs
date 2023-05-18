@@ -23,11 +23,10 @@ namespace BeginSEO.View
     [Pages("抓取文章")]
     public partial class Grab : UserControl
     {
-        GrabViewModel viewModel { get; set; } = new GrabViewModel();
+        public static Type MyType = typeof(GrabViewModel);
         public Grab()
         {
             InitializeComponent();
-            this.DataContext = viewModel;
         }
     }
 }

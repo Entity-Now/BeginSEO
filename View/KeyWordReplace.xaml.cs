@@ -30,12 +30,10 @@ namespace BeginSEO.Components
     [Pages("关键词替换", IsHome:true)]
     public partial class KeyWordReplice : UserControl
     {
-        public KeyWordReplaceViewModel viewModel { get; set; }
+        public static Type MyType = typeof(KeyWordReplaceViewModel);
         public KeyWordReplice()
         {
             InitializeComponent();
-            viewModel = new KeyWordReplaceViewModel();
-            this.DataContext = viewModel;
         }
     }
 }

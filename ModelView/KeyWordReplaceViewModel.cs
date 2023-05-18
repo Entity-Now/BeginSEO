@@ -19,6 +19,23 @@ namespace BeginSEO.ModelView
 {
     public class KeyWordReplaceViewModel : ObservableObject
     {
+        public readonly dataBank Db;
+        public KeyWordReplaceViewModel(dataBank db)
+        {
+            Db = db;
+            AddKeyWord = new RelayCommand(AddKeyWordHandle);
+            RemoveKeyWord = new RelayCommand<KeyWord>(RemoveKeyWordHandle);
+            SelectionKeyWord = new RelayCommand<KeyWord>(SelectionKeyWordHandle);
+            SelectionStrict = new RelayCommand<ComboBoxItem>(SelectionStrictHandle);
+            Clear = new RelayCommand(ClearHandle);
+            Operate = new RelayCommand(OperateHandle);
+            Load();
+        }
+        public void Load()
+        {
+            Db.Set<KeyWord>().Load();
+            KeyWords = Db.Set<KeyWord>().Local.ToObservableCollection();
+        }
         public string _KeyWord;
         public string KeyWord
         {
@@ -182,7 +199,7 @@ namespace BeginSEO.ModelView
                     Type = IsLockKeyWord
                 });
             }
-            DataAccess.SaveChanges();
+            Db.SaveChanges();
             Refresh();
         }
         /// <summary>
@@ -195,7 +212,7 @@ namespace BeginSEO.ModelView
             if (find != null)
             {
                 KeyWords.Remove(find);
-                DataAccess.SaveChanges();
+                Db.SaveChanges();
             }
             // refresh
             Refresh();
@@ -261,22 +278,6 @@ namespace BeginSEO.ModelView
                 Clipboard.SetText(OriginalValue);
             }
             ShowModal.Closing();
-        }
-
-        public KeyWordReplaceViewModel()
-        {
-            AddKeyWord = new RelayCommand(AddKeyWordHandle);
-            RemoveKeyWord = new RelayCommand<KeyWord>(RemoveKeyWordHandle);
-            SelectionKeyWord = new RelayCommand<KeyWord>(SelectionKeyWordHandle);
-            SelectionStrict = new RelayCommand<ComboBoxItem>(SelectionStrictHandle);
-            Clear = new RelayCommand(ClearHandle);
-            Operate = new RelayCommand(OperateHandle);
-            Load();
-        }
-        public void Load()
-        {
-            DataAccess.Entity<KeyWord>().Load();
-            KeyWords = DataAccess.Entity<KeyWord>().Local.ToObservableCollection();
         }
     }
 }

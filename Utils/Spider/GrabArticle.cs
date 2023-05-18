@@ -19,12 +19,14 @@ namespace BeginSEO.Utils.Spider
         public string Link { get; set; }
         public List<string> ArticleList = new List<string>();
         public IArticle Article { get; set; }
+        public readonly dataBank Db;
         /// <summary>
         /// 抓取数量
         /// </summary>
         public double GrabCount { get;set; }
-        public GrabArticle(IArticle article, string _link, double _GrabCount) 
+        public GrabArticle(dataBank _Db, IArticle article, string _link, double _GrabCount) 
         {
+            this.Db = _Db;
             this.Link = _link;
             this.GrabCount = _GrabCount;
             this.Article = article;
@@ -32,7 +34,7 @@ namespace BeginSEO.Utils.Spider
         public async Task<List<string>> Grab(bool IsUseProxy)
         {
             var random = new Random();
-            var ProxyList = await DataAccess.Entity<Proxys>()
+            var ProxyList = await Db.Set<Proxys>()
                     .Where(p => p.Status == ProxyStatus.Success && p.Speed > 0)
                     .ToListAsync();// Guid.NewGuid不支持翻译为Sql语句;
             
@@ -68,7 +70,7 @@ namespace BeginSEO.Utils.Spider
             // 判断数据库里面是否已存在改文章，一篇文章不抓取第二次
             foreach (var item in ArticleList.ToList())
             {
-                var data = DataAccess.Entity<Article>().FirstOrDefault(I => I.Url == item);
+                var data = Db.Set<Article>().FirstOrDefault(I => I.Url == item);
                 if (data != null)
                 {
                     ArticleList.Remove(item);
@@ -91,7 +93,7 @@ namespace BeginSEO.Utils.Spider
                     return;
                 }
                 var result = await Article.DeSerializeArticle(res);
-                DataAccess.Entity<Article>().Add(new Data.Article
+                Db.Set<Article>().Add(new Data.Article
                 {
                     Content = result.Content,
                     GrabTime = DateTime.Now,
@@ -105,7 +107,7 @@ namespace BeginSEO.Utils.Spider
                     Contrast = 0,
                     Rewrite = string.Empty
                 });
-                await DataAccess.BeginContext.SaveChangesAsync();
+                await Db.SaveChangesAsync();
             });
             if (IsUseProxy)
             {

@@ -16,14 +16,14 @@ namespace BeginSEO.Model
     {
         public async Task<string> replice(string Source = null, bool IsLevel = false)
         {
-            var dataContext = DataAccess.GetDbContext();
+            var Db = ServiceLocator.GetService<dataBank>();
             string Text = Source;
             if (string.IsNullOrWhiteSpace(Text))
             {
                 return Text;
             }
 
-            var list = await dataContext.Set<KeyWord>()
+            var list = await Db.Set<KeyWord>()
                 .Where(I => I.Type != true)
                 .Where(I => !IsLevel || I.level == -1) // 使用逻辑非和简化条件判断
                 .OrderByDescending(I => I.Key.Length)
@@ -47,9 +47,9 @@ namespace BeginSEO.Model
         {
             (string O_Msg, bool O_Status) = ("未开启原创", false);
             (string R_Msg, bool R_Status) = ("未开启换词", false);
-
+            var Db = ServiceLocator.GetService<dataBank>();
             string tempValue = await replice(source, true);
-            float Similarty = 0;
+            float Similarty = -1;
 
             // 5118智能原创
 
@@ -69,8 +69,7 @@ namespace BeginSEO.Model
             }
             if (IsReplace)
             {
-                var dataContext = DataAccess.GetDbContext();
-                var filterKeyWord = dataContext.Set<KeyWord>()
+                var filterKeyWord = Db.Set<KeyWord>()
                 .Where(kw => kw.Type)
                 .Select(kw => kw.Value.Replace(",", "|"))
                 .ToList()  // 将结果加载到内存中

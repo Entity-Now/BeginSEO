@@ -75,6 +75,10 @@
                             <Button Content="删除所有文章"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
                                 Command="{Binding RemoveAllCommand}"/>
+                            <Button  Margin="10 0"
+                                Content="删除重复的文章"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Command="{Binding RemoveDuplicateCommand}" Cursor="Hand"/>
                             <CheckBox
                                 Content="一键换词"
                                 IsChecked="{Binding IsReplaceKeyWord}"

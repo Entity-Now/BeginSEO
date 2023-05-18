@@ -1,6 +1,7 @@
 ﻿using BeginSEO.Data;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
@@ -28,8 +29,10 @@ namespace BeginSEO.View
     /// </summary>
     public partial class Login : UserControl
     {
+        public readonly dataBank Db;
         public Login()
         {
+            Db = ServiceLocator.GetService<dataBank>();
             InitializeComponent();
             webView.NavigationStarting += NavigationStaring;
             webView.NavigationCompleted += NavigationCompleted;
@@ -47,7 +50,7 @@ namespace BeginSEO.View
 
             foreach (var cookie in cookieList)
             {
-                DataAccess.InsertOrUpdate(new TempCookie
+                Db.InsertOrUpdate(new TempCookie
                 {
                     Host = currentUri.Host,
                     CookieKey = cookie.Name,
@@ -76,9 +79,9 @@ namespace BeginSEO.View
             {
                 item.Host = uri.Host;
                 item.Domain = uri.AbsolutePath;
-                DataAccess.InsertOrUpdate(item, I => I.Domain == uri.AbsolutePath || I.Host == uri.Host);
+                Db.InsertOrUpdate(item, I => I.Domain == uri.AbsolutePath || I.Host == uri.Host);
             }
-            var HeaderList = DataAccess.Entity<Header>().Where(I => I.Domain == uri.Host);
+            var HeaderList = Db.Set<Header>().Where(I => I.Domain == uri.Host);
             foreach (var item in HeaderList)
             {
                 if (Headers.FirstOrDefault(I => I.Name == item.Name) == null)
@@ -111,7 +114,7 @@ namespace BeginSEO.View
                 // ...
                 foreach (var item in headers)
                 {
-                    DataAccess.InsertOrUpdate(new Header
+                    Db.InsertOrUpdate(new Header
                     {
                         Domain = currentUrl,
                         Host = currentUri.Host,
@@ -144,7 +147,7 @@ namespace BeginSEO.View
             var currentUrl = webView.CoreWebView2.Source;
             var currentUri = new Uri(currentUrl);
             var CookieHandle = webView.CoreWebView2.CookieManager;
-            var data = DataAccess.Entity<TempCookie>().Where(I=>I.Host == currentUri.Host);
+            var data = Db.Set<TempCookie>().Where(I=>I.Host == currentUri.Host);
             foreach (var item in data)
             {
                var cookie = CookieHandle.CreateCookie(item.CookieKey, item.CookieValue, item.Domain, item.Path);
@@ -171,9 +174,9 @@ namespace BeginSEO.View
                 {
                     item.Host = currentUri.Host;
                     item.Domain = currentUrl;
-                    DataAccess.InsertOrUpdate(item, I => I.Domain == currentUrl || I.Host == currentUri.Host);
+                    Db.InsertOrUpdate(item, I => I.Domain == currentUrl || I.Host == currentUri.Host);
                 }
-                var HeaderList = DataAccess.Entity<Header>().Where(I => I.Domain == currentUrl || I.Host == currentUri.Host);
+                var HeaderList = Db.Set<Header>().Where(I => I.Domain == currentUrl || I.Host == currentUri.Host);
                 foreach (var item in HeaderList)
                 {
                     if (Headers.FirstOrDefault(I=> I.Name == item.Name) == null)
