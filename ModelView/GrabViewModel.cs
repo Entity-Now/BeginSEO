@@ -2,6 +2,9 @@
 using BeginSEO.Model;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
+using BeginSEO.Utils._5118;
+using BeginSEO.Utils.Dependency;
+using BeginSEO.Utils.Exceptions;
 using BeginSEO.Utils.Spider;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,22 +29,25 @@ namespace BeginSEO.ModelView
     public class GrabViewModel : ObservableObject
     {
         readonly dataBank Db;
-        public GrabViewModel(dataBank _Db) 
+        public readonly _5118Dependency _5118s;
+        public GrabViewModel(dataBank _Db, _5118Dependency _5118s)
         {
             Db = _Db;
+            this._5118s = _5118s;
             GrabCommand = new RelayCommand(GrabHandle);
             RemoveAllCommand = new RelayCommand(RemoveAllHandle);
             SelectCommand = new RelayCommand<Article>(SelectHandle);
             BackCommand = new RelayCommand(() => Page = 0);
-            OriginalCommand = new RelayCommand(OriginalHandle);
+            OriginalCommand = new AsyncRelayCommand(OriginalHandle);
             ChangeState = new RelayCommand<bool>(ChangeStateHandle);
-            InOriginalCommand = new RelayCommand<Article>(InOriginalHandle);
+            InOriginalCommand = new AsyncRelayCommand<Article>(InOriginalHandle);
             RemoveDuplicateCommand = new RelayCommand(RemoveDuplicate);
             CopyCommand = new RelayCommand(() =>
             {
                 Clipboard.SetText(InArticle.Rewrite);
                 ShowToast.Show("已复制成功.");
             });
+            RefreshCommand = new RelayCommand(() => LoadData());
             // load data
             LoadData();
         }
@@ -120,67 +126,46 @@ namespace BeginSEO.ModelView
         /// 对文章进行伪原创
         /// </summary>
         public ICommand OriginalCommand { get; set; }
-        public async void OriginalHandle()
+        public async Task OriginalHandle()
         {
             ShowModal.ShowLoading();
-            var model = new Model.ReplaceKeyWord();
-            var tamplist = new ConcurrentQueue<Article>();
-            var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0)
-                .Take(5);
+            var data = Db.Set<Article>()
+                .Where(I => !Unqualified ? I.Contrast <= 0 : (I.Contrast > 70 || I.Contrast <= 0))
+                .Where(I => !I.IsUse);
+            var ks = Db.Set<KeyWord>().ToList();
+            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
 
-            int maxConcurrentRequests = 5; // 同时允许的最大请求数量
-            int requestsPerSecond = 5; // 每秒允许的请求数量
-
-            var semaphore = new SemaphoreSlim(maxConcurrentRequests, maxConcurrentRequests);
-            var tasks = new List<Task>();
-
-            foreach (var item in data)
+            await Tools.ExecuteTaskHandle<Article>(data, 5, async (item) =>
             {
-                await semaphore.WaitAsync(); // 等待可用的信号量
-
-                tasks.Add(Task.Run(async () =>
-                {
-                    try
-                    {
-                        // 执行网络请求的代码
-                        string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
-                        var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
-                        item.IsUseReplaceKeyword = R_Status;
-                        item.Rewrite = OriginalValue;
-                        item.Contrast = ContrastValue;
-                        item.IsUseRewrite = O_Status;
-                        item.Title = await model.replice(item.Title);
-                        tamplist.Enqueue(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Error($"OriginalCommand,source  {ex.Source}, {ex.Message}");
-                    }
-                    finally
-                    {
-                        semaphore.Release(); // 释放信号量
-                    }
-                }));
-
-                if (tasks.Count >= requestsPerSecond)
-                {
-                    await Task.WhenAny(tasks); // 等待每秒请求限制
-                    tasks.RemoveAll(t => t.IsCompleted);
-                    await Task.Delay(1000 / requestsPerSecond); // 等待1秒
-                }
-            }
-
-            await Task.WhenAll(tasks); // 等待所有请求完成
+                var result = await _5118.Original(item.Rewrite ?? item.Content, "3", true, IsReplaceKeyWord);
+                await UpdateArticle(item, result);
+            });
             Application.Current.Dispatcher.Invoke(() =>
             {
                 ShowModal.Closing();
             });
-            for (int i = 0; i < tamplist.Count; i++)
+        }
+        /// <summary>
+        /// 更新文章
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public async Task UpdateArticle(Article item, OriginalResult result)
+        {
+            try
             {
-                tamplist.TryDequeue(out var newArticle);
-                Db.Set<Article>().Update(newArticle);
+                //var find = await Db.Set<Article>().FirstAsync(i=> i.Id == item.Id);
+                item.Rewrite = result.NewValue;
+                item.Contrast = result.contrastValue;
+                item.IsUseRewrite = result.OriginalStatus;
+                item.IsUseReplaceKeyword = result.AkeyStatus;
+                await Db.SaveChangesAsync();
             }
-            Db.SaveChanges();
+            catch (Exception e)
+            {
+                throw new LoggingException($"UpdateArticle {e.Message}");
+            }
         }
         /// <summary>
         /// 选择文章
@@ -200,29 +185,33 @@ namespace BeginSEO.ModelView
         /// 对选定的文章进行伪原创
         /// </summary>
         public ICommand InOriginalCommand { get; set; }
-        public void InOriginalHandle(Article item)
+        public ICommand RefreshCommand { get; set; }
+        public async Task InOriginalHandle(Article item)
         {
             ShowModal.ShowLoading();
-            Task.Run(async () =>
+            var ks = await Db.Set<KeyWord>().ToListAsync();
+            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
+            var result = await _5118.Original(item.Rewrite, "3", true, IsReplaceKeyWord);
+            await UpdateArticle(item, result);
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                var model = new Model.ReplaceKeyWord();
-                var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(item.Rewrite, "3", item.IsUseRewrite, item.IsUseReplaceKeyword);
-                Application.Current.Dispatcher.Invoke(() =>
+                if (result.OriginalStatus)
                 {
-                    //var data = GrabList.FirstOrDefault(I=>I.Url == InArticle.Url);
-                    item.Rewrite = OriginalValue;
-                    item.Contrast = ContrastValue;
-                    Db.SaveChanges();
-                    if (item.IsUseRewrite)
-                    {
-                        ShowToast.Show(O_msg, O_Status ? ShowToast.Type.Success : ShowToast.Type.Warning);
-                    }
-                    if (item.IsUseReplaceKeyword)
-                    {
-                        ShowToast.Show(R_msg, O_Status ? ShowToast.Type.Success : ShowToast.Type.Warning);
-                    }
-                    ShowModal.Closing();
-                });
+                    ShowToast.Success(result.OriginalError);
+                }
+                else
+                {
+                    ShowToast.Error(result.OriginalError);
+                }
+                if (result.AkeyStatus)
+                {
+                    ShowToast.Success(result.AkeyError);
+                }
+                else
+                {
+                    ShowToast.Error(result.AkeyError);
+                }
+                ShowModal.Closing();
             });
         }
         public List<string> _Types = new List<string> { "39疾病","全名健康网"};
@@ -265,7 +254,7 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _IsReplaceKeyWord, value);            
             }
         }
-        public bool _IsUseProxy;
+        public bool _IsUseProxy = false;
         public bool IsUseProxy
         {
             get => _IsUseProxy;
@@ -273,6 +262,18 @@ namespace BeginSEO.ModelView
             {
                 _IsUseProxy = value;
                 SetProperty(ref _IsUseProxy, value);
+            }
+        }
+        /// <summary>
+        /// 相似度超标的，不合格
+        /// </summary>
+        public bool _Unqualified = false;
+        public bool Unqualified
+        {
+            get => _Unqualified;
+            set
+            {
+                SetProperty(ref _Unqualified, value);
             }
         }
         public int _GrabCount = 10;
@@ -312,6 +313,7 @@ namespace BeginSEO.ModelView
         {
             Db.Set<Article>()
                 .Where(I=> !I.IsUse)
+                .AsNoTracking()
                 .Load();
             GrabList = Db.Set<Article>().Local.ToObservableCollection();
         }

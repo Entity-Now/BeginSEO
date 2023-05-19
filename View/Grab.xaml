@@ -6,7 +6,8 @@
              xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:BeginSEO.View"
              xmlns:Convert="clr-namespace:BeginSEO.Convert"
-             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -67,6 +68,20 @@
                             <CheckBox x:Name="UseProxy"
                                 IsChecked="{Binding IsUseProxy}"
                                 Content="启用代理"/>
+                            <CheckBox
+                                Content="一键换词"
+                                IsChecked="{Binding IsReplaceKeyWord}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
+                            <CheckBox
+                                Content="对相似度大于70%的进行原创"
+                                IsChecked="{Binding Unqualified}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    Margin="0 5">
                             <Button Margin="10 0"
                                 Content="抓取文章"
                                 Command="{Binding GrabCommand}"
@@ -79,11 +94,6 @@
                                 Content="删除重复的文章"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
                                 Command="{Binding RemoveDuplicateCommand}" Cursor="Hand"/>
-                            <CheckBox
-                                Content="一键换词"
-                                IsChecked="{Binding IsReplaceKeyWord}"
-                                Margin="5 0"
-                                Style="{StaticResource MaterialDesignLightCheckBox}" />
                             <Button
                                 Content="一键伪原创"
                                 Command="{Binding OriginalCommand}"
@@ -93,6 +103,13 @@
                     </StackPanel>
                 </material:Card>
                 <Grid  Grid.Row="2" Margin="10">
+                    <!--刷新按钮-->
+                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                            Command="{Binding RefreshCommand}"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right">
+                        <material:PackIcon Kind="Refresh"/>
+                    </Button>
                     <ListView x:Name="ArticleList" ItemsSource="{Binding Source={StaticResource ArticleData}}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">

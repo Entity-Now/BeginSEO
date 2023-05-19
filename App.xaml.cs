@@ -1,6 +1,7 @@
 ﻿using BeginSEO.ModelView;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
+using BeginSEO.Utils.Dependency;
 using BeginSEO.Utils.Spider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,6 +59,7 @@ namespace BeginSEO {
             services.AddTransient<KeyWordReplaceViewModel>();
             services.AddTransient<EmployViewModel>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<_5118Dependency>();
 
             return services.BuildServiceProvider();
         }

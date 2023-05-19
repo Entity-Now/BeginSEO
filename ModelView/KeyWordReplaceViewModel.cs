@@ -1,7 +1,11 @@
-﻿using BeginSEO.Data;
+﻿using BeginSEO.Components;
+using BeginSEO.Data;
+using BeginSEO.Data.DataEnum;
 using BeginSEO.Model;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
+using BeginSEO.Utils._5118;
+using BeginSEO.Utils.Dependency;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
@@ -13,16 +17,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using Clipboard = System.Windows.Clipboard;
 
 namespace BeginSEO.ModelView
 {
     public class KeyWordReplaceViewModel : ObservableObject
     {
         public readonly dataBank Db;
-        public KeyWordReplaceViewModel(dataBank db)
+        public readonly _5118Dependency _5118s;
+        public KeyWordReplaceViewModel(dataBank db, _5118Dependency _5118s)
         {
             Db = db;
+            this._5118s = _5118s;
             AddKeyWord = new RelayCommand(AddKeyWordHandle);
             RemoveKeyWord = new RelayCommand<KeyWord>(RemoveKeyWordHandle);
             SelectionKeyWord = new RelayCommand<KeyWord>(SelectionKeyWordHandle);
@@ -170,7 +178,6 @@ namespace BeginSEO.ModelView
             }
         }
 
-        public Model.ReplaceKeyWord Model = new Model.ReplaceKeyWord();
         /// <summary>
         /// 添加关键词
         /// </summary>
@@ -261,21 +268,23 @@ namespace BeginSEO.ModelView
                 // 获取剪切板的数据
                 TheOriginal = Clipboard.GetText();
             }
-            var (ContrastValue, OriginalValue, (O_msg, O_Status),(R_msg, R_Status)) = await Model.Original(TheOriginal, Strict, IsOriginal, IsReplace);
-            Similars = ContrastValue;
-            Original = OriginalValue;
+
+            var _5118 = new ReplaceKeyWordTools(KeyWords.ToList(), _5118s.ROriginal, _5118s.RAkey);
+            var result = await _5118.Original(TheOriginal, Strict, IsOriginal, IsReplace);
+            Similars = result.contrastValue;
+            Original = result.NewValue;
             // 判断是否原创成功
             if (IsOriginal)
             {
-                await ShowToast.Show(O_msg);
+                await ShowToast.Show(result.OriginalError);
             }
             if (IsReplace)
             {
-                await ShowToast.Show(R_msg);
+                await ShowToast.Show(result.AkeyError);
             }
             if (IsCopy)
             {
-                Clipboard.SetText(OriginalValue);
+                Clipboard.SetText(Original);
             }
             ShowModal.Closing();
         }

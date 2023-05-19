@@ -26,11 +26,14 @@ namespace BeginSEO.ModelView
             GrabProxysCommand = new RelayCommand(GrabProxysHandle);
             TestSpeedProxyCommand = new RelayCommand(TestSpeedProxy);
             RemoveAllCommand = new RelayCommand(RemoveAll);
+            RefreshCommand = new RelayCommand(() => load());
             load();
         }
         void load()
         {
-            Db.Set<Proxys>().Where(I => I.Status == ProxyStatus.Success).Load();
+            Db.Set<Proxys>().Where(I => I.Status == ProxyStatus.Success)
+                .AsNoTracking()
+                .Load();
             ProxyList = Db.Set<Proxys>().Local.ToObservableCollection();
         }
         public bool _IsUseProxy;
@@ -105,5 +108,7 @@ namespace BeginSEO.ModelView
             }
             Db.SaveChanges();
         }
+
+        public ICommand RefreshCommand { get; set; }
     }
 }

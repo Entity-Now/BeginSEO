@@ -32,7 +32,6 @@ namespace BeginSEO.SQL
                 {
                     if (DbContext.Value == null)
                     {
-                        DbContext.Value = new dataBank();
                     }
                 }
             }

@@ -46,44 +46,44 @@
                     Style="{StaticResource MaterialDesignPaperButton}"
                     Command="{Binding Handle}"/>
         </StackPanel>
-        <ListView ItemsSource="{Binding EmployList}" 
-                  SelectionMode="Extended"
-                  Grid.Row="3">
-            <ListView.View>
-                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="收录明细列明">
-                    <GridViewColumn DisplayMemberBinding="{Binding ID}" Header="序号"></GridViewColumn>
-                    <GridViewColumn Header="是否收录" >
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Status}" Foreground="{Binding Color}">
-                                </TextBlock>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn DisplayMemberBinding="{Binding Url}" Header="Url地址" Width="500"></GridViewColumn>
-                </GridView>
-            </ListView.View>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="ContextMenu">
-                        <Setter.Value>
-                            <ContextMenu>
-                                <MenuItem Header="复制" 
+        <Grid Grid.Row="3">
+            <ListView ItemsSource="{Binding EmployList}" 
+                  SelectionMode="Extended">
+                <ListView.View>
+                    <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="收录明细列明">
+                        <GridViewColumn DisplayMemberBinding="{Binding ID}" Header="序号"></GridViewColumn>
+                        <GridViewColumn Header="是否收录" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Status}" Foreground="{Binding Color}">
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Url}" Header="Url地址" Width="500"></GridViewColumn>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu>
+                                    <MenuItem Header="复制" 
                                           Command="{Binding Value.CommandCopy,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
-                                <MenuItem Header="只显示已收录的链接" 
+                                    <MenuItem Header="只显示已收录的链接" 
                                           Command="{Binding Value.CommandShowEmploy,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
-                                <MenuItem Header="删除" 
+                                    <MenuItem Header="删除" 
                                           Command="{Binding Value.CommandRemove,Source={StaticResource ControlContext}}"
                                           CommandParameter="{Binding}"/>
-                                
-                            </ContextMenu>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <!--<ListView.ContextMenu>
+
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <!--<ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="复制" 
                                           Command="{Binding DataContext.CommandRemove}"
@@ -92,6 +92,7 @@
                                           CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},Path= PlacementTarget}"/>
                 </ContextMenu>
             </ListView.ContextMenu>-->
-        </ListView>
+            </ListView>
+        </Grid>
     </Grid>
 </UserControl>

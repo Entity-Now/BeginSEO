@@ -1,6 +1,7 @@
 ﻿using BeginSEO.Data;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -256,5 +257,45 @@ namespace BeginSEO.Utils
         {
             App.Current.Dispatcher.Invoke(func);
         }
+        /// <summary>
+        /// 异步执行任务，并且限制每秒指定数量
+        /// </summary>
+        /// <typeparam name="TRequest"></typeparam>
+        /// <param name="requests"></param>
+        /// <param name="maxRequestsPerSecond"></param>
+        /// <param name="requestHandler"></param>
+        /// <returns></returns>
+        public static async Task ExecuteTaskHandle<TRequest>(IEnumerable<TRequest> requests, int maxRequestsPerSecond, Func<TRequest, Task> requestHandler)
+        {
+            // 创建信号量，限制每秒的请求数量
+            SemaphoreSlim semaphore = new SemaphoreSlim(maxRequestsPerSecond, maxRequestsPerSecond);
+
+            // 创建计时器，用于控制每秒请求数量
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            foreach (var request in requests)
+            {
+                // 等待信号量，控制每秒的请求数量
+                await semaphore.WaitAsync();
+
+                // 执行请求的异步方法
+                Task task = requestHandler(request);
+
+                // 在任务完成后释放信号量
+                task.ContinueWith(t => semaphore.Release());
+
+                // 检查计时器，如果已经过了1秒，则等待剩余时间
+                if (stopwatch.ElapsedMilliseconds >= 1000)
+                {
+                    var remainingMilliseconds = 1000 - (int)stopwatch.ElapsedMilliseconds;
+                    if (remainingMilliseconds > 0)
+                    {
+                        await Task.Delay(remainingMilliseconds);
+                    }
+                    stopwatch.Restart();
+                }
+            }
+        }
+
     }
 }
