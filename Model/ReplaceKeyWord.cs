@@ -2,6 +2,7 @@
 using BeginSEO.SQL;
 using BeginSEO.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +17,13 @@ namespace BeginSEO.Model
     {
         public async Task<string> replice(string Source = null, bool IsLevel = false)
         {
-            var Db = ServiceLocator.GetService<dataBank>();
             string Text = Source;
             if (string.IsNullOrWhiteSpace(Text))
             {
                 return Text;
             }
 
-            var list = await Db.Set<KeyWord>()
+            var list = await DataAccess.GetContext().Set<KeyWord>()
                 .Where(I => I.Type != true)
                 .Where(I => !IsLevel || I.level == -1) // 使用逻辑非和简化条件判断
                 .OrderByDescending(I => I.Key.Length)
@@ -45,9 +45,9 @@ namespace BeginSEO.Model
         }
         public async Task<(float, string, (string , bool), (string , bool))> Original(string source, string strict, bool IsOriginal, bool IsReplace)
         {
+
             (string O_Msg, bool O_Status) = ("未开启原创", false);
             (string R_Msg, bool R_Status) = ("未开启换词", false);
-            var Db = ServiceLocator.GetService<dataBank>();
             string tempValue = await replice(source, true);
             float Similarty = -1;
 
@@ -69,7 +69,7 @@ namespace BeginSEO.Model
             }
             if (IsReplace)
             {
-                var filterKeyWord = Db.Set<KeyWord>()
+                var filterKeyWord = DataAccess.GetContext().Set<KeyWord>()
                 .Where(kw => kw.Type)
                 .Select(kw => kw.Value.Replace(",", "|"))
                 .ToList()  // 将结果加载到内存中

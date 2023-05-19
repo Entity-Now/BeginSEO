@@ -9,7 +9,7 @@ namespace BeginSEO.Utils
 {
     public static class ServiceLocator
     {
-        private static IServiceProvider serviceProvider;
+        public static IServiceProvider serviceProvider;
 
         public static void Initialize(IServiceProvider provider)
         {
@@ -18,7 +18,7 @@ namespace BeginSEO.Utils
 
         public static T GetService<T>()
         {
-            return serviceProvider.GetService<T>();
+            return serviceProvider.GetRequiredService<T>();
         }
     }
 

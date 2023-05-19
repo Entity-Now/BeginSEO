@@ -16,11 +16,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BeginSEO.SQL
 {
     public static class DataAccess
     {
+        private static readonly object _lock = new object();
+        private static ThreadLocal<dataBank> DbContext = new ThreadLocal<dataBank>();
+        public static dataBank GetContext()
+        {
+            if (DbContext.Value == null)
+            {
+                lock (_lock)
+                {
+                    if (DbContext.Value == null)
+                    {
+                        DbContext.Value = new dataBank();
+                    }
+                }
+            }
+            return DbContext.Value;
+        }
+
         public static void Insert<T>(this dataBank BeginContext, T item) where T : class
         {
             BeginContext.Set<T>().Add(item);

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -32,7 +33,7 @@ namespace BeginSEO.ModelView
             RemoveAllCommand = new RelayCommand(RemoveAllHandle);
             SelectCommand = new RelayCommand<Article>(SelectHandle);
             BackCommand = new RelayCommand(() => Page = 0);
-            OriginalCommand = new AsyncRelayCommand(OriginalHandle);
+            OriginalCommand = new RelayCommand(OriginalHandle);
             ChangeState = new RelayCommand<bool>(ChangeStateHandle);
             InOriginalCommand = new RelayCommand<Article>(InOriginalHandle);
             RemoveDuplicateCommand = new RelayCommand(RemoveDuplicate);
@@ -119,83 +120,67 @@ namespace BeginSEO.ModelView
         /// 对文章进行伪原创
         /// </summary>
         public ICommand OriginalCommand { get; set; }
-        public async Task OriginalHandle()
+        public async void OriginalHandle()
         {
             ShowModal.ShowLoading();
             var model = new Model.ReplaceKeyWord();
+            var tamplist = new ConcurrentQueue<Article>();
             var data = GrabList.Where(I => I.IsUseRewrite == false || I.IsUseReplaceKeyword == false || I.Contrast == 0)
                 .Take(5);
+
+            int maxConcurrentRequests = 5; // 同时允许的最大请求数量
+            int requestsPerSecond = 5; // 每秒允许的请求数量
+
+            var semaphore = new SemaphoreSlim(maxConcurrentRequests, maxConcurrentRequests);
+            var tasks = new List<Task>();
+
             foreach (var item in data)
             {
-                // 执行网络请求的代码
-                string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
-                var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
-                string title = await model.replice(item.Title);
-                Application.Current.Dispatcher.Invoke(() =>
+                await semaphore.WaitAsync(); // 等待可用的信号量
+
+                tasks.Add(Task.Run(async () =>
                 {
-                    item.IsUseReplaceKeyword = R_Status;
-                    item.Rewrite = OriginalValue;
-                    item.Contrast = ContrastValue;
-                    item.IsUseRewrite = O_Status;
-                    item.Title = title;
-                    var result = Db.SaveChanges();
-                    if (result <= 0)
+                    try
                     {
-                        ShowToast.Error("保存失败~");
+                        // 执行网络请求的代码
+                        string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
+                        var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
+                        item.IsUseReplaceKeyword = R_Status;
+                        item.Rewrite = OriginalValue;
+                        item.Contrast = ContrastValue;
+                        item.IsUseRewrite = O_Status;
+                        item.Title = await model.replice(item.Title);
+                        tamplist.Enqueue(item);
                     }
-                });
+                    catch (Exception ex)
+                    {
+                        Logging.Error($"OriginalCommand,source  {ex.Source}, {ex.Message}");
+                    }
+                    finally
+                    {
+                        semaphore.Release(); // 释放信号量
+                    }
+                }));
+
+                if (tasks.Count >= requestsPerSecond)
+                {
+                    await Task.WhenAny(tasks); // 等待每秒请求限制
+                    tasks.RemoveAll(t => t.IsCompleted);
+                    await Task.Delay(1000 / requestsPerSecond); // 等待1秒
+                }
             }
-            //int maxConcurrentRequests = 5; // 同时允许的最大请求数量
-            //int requestsPerSecond = 5; // 每秒允许的请求数量
 
-            //var semaphore = new SemaphoreSlim(maxConcurrentRequests, maxConcurrentRequests);
-            //var tasks = new List<Task>();
-
-            //foreach(var item in data)
-            //{
-            //    await semaphore.WaitAsync(); // 等待可用的信号量
-
-            //    tasks.Add(Task.Run(async () =>
-            //    {
-            //        try
-            //        {
-            //            // 执行网络请求的代码
-            //            string waitStr = string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite;
-            //            var (ContrastValue, OriginalValue, (O_msg, O_Status), (R_msg, R_Status)) = await model.Original(waitStr, "3", true, IsReplaceKeyWord);
-            //            string title = await model.replice(item.Title);
-            //            Application.Current.Dispatcher.Invoke(()=>
-            //            {
-            //                item.IsUseReplaceKeyword = R_Status;
-            //                item.Rewrite = OriginalValue;
-            //                item.Contrast = ContrastValue;
-            //                item.IsUseRewrite = O_Status;
-            //                item.Title = title;
-            //                var result = Db.SaveChanges();
-            //                if (result <= 0)
-            //                {
-            //                    ShowToast.Error("保存失败~");
-            //                }
-            //            });
-            //        }
-            //        finally
-            //        {
-            //            semaphore.Release(); // 释放信号量
-            //        }
-            //    }));
-
-            //    if (tasks.Count >= requestsPerSecond)
-            //    {
-            //        await Task.WhenAny(tasks); // 等待每秒请求限制
-            //        tasks.RemoveAll(t => t.IsCompleted);
-            //        await Task.Delay(1000 / requestsPerSecond); // 等待1秒
-            //    }
-            //}
-
-            //await Task.WhenAll(tasks); // 等待所有请求完成
-            //Application.Current.Dispatcher.Invoke(() =>
-            //{
-            //    ShowModal.Closing();
-            //});
+            await Task.WhenAll(tasks); // 等待所有请求完成
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                ShowModal.Closing();
+            });
+            for (int i = 0; i < tamplist.Count; i++)
+            {
+                tamplist.TryDequeue(out var newArticle);
+                Db.Set<Article>().Update(newArticle);
+            }
+            Db.SaveChanges();
         }
         /// <summary>
         /// 选择文章

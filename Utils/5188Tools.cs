@@ -10,6 +10,7 @@ using BeginSEO.Data;
 using BeginSEO.Data.DataEnum;
 using BeginSEO.SQL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace BeginSEO.Utils
@@ -62,8 +63,8 @@ namespace BeginSEO.Utils
         {
             try
             {
-                var Context = ServiceLocator.GetService<dataBank>(); ;
-                var Data = Context.Set<Settings>().FirstOrDefault(I => I.Name == Sm.ToString());
+
+                var Data = DataAccess.GetContext().Set<Settings>().FirstOrDefault(I => I.Name == Sm.ToString());
                 if (Data == null)
                 {
                     throw new Exception("您还未添加API的key，请到设置页面添加KEY");

@@ -4,10 +4,12 @@ using BeginSEO.Utils;
 using BeginSEO.Utils.Spider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -42,7 +44,13 @@ namespace BeginSEO {
         {
             var services = new ServiceCollection();
             // 注册DbContext
-            services.AddDbContext<dataBank>();
+            services.AddDbContextPool<dataBank>(option =>
+            {
+                string path = $"{Environment.CurrentDirectory}/数据库";
+                Directory.CreateDirectory(path);
+                option.UseSqlite($"Data Source={path}/BeginSeo.db");
+            });
+            //services.AddDbContext<dataBank>();
             // 注册其他依赖项
             services.AddTransient<MainWindow>();
             services.AddTransient<GrabViewModel>();
