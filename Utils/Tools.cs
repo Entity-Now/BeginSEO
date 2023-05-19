@@ -287,11 +287,7 @@ namespace BeginSEO.Utils
                 // 检查计时器，如果已经过了1秒，则等待剩余时间
                 if (stopwatch.ElapsedMilliseconds >= 1000)
                 {
-                    var remainingMilliseconds = 1000 - (int)stopwatch.ElapsedMilliseconds;
-                    if (remainingMilliseconds > 0)
-                    {
-                        await Task.Delay(remainingMilliseconds);
-                    }
+                    await Task.Delay(1000);
                     stopwatch.Restart();
                 }
             }

@@ -137,7 +137,7 @@ namespace BeginSEO.ModelView
 
             await Tools.ExecuteTaskHandle<Article>(data, 5, async (item) =>
             {
-                var result = await _5118.Original(item.Rewrite ?? item.Content, "3", true, IsReplaceKeyWord);
+                var result = await _5118.Original(item.Content, "3", true, IsReplaceKeyWord);
                 await UpdateArticle(item, result);
             });
             Application.Current.Dispatcher.Invoke(() =>
