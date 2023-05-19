@@ -103,13 +103,6 @@
                     </StackPanel>
                 </material:Card>
                 <Grid  Grid.Row="2" Margin="10">
-                    <!--刷新按钮-->
-                    <Button Style="{StaticResource MaterialDesignIconButton}"
-                            Command="{Binding RefreshCommand}"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Right">
-                        <material:PackIcon Kind="Refresh"/>
-                    </Button>
                     <ListView x:Name="ArticleList" ItemsSource="{Binding Source={StaticResource ArticleData}}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -134,6 +127,13 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+                    <!--刷新按钮-->
+                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                            Command="{Binding RefreshCommand}"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right">
+                        <material:PackIcon Kind="Refresh"/>
+                    </Button>
                 </Grid>
             </Grid>
         </material:TransitionerSlide>

@@ -41,9 +41,17 @@
                   Command="{Binding TestSpeedProxyCommand}"
                   ToolTip="测速已抓取的代理IP" />
         </StackPanel>
-        <ListView Grid.Row="1" 
-                  ItemsSource="{Binding Source={StaticResource ViewProxyList}}"
-                  Grid.ColumnSpan="2">
+        <Grid Grid.Row="1"
+              Grid.ColumnSpan="2">
+            <ListView
+                  ItemsSource="{Binding Source={StaticResource ViewProxyList}}">
+                <ListView.View>
+                    <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="所有代理IP">
+                        <GridViewColumn Header="IP" DisplayMemberBinding="{Binding IP}"/>
+                        <GridViewColumn Header="响应速度" DisplayMemberBinding="{Binding Speed}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
             <!--刷新按钮-->
             <Button Style="{StaticResource MaterialDesignIconButton}"
                     Command="{Binding RefreshCommand}"
@@ -51,12 +59,6 @@
                     HorizontalAlignment="Right">
                 <materialDesign:PackIcon Kind="Refresh"/>
             </Button>
-            <ListView.View>
-                <GridView AllowsColumnReorder="True" ColumnHeaderToolTip="所有代理IP">
-                    <GridViewColumn Header="IP" DisplayMemberBinding="{Binding IP}"/>
-                    <GridViewColumn Header="响应速度" DisplayMemberBinding="{Binding Speed}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        </Grid>
     </Grid>
 </UserControl>

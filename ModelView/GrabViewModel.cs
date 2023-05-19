@@ -313,7 +313,6 @@ namespace BeginSEO.ModelView
         {
             Db.Set<Article>()
                 .Where(I=> !I.IsUse)
-                .AsNoTracking()
                 .Load();
             GrabList = Db.Set<Article>().Local.ToObservableCollection();
         }

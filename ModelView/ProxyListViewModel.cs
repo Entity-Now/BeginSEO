@@ -32,7 +32,6 @@ namespace BeginSEO.ModelView
         void load()
         {
             Db.Set<Proxys>().Where(I => I.Status == ProxyStatus.Success)
-                .AsNoTracking()
                 .Load();
             ProxyList = Db.Set<Proxys>().Local.ToObservableCollection();
         }
