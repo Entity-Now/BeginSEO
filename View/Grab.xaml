@@ -60,7 +60,7 @@
                             </ListBox>
                         </Grid>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="抓取数量" 
+                            <TextBlock Text="抓取页数" 
                                 Margin="10 0"
                                 VerticalAlignment="Center"/>
                             <TextBox material:HintAssist.Hint="设置抓取数量"

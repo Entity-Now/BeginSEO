@@ -54,8 +54,8 @@ namespace BeginSEO.Utils.Spider
                 var (Links, NextPage) = await Article.DeSerializeLinks(result);
                 ArticleList.AddRange(Links);
 
-                int residue = (int)Math.Ceiling((double)(GrabCount / (Article.inCount * unfinished)));
-                if (residue != 1)
+                //int residue = (int)Math.Ceiling((double)(GrabCount / (Article.inCount * unfinished)));
+                if (unfinished >= GrabCount)
                 {
                     await Task.Delay(random.Next(3000));
                     this.Link = NextPage;
