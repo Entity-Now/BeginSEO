@@ -55,7 +55,7 @@ namespace BeginSEO.Utils.Spider
                 ArticleList.AddRange(Links);
 
                 //int residue = (int)Math.Ceiling((double)(GrabCount / (Article.inCount * unfinished)));
-                if (unfinished >= GrabCount)
+                if (unfinished < GrabCount)
                 {
                     await Task.Delay(random.Next(3000));
                     this.Link = NextPage;
@@ -63,7 +63,7 @@ namespace BeginSEO.Utils.Spider
                 }
                 else
                 {
-                    unfinished = 1;
+                    unfinished = 0;
                 }
 
             } while ((RequestError > 0 && RequestError < 3) || unfinished > 1);
