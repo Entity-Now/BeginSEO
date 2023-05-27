@@ -69,7 +69,7 @@ namespace BeginSEO.Utils.Spider
                 {
                     NextPage = $"https://{host}{NextPage}";
                 }
-                else
+                else if(NextPage.IndexOf('/') == -1)
                 {
                     var Path = res.RequestMessage.RequestUri.AbsoluteUri;
                     var lastIndex = Path.LastIndexOf("/");
@@ -86,14 +86,14 @@ namespace BeginSEO.Utils.Spider
         {
             string host = res.RequestMessage.RequestUri.Host;
             var html = new HtmlDocument();
-            html.LoadHtml(await Tools.GetHtmlFromUrl(res, Encoding.GetEncoding("GB2312")));
+            html.LoadHtml(await Tools.GetHtmlFromUrl(res));
 
             Content = html.DocumentNode.SelectNodes(xGetContent(host)).Aggregate(string.Empty, (newVal, oldVal) =>
             {
                 return newVal + "\n" + oldVal.InnerText;
             });
             Title = html.DocumentNode.SelectSingleNode(@"//title").InnerText;
-            Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'Description')]").
+            Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'description')]").
                 GetAttributeValue("content", "null");
 
             return this;

@@ -118,16 +118,15 @@ namespace BeginSEO.Utils
         /// <param name="url"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        public static async Task<string> GetHtmlFromUrl(HttpResponseMessage res, Encoding encoding)
+        public static async Task<string> GetHtmlFromUrl(HttpResponseMessage res)
         {
-            var bys = await res.Content.ReadAsByteArrayAsync();
-            string htmlString = encoding.GetString(bys);
+            var htmlString = await res.Content.ReadAsStringAsync();
 
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlString);
 
             // 将 HTML 文档中的编码设置为指定的编码
-            htmlDoc.OptionDefaultStreamEncoding = encoding;
+            htmlDoc.OptionDefaultStreamEncoding = Encoding.GetEncoding(htmlDoc.DocumentNode.SelectSingleNode("//meta").GetAttributeValue("charset", "UTF-8"));
 
             return htmlDoc.DocumentNode.InnerHtml;
         }
