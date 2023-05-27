@@ -74,8 +74,18 @@
                                 Margin="5 0"
                                 Style="{StaticResource MaterialDesignLightCheckBox}" />
                             <CheckBox
+                                Content="一键重写"
+                                IsChecked="{Binding IsRewrite}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
+                            <CheckBox
                                 Content="对相似度大于70%的进行原创"
                                 IsChecked="{Binding Unqualified}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
+                            <CheckBox
+                                Content="重写所有文章"
+                                IsChecked="{Binding OriginalAll}"
                                 Margin="5 0"
                                 Style="{StaticResource MaterialDesignLightCheckBox}" />
                         </StackPanel>

@@ -129,15 +129,25 @@ namespace BeginSEO.ModelView
         public async Task OriginalHandle()
         {
             ShowModal.ShowLoading();
-            var data = Db.Set<Article>()
-                .Where(I => !Unqualified ? I.Contrast <= 0 : (I.Contrast > 70 || I.Contrast <= 0))
-                .Where(I => !I.IsUse);
+            IQueryable<Article> data;
+            if (OriginalAll)
+            {
+                data = Db.Set<Article>()
+                    .Where(I => !I.IsUse);
+            }
+            else
+            {
+                data = Db.Set<Article>()
+                    .Where(I => !Unqualified ? I.Contrast <= 0 : (I.Contrast > 70 || I.Contrast <= 0))
+                    .Where(I => !I.IsUse);
+            }
             var ks = Db.Set<KeyWord>().ToList();
             var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
 
             await Tools.ExecuteTaskHandle<Article>(data, 5, async (item) =>
             {
-                var result = await _5118.Original(item.Content, "3", true, IsReplaceKeyWord);
+                var result = await _5118.Original(item.Content, "3", IsRewrite, IsReplaceKeyWord);
+                item.Title = _5118.replaceKeyWord(item.Title);
                 await UpdateArticle(item, result);
             });
             Application.Current.Dispatcher.Invoke(() =>
@@ -191,7 +201,7 @@ namespace BeginSEO.ModelView
             ShowModal.ShowLoading();
             var ks = await Db.Set<KeyWord>().ToListAsync();
             var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
-            var result = await _5118.Original(item.Rewrite, "3", true, IsReplaceKeyWord);
+            var result = await _5118.Original(item.Rewrite, "3", IsRewrite, IsReplaceKeyWord);
             await UpdateArticle(item, result);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -245,13 +255,31 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _InArticle, value);
             }
         }
-        public bool _IsReplaceKeyWord = false;
+        public bool _IsReplaceKeyWord = true;
         public bool IsReplaceKeyWord
         {
             get { return _IsReplaceKeyWord; }
             set 
             { 
                 SetProperty(ref _IsReplaceKeyWord, value);            
+            }
+        }
+        public bool _IsRewrite = true;
+        public bool IsRewrite
+        {
+            get => _IsRewrite;
+            set
+            {
+                SetProperty(ref _IsRewrite, value);
+            }
+        }
+        public bool _OriginalAll = false;
+        public bool OriginalAll
+        {
+            get=> _OriginalAll;
+            set
+            {
+                SetProperty(ref _OriginalAll, value);
             }
         }
         public bool _IsUseProxy = false;
