@@ -108,6 +108,7 @@ namespace BeginSEO.Utils
             catch (Exception e)
             {
                 throw new LoggingException($"Original {e.Message}");
+                throw e;
             }
 
         }

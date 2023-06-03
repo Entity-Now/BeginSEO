@@ -1,4 +1,5 @@
 ﻿using BeginSEO.Data.DataEnum;
+using BeginSEO.Utils.Exceptions;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
@@ -93,8 +94,18 @@ namespace BeginSEO.Utils.Spider
                 return newVal + "\n" + oldVal.InnerText;
             });
             Title = html.DocumentNode.SelectSingleNode(@"//title").InnerText;
-            Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'description')]").
-                GetAttributeValue("content", "null");
+            try
+            {
+                Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'description')]").
+                    GetAttributeValue("content", "null");
+            }
+            catch (Exception e)
+            {
+                Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'Description')]").
+                    GetAttributeValue("content", "null");
+                throw new LoggingException("DeSerializeArticle" +  e.Message);
+            }
+
 
             return this;
         }

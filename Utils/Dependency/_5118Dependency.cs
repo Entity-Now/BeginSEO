@@ -18,9 +18,9 @@ namespace BeginSEO.Utils.Dependency
         public _5118Dependency(dataBank db)
         {
             // 获取5118API的key
-            //var keys = db.Set<Settings>().ToList();
-            //ROriginal = _5188Tools.Original(keys.GetSettingValue(SettingsEnum.Original));
-            //RAkey = _5188Tools.Akey(keys.GetSettingValue(SettingsEnum.ReplaceKeyWord));
+            var keys = db.Set<Settings>().ToList();
+            ROriginal = _5188Tools.Original(keys.GetSettingValue(SettingsEnum.Original));
+            RAkey = _5188Tools.Akey(keys.GetSettingValue(SettingsEnum.ReplaceKeyWord));
         }
     }
 }

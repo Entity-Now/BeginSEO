@@ -129,22 +129,22 @@ namespace BeginSEO.ModelView
         public async Task OriginalHandle()
         {
             ShowModal.ShowLoading();
-            IQueryable<Article> data;
-            if (OriginalAll)
+            IQueryable<Article> data = Db.Set<Article>()
+                                                .Where(I => !I.IsUse);
+
+            if (!OriginalAll)
             {
-                data = Db.Set<Article>()
-                    .Where(I => !I.IsUse);
+                data = data
+                    .Where(I => I.Contrast <= 0);
             }
-            else
+            if (Unqualified)
             {
-                data = Db.Set<Article>()
-                    .Where(I => !Unqualified ? I.Contrast <= 0 : (I.Contrast > 70 || I.Contrast <= 0))
-                    .Where(I => !I.IsUse);
+                data = data.Where(I => I.Contrast >= 70);
             }
             var ks = Db.Set<KeyWord>().ToList();
             var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
 
-            await Tools.ExecuteTaskHandle<Article>(data, 5, async (item) =>
+            await Tools.ExecuteTaskHandle(data, 5, async (item) =>
             {
                 var result = await _5118.Original(string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite, "3", IsRewrite, IsReplaceKeyWord);
                 item.Title = _5118.replaceKeyWord(item.Title);
