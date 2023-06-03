@@ -23,7 +23,7 @@ namespace BeginSEO.ModelView
         public ProxyListViewModel(dataBank db) 
         {
             Db = db;
-            GrabProxysCommand = new RelayCommand(GrabProxysHandle);
+            GrabProxysCommand = new AsyncRelayCommand(GrabProxysHandle);
             TestSpeedProxyCommand = new RelayCommand(TestSpeedProxy);
             RemoveAllCommand = new RelayCommand(RemoveAll);
             RefreshCommand = new RelayCommand(() => load());
@@ -54,29 +54,25 @@ namespace BeginSEO.ModelView
             }
         }
         public ICommand GrabProxysCommand { get; set; }
-        public void GrabProxysHandle()
+        public async Task GrabProxysHandle()
         {
             ShowModal.ShowLoading();
-            Task.Run(async () =>
+            var proxyList = await GrabProxys.RequestAll();
+            Proxys proxys = null;
+            while (proxyList.TryDequeue(out proxys))
             {
-                var proxyList = await GrabProxys.RequestAll();
-
-                await Application.Current.Dispatcher.Invoke(async () =>
+                var findData = await Db.Set<Proxys>().FirstOrDefaultAsync(I => I.IP == proxys.IP && I.Port == proxys.Port);
+                if (findData != null)
                 {
-                    await ShowToast.Show($"成功获取{ProxyList.Count}个IP代理..");
-                    Proxys proxys = null;
-                    while (proxyList.TryDequeue(out proxys))
-                    {
-                        var findData = ProxyList.FirstOrDefault(I => I.IP == proxys.IP && I.Port == proxys.Port);
-                        if (findData != null)
-                        {
-                            continue;
-                        }
-                        ProxyList.Add(proxys);
-                    }
-                    await Db.SaveChangesAsync();
-                    ShowModal.Closing();
-                });
+                    continue;
+                }
+                Db.Set<Proxys>().Add(proxys);
+            }
+            await Db.SaveChangesAsync();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                ShowToast.Show($"成功获取{ProxyList.Count}个IP代理..");
+                ShowModal.Closing();
             });
         }
         public ICommand TestSpeedProxyCommand { get; set; }

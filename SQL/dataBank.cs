@@ -19,12 +19,12 @@ namespace BeginSEO.SQL
     public class dataBank : DbContext
     {
         public dataBank(DbContextOptions<dataBank> option) : base(option) { }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            //string path = $"{Environment.CurrentDirectory}/数据库";
-            //Directory.CreateDirectory(path);
-            //optionsBuilder.UseSqlite($"Data Source={path}/BeginSeo.db");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    //string path = $"{Environment.CurrentDirectory}/数据库";
+        //    //Directory.CreateDirectory(path);
+        //    //optionsBuilder.UseSqlite($"Data Source={path}/BeginSeo.db");
+        //}
         //public dataBank() { }   
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

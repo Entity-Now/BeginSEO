@@ -2,6 +2,7 @@
 using BeginSEO.SQL;
 using BeginSEO.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace BeginSEO.View
         public readonly dataBank Db;
         public Login()
         {
-            Db = ServiceLocator.GetService<dataBank>();
+            Db = App.Current.Services.GetRequiredService<dataBank>();
             InitializeComponent();
             webView.NavigationStarting += NavigationStaring;
             webView.NavigationCompleted += NavigationCompleted;

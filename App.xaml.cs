@@ -36,7 +36,6 @@ namespace BeginSEO {
             base.OnStartup(e);
 
             Services = ConfigureServices();
-            ServiceLocator.Initialize(Services);
         }
         /// <summary>
         /// Configures the services for the application.
@@ -59,8 +58,8 @@ namespace BeginSEO {
             services.AddTransient<KeyWordReplaceViewModel>();
             services.AddTransient<EmployViewModel>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<ProxyListViewModel>();
             services.AddTransient<_5118Dependency>();
-
             return services.BuildServiceProvider();
         }
 

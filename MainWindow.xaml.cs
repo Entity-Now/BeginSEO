@@ -32,14 +32,22 @@ namespace BeginSEO
     public partial class MainWindow : Window
     {
         private Dictionary<string, object> PageList = new Dictionary<string, object>();
-        public MainWindow() {
+        public MainWindow()
+        {
             InitializeComponent();
-            // 注入提示框
+            // 判断数据库是否已生成
+            App.Current.Services.GetRequiredService<dataBank>()
+                .InitDataBase();
             Inject();
-            // 获取所有窗口
+            makeNav();
+        }
+        // 动态生成导航栏
+        void makeNav()
+        {
+            // 反射获取所有窗口类
             var data = getReflex.Get<PagesAttribute>("BeginSEO")
-                .OrderBy(I=> I.GetCustomAttribute<PagesAttribute>().Orderby)
-                .ThenByDescending(I=> I.GetCustomAttribute<PagesAttribute>().Name.Length);
+                .OrderBy(I => I.GetCustomAttribute<PagesAttribute>().Orderby)
+                .ThenByDescending(I => I.GetCustomAttribute<PagesAttribute>().Name.Length);
             foreach (var page in data)
             {
                 var PageInfo = page.GetCustomAttribute<PagesAttribute>();
@@ -60,7 +68,7 @@ namespace BeginSEO
                 {
                     temp_page = Activator.CreateInstance(page);
                     if (temp_page is UserControl home)
-                    { 
+                    {
                         Type Page_Type = (Type)temp_page.GetType().GetField("MyType")?.GetValue(null);
                         if (Page_Type != null)
                         {
@@ -82,7 +90,7 @@ namespace BeginSEO
                 }
             }
         }
-
+        // 注入dom
         void Inject()
         {
             ShowToast.Snackbar = MainSnackbar;

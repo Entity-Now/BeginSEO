@@ -22,20 +22,24 @@ namespace BeginSEO.SQL
 {
     public static class DataAccess
     {
-        private static readonly object _lock = new object();
-        private static ThreadLocal<dataBank> DbContext = new ThreadLocal<dataBank>();
-        public static dataBank GetContext()
+        /// <summary>
+        /// 初始化数据库
+        /// </summary>
+        public static void InitDataBase(this dataBank context)
         {
-            if (DbContext.Value == null)
+            // 初始化
+            var Ensure = context.Database.EnsureCreated();
+            if (context.Database.GetPendingMigrations().Any())
             {
-                lock (_lock)
+                try
                 {
-                    if (DbContext.Value == null)
-                    {
-                    }
+                    context.Database.Migrate(); //执行迁移
+                }
+                catch (Exception e)
+                {
+                    Logging.Error(e.Message);
                 }
             }
-            return DbContext.Value;
         }
 
         public static void Insert<T>(this dataBank BeginContext, T item) where T : class

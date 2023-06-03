@@ -146,7 +146,7 @@ namespace BeginSEO.ModelView
 
             await Tools.ExecuteTaskHandle<Article>(data, 5, async (item) =>
             {
-                var result = await _5118.Original(item.Content, "3", IsRewrite, IsReplaceKeyWord);
+                var result = await _5118.Original(string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite, "3", IsRewrite, IsReplaceKeyWord);
                 item.Title = _5118.replaceKeyWord(item.Title);
                 await UpdateArticle(item, result);
             });
@@ -166,10 +166,13 @@ namespace BeginSEO.ModelView
             try
             {
                 //var find = await Db.Set<Article>().FirstAsync(i=> i.Id == item.Id);
+                if (!OriginalAll)
+                {
+                    item.Contrast = result.contrastValue;
+                    item.IsUseRewrite = result.OriginalStatus;
+                    item.IsUseReplaceKeyword = result.AkeyStatus;
+                }
                 item.Rewrite = result.NewValue;
-                item.Contrast = result.contrastValue;
-                item.IsUseRewrite = result.OriginalStatus;
-                item.IsUseReplaceKeyword = result.AkeyStatus;
                 await Db.SaveChangesAsync();
             }
             catch (Exception e)
