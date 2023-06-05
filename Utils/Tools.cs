@@ -124,11 +124,24 @@ namespace BeginSEO.Utils
 
             HtmlDocument htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(htmlString);
+            string encoding = htmlDoc.DocumentNode.SelectSingleNode("//meta[@charset]").GetAttributeValue("charset", "UTF-8");
+            var encodeVal = await res.Content.ReadAsByteArrayAsync();
+            return encodeVal.AnyToUTF8(encoding);
+        }
+        public static string AnyToUTF8(this byte[] source, string encoding)
+        {
+            // GB2312 编码
+            Encoding gb2312 = Encoding.GetEncoding(encoding);
 
-            // 将 HTML 文档中的编码设置为指定的编码
-            htmlDoc.OptionDefaultStreamEncoding = Encoding.GetEncoding(htmlDoc.DocumentNode.SelectSingleNode("//meta").GetAttributeValue("charset", "UTF-8"));
+            // UTF-8 编码
+            Encoding utf8 = Encoding.UTF8;
 
-            return htmlDoc.DocumentNode.InnerHtml;
+            var newByte = Encoding.Convert(gb2312, utf8, source);
+
+            // 使用 UTF-8 编码将字节数组转换为字符串
+            string utf8Content = utf8.GetString(newByte);
+
+            return utf8Content;
         }
         public static string SerializerJson(object obj)
         {

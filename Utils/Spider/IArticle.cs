@@ -94,19 +94,6 @@ namespace BeginSEO.Utils.Spider
                 return newVal + "\n" + oldVal.InnerText;
             });
             Title = html.DocumentNode.SelectSingleNode(@"//title").InnerText;
-            try
-            {
-                Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'description')]").
-                    GetAttributeValue("content", "null");
-            }
-            catch (Exception e)
-            {
-                Description = html.DocumentNode.SelectSingleNode(@"//meta[contains(@name, 'Description')]").
-                    GetAttributeValue("content", "null");
-                throw new LoggingException("DeSerializeArticle" +  e.Message);
-            }
-
-
             return this;
         }
     }

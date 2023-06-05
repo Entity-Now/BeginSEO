@@ -41,7 +41,8 @@ namespace BeginSEO.Utils.Spider
                 {"news.fh21.com.cn","article-content" },
                 {"disease.39.net","page4txt" },
                 {"cm.39.net","art_con" },
-                {"yyk.familydoctor.com.cn", "zwen" }
+                {"yyk.familydoctor.com.cn", "zwen" },
+                {"www.mingyihui.net","articleText" }
             };
             List<string> LinksTemplate = new List<string>()
             {
@@ -51,6 +52,8 @@ namespace BeginSEO.Utils.Spider
                 @"//div[contains(@class, '{0}')]/div/div/a/@href",
                 // 家庭医生
                 @"//ul[contains(@class, '{0}')]/li/*/a/@href",
+                // 名医汇
+                @"//ul[contains(@class, '{0}')]/a/@href"
             };
             List<string> PageTemplate = new List<string>()
             {
@@ -59,7 +62,9 @@ namespace BeginSEO.Utils.Spider
                 // 复合
                 @"//div[contains(@class, '{0}')]/li[(position() = last() - 1)]/a/@href",
                 // 家庭医生
-                @"//div[contains(@class, '{0}')]//a[(position() = last() - 1)]/@href"
+                @"//div[contains(@class, '{0}')]/a[(position() = last() - 1)]/@href",
+                // 名医汇
+                @"//div[contains(@class, '{0}')]/a[(position() = last() - 1)]/@href"
             };
             // Key的三个参数分别是 模板索引、文章列表、分页列表
             Dictionary<string, (int, string, string)> LinksStation = new Dictionary<string, (int, string, string)>()
@@ -69,7 +74,8 @@ namespace BeginSEO.Utils.Spider
                 {"news.fh21.com.cn",(1, "left fll" , "page-main")},
                 {"disease.39.net",(0, "pclist", "docFlip") },
                 {"yyk.39.net",(0, "newslist", "pageno") },
-                {"yyk.familydoctor.com.cn",(2, "tart", "fye") }
+                {"yyk.familydoctor.com.cn",(2, "tart", "fye") },
+                {"www.mingyihui.net",(3,"articleList", "pageNum") }
             };
             if (type == Types.Links)
             {
@@ -83,7 +89,8 @@ namespace BeginSEO.Utils.Spider
                 return string.Format(PageTemplate[TemplateIndex], StationSymbol);
             }else
             {
-                string template = @"//div[contains(@class, '{0}')]/*[position() < last()]";
+                //string template = @"//div[contains(@class, '{0}')]/*[position() < last()]";
+                string template = @"//div[contains(@class, '{0}')]/*[not(contains(@style, 'color:#999;'))]";
                 return string.Format(template, ContentTemplate[url]);
             }
         }
