@@ -44,7 +44,7 @@ namespace BeginSEO.Utils.Spider
             {
                 WebProxy proxy = !IsUseProxy ? null : new WebProxy(await ProxyList.GetRandomProxy());
                 var result = await Get(this.Link, string.Empty, GetUserAgent(), proxy);
-                if (!result.IsSuccessStatusCode)
+                if (!result.IsSuccessStatusCode || result.Content.Headers.ContentLength <= 0)
                 {
                     await Task.Delay(random.Next(3000));
                     ++RequestError;
@@ -90,6 +90,11 @@ namespace BeginSEO.Utils.Spider
                 if (!res.IsSuccessStatusCode)
                 {
                     await ShowToast.Show($"请求失败：{url}~",ShowToast.Type.Error);
+                    return;
+                }
+                if (res.Content.Headers.ContentLength <= 0)
+                {
+                    await ShowToast.Show($"请求结果为空：{url}~", ShowToast.Type.Error);
                     return;
                 }
                 var result = await Article.DeSerializeArticle(res);
