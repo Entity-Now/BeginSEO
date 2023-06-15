@@ -58,15 +58,13 @@ namespace BeginSEO.ModelView
         {
             ShowModal.ShowLoading();
             var proxyList = await GrabProxys.RequestAll();
-            Proxys proxys = null;
-            while (proxyList.TryDequeue(out proxys))
-            {
-                var findData = await Db.Set<Proxys>().FirstOrDefaultAsync(I => I.IP == proxys.IP && I.Port == proxys.Port);
+            foreach (var proxy in proxyList) {
+                var findData = await Db.Set<Proxys>().FirstOrDefaultAsync(I => I.IP == proxy.IP && I.Port == proxy.Port);
                 if (findData != null)
                 {
                     continue;
                 }
-                Db.Set<Proxys>().Add(proxys);
+                Db.Set<Proxys>().Add(proxy);
             }
             await Db.SaveChangesAsync();
             Application.Current.Dispatcher.Invoke(() =>
