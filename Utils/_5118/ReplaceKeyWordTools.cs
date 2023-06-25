@@ -15,14 +15,16 @@ namespace BeginSEO.Utils
         public List<KeyWord> keyWords { get; set; }
         public _5118Request ROriginal { get; set; }
         public _5118Request RAkey { get; set; }
+        public _5118Request RNewOrignal { get; set; }
         public ReplaceKeyWordTools(List<KeyWord> _keyword)
         {
             keyWords = _keyword;
         }
-        public ReplaceKeyWordTools(List<KeyWord> _keyword, _5118Request _ROriginal, _5118Request _RAkey) : this(_keyword)
+        public ReplaceKeyWordTools(List<KeyWord> _keyword, _5118Request _ROriginal, _5118Request _RAkey, _5118Request rNewOrignal) : this(_keyword)
         {
             ROriginal = _ROriginal;
             RAkey = _RAkey;
+            RNewOrignal = rNewOrignal;
         }
         public string replaceKeyWord(string Source, bool IsLevel = false)
         {
@@ -51,7 +53,7 @@ namespace BeginSEO.Utils
 
             return Source;
         }
-        public async Task<OriginalResult> Original(string source, string strict, bool IsOriginal, bool IsReplace)
+        public async Task<OriginalResult> Original(string source, string strict, bool IsOriginal, bool IsReplace, bool IsNewOrinal)
         {
             try
             {
@@ -59,14 +61,29 @@ namespace BeginSEO.Utils
                 {
                     AkeyStatus = false,
                     OriginalStatus = false,
+                    NewOriginalStatus = false,
                     contrastValue = -1,
                 };
-                result.NewValue = replaceKeyWord(source, true);
+                result.NewValue = replaceKeyWord(source);
                 // 5118智能原创
-
+                if (IsNewOrinal)
+                {
+                    var originalResult = await ROriginal.OriginalRequest(result.NewValue, strict);
+                    if (originalResult != null && originalResult.errcode == "0")
+                    {
+                        result.NewValue = originalResult.data;
+                        result.contrastValue = float.Parse(originalResult.like) * 100;
+                        result.NewOriginalError = "智能原创成功";
+                        result.NewOriginalStatus = true;
+                    }
+                    else
+                    {
+                        result.NewOriginalError = originalResult.errmsg;
+                    }
+                }
                 if (IsOriginal)
                 {
-                    var originalResult = await ROriginal.OriginalRequest(source, strict);
+                    var originalResult = await ROriginal.OriginalRequest(result.NewValue, strict);
                     if (originalResult != null && originalResult.errcode == "0")
                     {
                         result.NewValue = originalResult.data;
@@ -101,8 +118,6 @@ namespace BeginSEO.Utils
                     }
 
                 }
-
-                result.NewValue = replaceKeyWord(result.NewValue);
                 return result;
             }
             catch (Exception e)

@@ -18,7 +18,9 @@ namespace BeginSEO.Utils._5118
         public string NewValue { get; set; }
         public bool OriginalStatus { get; set; }
         public bool AkeyStatus { get; set; }
+        public bool NewOriginalStatus { get; set; }
         public string OriginalError { get; set; }
         public string AkeyError { get; set; }
+        public string NewOriginalError { get; set; }
     }
 }

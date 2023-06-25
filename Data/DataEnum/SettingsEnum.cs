@@ -12,6 +12,7 @@ namespace BeginSEO.Data.DataEnum
         ReplaceKeyWord,
         Contrast,
         Original,
-        OpenAi
+        OpenAi,
+        SeniorRewrite
     }
 }

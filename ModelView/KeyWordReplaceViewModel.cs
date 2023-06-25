@@ -135,6 +135,18 @@ namespace BeginSEO.ModelView
             }
         }
         /// <summary>
+        /// 新版智能伪原创
+        /// </summary>
+        public bool _IsNewOriginal;
+        public bool IsNewOriginal
+        {
+            get => _IsNewOriginal;
+            set
+            {
+                SetProperty(ref _IsNewOriginal, value);
+            }
+        }
+        /// <summary>
         /// 原创度
         /// </summary>
         public double _Similars;
@@ -269,8 +281,8 @@ namespace BeginSEO.ModelView
                 TheOriginal = Clipboard.GetText();
             }
 
-            var _5118 = new ReplaceKeyWordTools(KeyWords.ToList(), _5118s.ROriginal, _5118s.RAkey);
-            var result = await _5118.Original(TheOriginal, Strict, IsOriginal, IsReplace);
+            var _5118 = new ReplaceKeyWordTools(KeyWords.ToList(), _5118s.ROriginal, _5118s.RAkey, _5118s.RNewOriginal);
+            var result = await _5118.Original(TheOriginal, Strict, IsOriginal, IsReplace, IsNewOriginal);
             Similars = result.contrastValue;
             Original = result.NewValue;
             // 判断是否原创成功

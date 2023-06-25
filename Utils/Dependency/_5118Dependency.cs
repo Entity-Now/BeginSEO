@@ -15,12 +15,14 @@ namespace BeginSEO.Utils.Dependency
     {
         public readonly _5118Request ROriginal;
         public readonly _5118Request RAkey;
+        public readonly _5118Request RNewOriginal;
         public _5118Dependency(dataBank db)
         {
             // 获取5118API的key
             var keys = db.Set<Settings>().ToList();
             ROriginal = _5188Tools.Original(keys.GetSettingValue(SettingsEnum.Original));
             RAkey = _5188Tools.Akey(keys.GetSettingValue(SettingsEnum.ReplaceKeyWord));
+            RNewOriginal = _5188Tools.NewOriginal(keys.GetSettingValue(SettingsEnum.SeniorRewrite));
         }
     }
 }

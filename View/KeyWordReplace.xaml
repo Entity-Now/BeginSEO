@@ -141,6 +141,12 @@
                   IsChecked="{Binding IsReplace}"
                   Style="{StaticResource MaterialDesignLightCheckBox}" />
                 <CheckBox
+                    x:Name="NewOriginal"
+                  Content="5118智能改写(新版)"
+                  IsChecked="{Binding IsNewOriginal}"
+                    Margin="5 0"
+                  Style="{StaticResource MaterialDesignLightCheckBox}" />
+                <CheckBox
                     x:Name="Original"
                   Content="5118智能改写"
                   IsChecked="{Binding IsOriginal}"

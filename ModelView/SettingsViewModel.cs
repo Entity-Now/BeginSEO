@@ -90,7 +90,21 @@ namespace BeginSEO.ModelView
                 setValue(ref _Detection, SettingsEnum.Detection.ToString(), value);
             }
         }
-
+        /// <summary>
+        /// 智能原创升级版
+        /// </summary>
+        public string _SeniorRewrite;
+        public string SeniorRewrite
+        {
+            get
+            {
+                return getValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite.ToString());
+            }
+            set
+            {
+                setValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite.ToString(), value);
+            }
+        }
         void setValue(ref string field, string name, string value)
         {
             Inser(name, value);

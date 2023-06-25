@@ -142,11 +142,11 @@ namespace BeginSEO.ModelView
                 data = data.Where(I => I.Contrast >= 70);
             }
             var ks = Db.Set<KeyWord>().ToList();
-            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
+            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey, _5118s.RNewOriginal);
 
             await Tools.ExecuteTaskHandle(data, 5, async (item) =>
             {
-                var result = await _5118.Original(string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite, "3", IsRewrite, IsReplaceKeyWord);
+                var result = await _5118.Original(string.IsNullOrEmpty(item.Rewrite) ? item.Content : item.Rewrite, "2", IsRewrite, IsReplaceKeyWord, IsSeniorRewrite);
                 item.Title = _5118.replaceKeyWord(item.Title);
                 await UpdateArticle(item, result);
             });
@@ -203,8 +203,8 @@ namespace BeginSEO.ModelView
         {
             ShowModal.ShowLoading();
             var ks = await Db.Set<KeyWord>().ToListAsync();
-            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey);
-            var result = await _5118.Original(item.Rewrite, "3", IsRewrite, IsReplaceKeyWord);
+            var _5118 = new ReplaceKeyWordTools(ks, _5118s.ROriginal, _5118s.RAkey, _5118s.RNewOriginal);
+            var result = await _5118.Original(item.Rewrite, "3", IsRewrite, IsReplaceKeyWord, IsSeniorRewrite);
             await UpdateArticle(item, result);
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -274,6 +274,18 @@ namespace BeginSEO.ModelView
             set
             {
                 SetProperty(ref _IsRewrite, value);
+            }
+        }
+        /// <summary>
+        /// 是否开启新版智能原创
+        /// </summary>
+        public bool _IsSeniorRewrite = false;
+        public bool IsSeniorRewrite
+        {
+            get => _IsSeniorRewrite;
+            set
+            {
+                SetProperty(ref _IsSeniorRewrite, value);
             }
         }
         public bool _OriginalAll = false;

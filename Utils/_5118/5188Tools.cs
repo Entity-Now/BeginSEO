@@ -19,14 +19,15 @@ namespace BeginSEO.Utils
 {
     public static class _5188Tools
     {
-        public static string DetectionUrl = "https://apis.5118.com/wyc/original";
-        public static string OriginalUrl = "http://apis.5118.com/wyc/rewrite";
-        public static string ReplaceKeyWordUrl = "http://apis.5118.com/wyc/akey";
+        const string DetectionUrl = "https://apis.5118.com/wyc/original";
+        const string OriginalUrl = "http://apis.5118.com/wyc/rewrite";
+        const string ReplaceKeyWordUrl = "http://apis.5118.com/wyc/akey";
+        const string NewOriginalUrl = "http://apis.5118.com/wyc/seniorrewrite";
         /// <summary>
         /// 检测文本原创度
         /// </summary>
         /// <returns></returns>
-        public static _5118Request Detection(string key, string value)
+        public static _5118Request Detection(string key)
         {
             return new _5118Request(key, DetectionUrl);
         }
@@ -75,6 +76,24 @@ namespace BeginSEO.Utils
                 {"sim", "1" },
                 {"corewordfilter","1" },
                 {"filter",filter}
+            });
+        }
+        /// <summary>
+        /// 智能原创升级版
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static _5118Request NewOriginal(string key)
+        {
+            return new _5118Request(key, NewOriginalUrl);
+        }
+        public static async Task<Original> NewOriginalRequest(this _5118Request request, string value, string strict)
+        {
+            return await request.Request<Original>(new Dictionary<string, string>()
+            {
+                {"txt", WebUtility.UrlEncode(value)},
+                {"sim", "1" },
+                {"keephtml", "true"}
             });
         }
     }

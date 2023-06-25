@@ -74,6 +74,11 @@
                                 Margin="5 0"
                                 Style="{StaticResource MaterialDesignLightCheckBox}" />
                             <CheckBox
+                                Content="一键重写（新版）"
+                                IsChecked="{Binding IsSeniorRewrite}"
+                                Margin="5 0"
+                                Style="{StaticResource MaterialDesignLightCheckBox}" />
+                            <CheckBox
                                 Content="一键重写"
                                 IsChecked="{Binding IsRewrite}"
                                 Margin="5 0"

@@ -319,7 +319,7 @@
     <Compile Include="Model\EmployData.cs" />
     <Compile Include="Utils\Dependency\_5118Dependency.cs" />
     <Compile Include="Utils\GetSettingValue.cs" />
-    <Compile Include="Utils\_5118\OriginalResult.cs" />
+    <Compile Include="Utils\_5118\Data\OriginalResult.cs" />
     <Compile Include="Utils\_5118\ReplaceKeyWordTools.cs" />
     <Compile Include="Utils\_5118\5188Tools.cs" />
     <Compile Include="Utils\BoolComparer.cs" />
@@ -332,10 +332,10 @@
     <Compile Include="Utils\Spider\_39Article.cs" />
     <Compile Include="Utils\Throttle.cs" />
     <Compile Include="Utils\WithCancellation.cs" />
-    <Compile Include="Utils\_5118\Contrast.cs" />
-    <Compile Include="Utils\_5118\Detection.cs" />
-    <Compile Include="Utils\_5118\Original.cs" />
-    <Compile Include="Utils\_5118\Akey.cs" />
+    <Compile Include="Utils\_5118\Data\Contrast.cs" />
+    <Compile Include="Utils\_5118\Data\Detection.cs" />
+    <Compile Include="Utils\_5118\Data\Original.cs" />
+    <Compile Include="Utils\_5118\Data\Akey.cs" />
     <Compile Include="Utils\_5118\_5118Request.cs" />
     <Compile Include="View\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>

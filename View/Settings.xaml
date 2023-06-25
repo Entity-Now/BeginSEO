@@ -87,5 +87,21 @@
                         MinWidth="64"/>
             </Components:Card.Button>
         </Components:Card>
+
+        <Components:Card VerticalContentAlignment="Stretch">
+            <Components:Card.Title>
+                <TextBlock Text="一键只能原创（升级版）"/>
+            </Components:Card.Title>
+            <Components:Card.Description>
+                <TextBlock Text="将全文内容智能改写，返回高可读，低相似度的内容"
+                           Foreground="{DynamicResource Text_Primary_Brush}"/>
+            </Components:Card.Description>
+            <Components:Card.Button>
+                <TextBox
+                        materialDesign:HintAssist.Hint="请输入5118后台的KEY值"
+                        Text="{Binding SeniorRewrite}"
+                        MinWidth="64"/>
+            </Components:Card.Button>
+        </Components:Card>
     </StackPanel>
 </UserControl>
