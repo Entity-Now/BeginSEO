@@ -13,7 +13,8 @@ namespace BeginSEO.Utils
     {
         public static string GetSettingValue(this IEnumerable<Settings> db, SettingsEnum type)
         {
-            return db.FirstOrDefault(I=> I.Name == type.ToString()).Value;
+            var findData = db.FirstOrDefault(I => I.Name == type.ToString());
+            return findData == null ? "Undefined" :findData.Value;
         }
     }
 }
