@@ -68,7 +68,7 @@ namespace BeginSEO.Utils
                 // 5118智能原创
                 if (IsNewOrinal)
                 {
-                    var originalResult = await ROriginal.OriginalRequest(result.NewValue, strict);
+                    var originalResult = await ROriginal.NewOriginalRequest(result.NewValue, strict);
                     if (originalResult != null && originalResult.errcode == "0")
                     {
                         result.NewValue = originalResult.data;
