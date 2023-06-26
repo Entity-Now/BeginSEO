@@ -87,7 +87,7 @@ namespace BeginSEO.Utils
         {
             return new _5118Request(key, NewOriginalUrl);
         }
-        public static async Task<Original> NewOriginalRequest(this _5118Request request, string value, string strict)
+        public static async Task<Original> NewOriginalRequest(this _5118Request request, string value)
         {
             return await request.Request<Original>(new Dictionary<string, string>()
             {

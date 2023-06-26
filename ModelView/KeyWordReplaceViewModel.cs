@@ -137,7 +137,7 @@ namespace BeginSEO.ModelView
         /// <summary>
         /// 新版智能伪原创
         /// </summary>
-        public bool _IsNewOriginal;
+        public bool _IsNewOriginal = false;
         public bool IsNewOriginal
         {
             get => _IsNewOriginal;
