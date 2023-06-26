@@ -35,7 +35,7 @@ namespace BeginSEO.Utils
         {
             return await request.Request<Detection>(new Dictionary<string, string>()
             {
-                {"txt", WebUtility.UrlEncode(value)}
+                {"txt", Uri.UnescapeDataString(WebUtility.UrlEncode(value))}
             });
         }
         /// <summary>
@@ -53,7 +53,7 @@ namespace BeginSEO.Utils
         {
             return await request.Request<Original>(new Dictionary<string, string>()
             {
-                {"txt", WebUtility.UrlEncode(value)},
+                {"txt", Uri.UnescapeDataString(WebUtility.UrlEncode(value))},
                 {"sim", "1" },
                 {"strict",strict}
             });
@@ -72,7 +72,7 @@ namespace BeginSEO.Utils
         {
             return await request.Request<Akey>(new Dictionary<string, string>()
             {
-                {"txt", WebUtility.UrlEncode(value)},
+                {"txt", Uri.UnescapeDataString(WebUtility.UrlEncode(value))},
                 {"sim", "1" },
                 {"corewordfilter","1" },
                 {"filter",filter}
@@ -91,7 +91,7 @@ namespace BeginSEO.Utils
         {
             return await request.Request<Original>(new Dictionary<string, string>()
             {
-                {"txt", WebUtility.UrlEncode(value)},
+                {"txt", Uri.UnescapeDataString(WebUtility.UrlEncode(value))},
                 {"sim", "1" },
                 {"keephtml", "true"}
             });
