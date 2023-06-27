@@ -118,6 +118,8 @@ namespace BeginSEO.Utils
                     }
 
                 }
+                // 重新替换关键词
+                result.NewValue = replaceKeyWord(source);
                 return result;
             }
             catch (Exception e)

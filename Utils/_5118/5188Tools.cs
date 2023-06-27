@@ -89,6 +89,14 @@ namespace BeginSEO.Utils
         }
         public static async Task<Original> NewOriginalRequest(this _5118Request request, string value)
         {
+            // 改之前
+            //return await request.Request<Original>(new Dictionary<string, string>()
+            //{
+            //    {"txt", WebUtility.UrlEncode(value)},
+            //    {"sim", "1" },
+            //    {"keephtml", "true"}
+            //});
+            // 改之后，使用Uri.UnescapeDataString处理UrlEncode后的字符串
             return await request.Request<Original>(new Dictionary<string, string>()
             {
                 {"txt", Uri.UnescapeDataString(WebUtility.UrlEncode(value))},
