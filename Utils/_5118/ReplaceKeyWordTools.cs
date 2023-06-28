@@ -119,7 +119,7 @@ namespace BeginSEO.Utils
 
                 }
                 // 重新替换关键词
-                result.NewValue = replaceKeyWord(source);
+                result.NewValue = replaceKeyWord(result.NewValue);
                 return result;
             }
             catch (Exception e)
