@@ -136,6 +136,11 @@
                         HorizontalAlignment="Center"
                         Grid.Row="2" Height="40">
                 <CheckBox
+                    x:Name="MarkToHtml"
+                  Content="Markdown换为HTML"
+                  IsChecked="{Binding IsConvertMark}"
+                  Style="{StaticResource MaterialDesignLightCheckBox}" />
+                <CheckBox
                     x:Name="ReplaceKeyWord"
                   Content="5118一键换词"
                   IsChecked="{Binding IsReplace}"

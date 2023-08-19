@@ -179,6 +179,18 @@ namespace BeginSEO.ModelView
                 SetProperty(ref _Strict, value);
             }
         }
+        /// <summary>
+        /// 是否将Markdown代码转换为HTML代码
+        /// </summary>
+        public bool _IsConvertMark = false;
+        public bool IsConvertMark
+        {
+            get => _IsConvertMark;
+            set
+            {
+                SetProperty(ref _IsConvertMark, value);
+            }
+        }
 
         public ObservableCollection<KeyWord> _KeyWords;
         public ObservableCollection<KeyWord> KeyWords
@@ -293,6 +305,10 @@ namespace BeginSEO.ModelView
             if (IsReplace)
             {
                 await ShowToast.Show(result.AkeyError);
+            }
+            if (IsConvertMark)
+            {
+                Original = MarkdownHelper.MarkToHtml(Original);
             }
             if (IsCopy)
             {
