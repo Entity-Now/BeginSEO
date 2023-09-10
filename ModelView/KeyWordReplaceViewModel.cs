@@ -2,6 +2,7 @@
 using BeginSEO.Data;
 using BeginSEO.Data.DataEnum;
 using BeginSEO.Model;
+using BeginSEO.Services;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
 using BeginSEO.Utils._5118;
@@ -26,8 +27,8 @@ namespace BeginSEO.ModelView
     public class KeyWordReplaceViewModel : ObservableObject
     {
         public readonly dataBank Db;
-        public readonly _5118Dependency _5118s;
-        public KeyWordReplaceViewModel(dataBank db, _5118Dependency _5118s)
+        public readonly _5118Service _5118s;
+        public KeyWordReplaceViewModel(dataBank db, _5118Service _5118s)
         {
             Db = db;
             this._5118s = _5118s;
@@ -111,63 +112,6 @@ namespace BeginSEO.ModelView
             }
         }
         /// <summary>
-        /// 是否要5118替换关键词
-        /// </summary>
-        public bool _IsReplace;
-        public bool IsReplace
-        {
-            get => _IsReplace;
-            set
-            {
-                SetProperty(ref _IsReplace, value);
-            }
-        }
-        /// <summary>
-        /// 是否要伪原创
-        /// </summary>
-        public bool _IsOriginal;
-        public bool IsOriginal
-        {
-            get => _IsOriginal;
-            set
-            {
-                SetProperty(ref _IsOriginal, value);
-            }
-        }
-        /// <summary>
-        /// 新版智能伪原创
-        /// </summary>
-        public bool _IsNewOriginal = false;
-        public bool IsNewOriginal
-        {
-            get => _IsNewOriginal;
-            set
-            {
-                SetProperty(ref _IsNewOriginal, value);
-            }
-        }
-        /// <summary>
-        /// 原创度
-        /// </summary>
-        public double _Similars;
-        public double Similars
-        {
-            get => _Similars;
-            set
-            {
-                SetProperty(ref _Similars, value);
-            }
-        }
-        public bool _IsCopy = true;
-        public bool IsCopy
-        {
-            get=>_IsCopy;
-            set
-            {
-                SetProperty(ref _IsCopy, value);
-            }
-        }
-        /// <summary>
         /// 换词严格度
         /// </summary>
         public string _Strict;
@@ -177,6 +121,23 @@ namespace BeginSEO.ModelView
             set
             {
                 SetProperty(ref _Strict, value);
+            }
+        }
+        public ObservableCollection<Tuple<string, bool>> _Freatures = new ObservableCollection<Tuple<string, bool>> 
+        {
+            new Tuple<string, bool>("MarkToHtml", false),
+            new Tuple<string, bool>("智能改写", false),
+            new Tuple<string, bool>("智能改写（新）", false),
+            new Tuple<string, bool>("一键换词", false),
+            new Tuple<string, bool>("一键换词", false),
+            new Tuple<string, bool>("复制到剪切板", true),
+        };
+        public ObservableCollection<Tuple<string, bool>> Freatures
+        {
+            get => _Freatures;
+            set
+            {
+                SetProperty(ref _Freatures, value);
             }
         }
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using BeginSEO.ModelView;
+using BeginSEO.Services;
 using BeginSEO.SQL;
 using BeginSEO.Utils;
-using BeginSEO.Utils.Dependency;
 using BeginSEO.Utils.Spider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,7 +59,8 @@ namespace BeginSEO {
             services.AddTransient<EmployViewModel>();
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<ProxyListViewModel>();
-            services.AddTransient<_5118Dependency>();
+            services.AddTransient<_5118Service>();
+            
             return services.BuildServiceProvider();
         }
 

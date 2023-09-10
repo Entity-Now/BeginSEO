@@ -320,10 +320,15 @@
     <Compile Include="ModelView\ProxyListViewModel.cs" />
     <Compile Include="ModelView\SettingsViewModel.cs" />
     <Compile Include="Model\EmployData.cs" />
-    <Compile Include="Utils\Dependency\_5118Dependency.cs" />
-    <Compile Include="Utils\GetSettingValue.cs" />
+    <Compile Include="Services\_5118Service.cs" />
     <Compile Include="Utils\MarkdownHelper.cs" />
+    <Compile Include="Utils\_5118\AKeyHandle.cs" />
     <Compile Include="Utils\_5118\Data\OriginalResult.cs" />
+    <Compile Include="Utils\_5118\Data\_5118Result.cs" />
+    <Compile Include="Utils\_5118\DetectionHandle.cs" />
+    <Compile Include="Utils\_5118\I5118Handle.cs" />
+    <Compile Include="Utils\_5118\OriginalHandle.cs" />
+    <Compile Include="Utils\_5118\ReplaceKeyWordHandle.cs" />
     <Compile Include="Utils\_5118\ReplaceKeyWordTools.cs" />
     <Compile Include="Utils\_5118\5188Tools.cs" />
     <Compile Include="Utils\BoolComparer.cs" />
@@ -340,7 +345,9 @@
     <Compile Include="Utils\_5118\Data\Detection.cs" />
     <Compile Include="Utils\_5118\Data\Original.cs" />
     <Compile Include="Utils\_5118\Data\Akey.cs" />
-    <Compile Include="Utils\_5118\_5118Request.cs" />
+    <Compile Include="Utils\_5118\SeniorrewireHandle.cs" />
+    <Compile Include="Utils\_5118\_5118Helper.cs" />
+    <Compile Include="Utils\_5118\_5118Config.cs" />
     <Compile Include="View\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>

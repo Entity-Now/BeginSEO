@@ -13,18 +13,9 @@ namespace BeginSEO.Utils
     public class ReplaceKeyWordTools
     {
         public List<KeyWord> keyWords { get; set; }
-        public _5118Request ROriginal { get; set; }
-        public _5118Request RAkey { get; set; }
-        public _5118Request RNewOrignal { get; set; }
         public ReplaceKeyWordTools(List<KeyWord> _keyword)
         {
             keyWords = _keyword;
-        }
-        public ReplaceKeyWordTools(List<KeyWord> _keyword, _5118Request _ROriginal, _5118Request _RAkey, _5118Request rNewOrignal) : this(_keyword)
-        {
-            ROriginal = _ROriginal;
-            RAkey = _RAkey;
-            RNewOrignal = rNewOrignal;
         }
         public string replaceKeyWord(string Source, bool IsLevel = false)
         {

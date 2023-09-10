@@ -1,4 +1,5 @@
 ﻿using BeginSEO.Data.DataEnum;
+using BeginSEO.Services;
 using BeginSEO.SQL;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Win32;
@@ -13,10 +14,10 @@ namespace BeginSEO.ModelView
 {
     public class SettingsViewModel : ObservableObject
     {
-        public readonly dataBank Db;
-        public SettingsViewModel(dataBank _db) 
+        public readonly _5118Service _5118;
+        public SettingsViewModel(_5118Service __5118) 
         {
-            Db = _db;
+            _5118 = __5118;
         }
         public string _OpenAiKey;
         public string OpenAiKey
@@ -24,11 +25,11 @@ namespace BeginSEO.ModelView
             get
             {
 
-                return getValue(ref _OpenAiKey, SettingsEnum.OpenAi.ToString());
+                return getValue(ref _OpenAiKey, SettingsEnum.OpenAi);
             }
             set
             {
-                setValue(ref _OpenAiKey, SettingsEnum.OpenAi.ToString(), value);
+                setValue(ref _OpenAiKey, SettingsEnum.OpenAi, value);
             }
         }
         /// <summary>
@@ -39,10 +40,10 @@ namespace BeginSEO.ModelView
         {
             get{
 
-                return getValue(ref _Original, SettingsEnum.Original.ToString());
+                return getValue(ref _Original, SettingsEnum.Original);
             }
             set{
-                setValue(ref _Original, SettingsEnum.Original.ToString(), value);
+                setValue(ref _Original, SettingsEnum.Original, value);
             }
         }
         /// <summary>
@@ -53,11 +54,11 @@ namespace BeginSEO.ModelView
         {
             get
             {
-                return getValue(ref _Contrast, SettingsEnum.Contrast.ToString());
+                return getValue(ref _Contrast, SettingsEnum.Contrast);
             }
             set 
             {
-                setValue(ref _Contrast, SettingsEnum.Contrast.ToString(), value);
+                setValue(ref _Contrast, SettingsEnum.Contrast, value);
             }
         }
         /// <summary>
@@ -68,11 +69,11 @@ namespace BeginSEO.ModelView
         {
             get
             {
-                return getValue(ref _ReplaceKeyWord, SettingsEnum.ReplaceKeyWord.ToString());
+                return getValue(ref _ReplaceKeyWord, SettingsEnum.ReplaceKeyWord);
             }
             set
             {
-                setValue(ref _ReplaceKeyWord, SettingsEnum.ReplaceKeyWord.ToString(), value);
+                setValue(ref _ReplaceKeyWord, SettingsEnum.ReplaceKeyWord, value);
             }
         }
         /// <summary>
@@ -83,11 +84,11 @@ namespace BeginSEO.ModelView
         {
             get
             {
-                return getValue(ref _Detection, SettingsEnum.Detection.ToString());
+                return getValue(ref _Detection, SettingsEnum.Detection);
             }
             set
             {
-                setValue(ref _Detection, SettingsEnum.Detection.ToString(), value);
+                setValue(ref _Detection, SettingsEnum.Detection, value);
             }
         }
         /// <summary>
@@ -98,38 +99,25 @@ namespace BeginSEO.ModelView
         {
             get
             {
-                return getValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite.ToString());
+                return getValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite);
             }
             set
             {
-                setValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite.ToString(), value);
+                setValue(ref _SeniorRewrite, SettingsEnum.SeniorRewrite, value);
             }
         }
-        void setValue(ref string field, string name, string value)
+        void setValue(ref string field, SettingsEnum type, string value)
         {
-            Inser(name, value);
             SetProperty(ref field, value);
+            _5118.Set(type, value);
         }
-        string getValue(ref string field, string name)
+        string getValue(ref string field, SettingsEnum type)
         {
             if (string.IsNullOrEmpty(field))
             {
-                field = Get(name);
+                field = _5118.Get(type);
             }
             return field;
-        }
-        string Get(string name)
-        {
-            var data = Db.Set<Data.Settings>().FirstOrDefault(I => I.Name == name);
-            return data != null ? data.Value : string.Empty;
-        }
-        void Inser(string name, string value)
-        {
-            Db.InsertOrUpdate<Data.Settings>(new Data.Settings()
-            {
-                Name = name,
-                Value = value
-            }, I => I.Name == name);
         }
     }
 }
